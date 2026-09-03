@@ -5,7 +5,7 @@ import { signOutAction } from "@/lib/actions/auth";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/site/theme-toggle";
 
-const navItems = [
+const baseNav = [
   { href: "/dashboard", label: "Dashboard" },
   { href: "/applications", label: "Applications" },
   { href: "/countries", label: "Countries" },
@@ -13,6 +13,14 @@ const navItems = [
 
 export async function AppHeader() {
   const session = await auth();
+  const role = session?.user?.role;
+  const navItems = [
+    ...baseNav,
+    ...(role === "CONTENT_MANAGER" || role === "ADMIN"
+      ? [{ href: "/content", label: "Content" }]
+      : []),
+    ...(role === "ADMIN" ? [{ href: "/admin", label: "Admin" }] : []),
+  ];
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/40 bg-background/70 backdrop-blur-xl">

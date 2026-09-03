@@ -50,7 +50,9 @@ re-verified with the `security-review` skill before any deploy. This app has
 ## 5. Attacker's Perspective Review (ECC)
 - [ ] ID manipulation / IDOR swept across every id-taking endpoint.
 - [ ] No endpoint works without a valid, unexpired token where auth is required.
-- [ ] Privilege escalation blocked (can't reach admin routes by guessing/role-editing).
+- [x] Privilege escalation blocked: middleware gates /admin & /content by role AND
+      every admin/content server action re-checks role (defense in depth); role lives
+      in the signed JWT, not client-editable. Verified: student redirected off /admin.
 - [ ] Feature-abuse limits (mass signup, spam, upload fill) rate-limited.
 - [ ] Stored-XSS: user text (SOP, bios, field names) escaped on render.
 - [ ] No internal exposure (`.env`, `.git`, source maps, verbose health checks).

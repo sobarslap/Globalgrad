@@ -20,7 +20,10 @@
       "Bash(git checkout *)",
       "Bash(git add *)",
       "Bash(git commit *)",
-      "Bash(git commit -q -m 'chore: allow git commit in local Claude settings *)"
+      "Bash(git commit -q -m 'chore: allow git commit in local Claude settings *)",
+      "Bash(node -e \"console.log\\(require\\('crypto'\\).randomBytes\\(32\\).toString\\('base64'\\)\\)\")",
+      "Bash(npm run *)",
+      "Bash(git check-ignore *)"
     ]
   }
 }

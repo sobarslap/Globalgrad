@@ -33,6 +33,9 @@ export default async function DashboardPage() {
             GlobalGrad
           </Link>
           <div className="flex items-center gap-3">
+            <Button asChild variant="ghost" size="sm">
+              <Link href="/countries">Countries</Link>
+            </Button>
             <span className="hidden text-sm text-muted-foreground sm:inline">
               {session.user.email}
             </span>

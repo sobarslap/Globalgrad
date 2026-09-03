@@ -23,7 +23,9 @@
       "Bash(git commit -q -m 'chore: allow git commit in local Claude settings *)",
       "Bash(node -e \"console.log\\(require\\('crypto'\\).randomBytes\\(32\\).toString\\('base64'\\)\\)\")",
       "Bash(npm run *)",
-      "Bash(git check-ignore *)"
+      "Bash(git check-ignore *)",
+      "Bash(grep -v \"^$\")",
+      "Bash(curl -sI http://localhost:3000/countries)"
     ]
   }
 }

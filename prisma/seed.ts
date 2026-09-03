@@ -30,14 +30,20 @@ async function main() {
   await db.scholarship.deleteMany();
   await db.country.deleteMany();
 
-  // Countries
+  // Countries — macro data is illustrative (verify against official sources).
+  const countryData = [
+    { name: "United States", code: "US", flagEmoji: "🇺🇸", postStudyWorkMonths: 12, monthlyLivingCostUsd: 1500, costOfLivingIndex: 100, partTimeAllowed: true, workHoursPerWeek: 20, currency: "USD" },
+    { name: "Canada", code: "CA", flagEmoji: "🇨🇦", postStudyWorkMonths: 36, monthlyLivingCostUsd: 1200, costOfLivingIndex: 72, partTimeAllowed: true, workHoursPerWeek: 24, currency: "CAD" },
+    { name: "United Kingdom", code: "GB", flagEmoji: "🇬🇧", postStudyWorkMonths: 24, monthlyLivingCostUsd: 1400, costOfLivingIndex: 78, partTimeAllowed: true, workHoursPerWeek: 20, currency: "GBP" },
+    { name: "Germany", code: "DE", flagEmoji: "🇩🇪", postStudyWorkMonths: 18, monthlyLivingCostUsd: 1100, costOfLivingIndex: 70, partTimeAllowed: true, workHoursPerWeek: 20, currency: "EUR" },
+    { name: "Australia", code: "AU", flagEmoji: "🇦🇺", postStudyWorkMonths: 24, monthlyLivingCostUsd: 1600, costOfLivingIndex: 83, partTimeAllowed: true, workHoursPerWeek: 24, currency: "AUD" },
+    { name: "Switzerland", code: "CH", flagEmoji: "🇨🇭", postStudyWorkMonths: 6, monthlyLivingCostUsd: 2000, costOfLivingIndex: 122, partTimeAllowed: true, workHoursPerWeek: 15, currency: "CHF" },
+    { name: "Sweden", code: "SE", flagEmoji: "🇸🇪", postStudyWorkMonths: 12, monthlyLivingCostUsd: 1000, costOfLivingIndex: 74, partTimeAllowed: true, workHoursPerWeek: 40, currency: "SEK" },
+  ];
   const countryIds = new Map<string, string>();
-  for (const { name, code } of Object.values(universityCountry)) {
-    if (countryIds.has(code)) continue;
-    const c = await db.country.create({
-      data: { name, code, partTimeAllowed: true },
-    });
-    countryIds.set(code, c.id);
+  for (const c of countryData) {
+    const created = await db.country.create({ data: c });
+    countryIds.set(c.code, created.id);
   }
 
   // Universities + programs

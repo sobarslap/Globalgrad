@@ -26,6 +26,20 @@ export interface StudentProfile {
   greTotal?: number;
 }
 
+/** Macro-level country data for the Country Decision Dashboard (Module 1, F4). */
+export interface CountryInfo {
+  id: string;
+  name: string;
+  code: string;
+  flagEmoji: string | null;
+  postStudyWorkMonths: number | null;
+  monthlyLivingCostUsd: number | null;
+  costOfLivingIndex: number | null;
+  partTimeAllowed: boolean;
+  workHoursPerWeek: number | null;
+  currency: string | null;
+}
+
 /** Admission profile of a specific university program. */
 export interface Program {
   id: string;

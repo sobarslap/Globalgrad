@@ -3,6 +3,7 @@ import type {
   Program,
   Scholarship,
   DegreeLevel,
+  CountryInfo,
 } from "@/lib/domain/types";
 
 const toLevel = (l: "BACHELORS" | "MASTERS" | "PHD"): DegreeLevel =>
@@ -26,6 +27,23 @@ export async function getPublishedPrograms(): Promise<Program[]> {
     admitCgpa: r.admitCgpa,
     admitIelts: r.admitIelts,
     valuesResearch: r.valuesResearch,
+  }));
+}
+
+/** All countries with macro data, for the Country Decision Dashboard. */
+export async function getCountries(): Promise<CountryInfo[]> {
+  const rows = await db.country.findMany({ orderBy: { name: "asc" } });
+  return rows.map((r) => ({
+    id: r.id,
+    name: r.name,
+    code: r.code,
+    flagEmoji: r.flagEmoji,
+    postStudyWorkMonths: r.postStudyWorkMonths,
+    monthlyLivingCostUsd: r.monthlyLivingCostUsd,
+    costOfLivingIndex: r.costOfLivingIndex,
+    partTimeAllowed: r.partTimeAllowed,
+    workHoursPerWeek: r.workHoursPerWeek,
+    currency: r.currency,
   }));
 }
 

@@ -6,10 +6,10 @@ import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/site/theme-toggle";
 
 const links = [
-  { href: "#features", label: "Features" },
-  { href: "#how", label: "How it works" },
-  { href: "#integrations", label: "Integrations" },
-  { href: "#testimonials", label: "Students" },
+  { href: "/#features", label: "Features" },
+  { href: "/#how", label: "How it works" },
+  { href: "/countries", label: "Countries" },
+  { href: "/#testimonials", label: "Students" },
 ];
 
 export async function Navbar() {

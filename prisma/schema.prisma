@@ -127,13 +127,16 @@ model StudentProfile {
 }
 
 model Country {
-  id                 String   @id @default(cuid())
-  name               String   @unique
-  code               String   @unique
-  postStudyWorkMonths Int?
-  costOfLivingIndex  Float?
-  partTimeAllowed    Boolean  @default(false)
-  currency           String?
+  id                  String   @id @default(cuid())
+  name                String   @unique
+  code                String   @unique
+  flagEmoji           String?
+  postStudyWorkMonths Int? // length of a post-study work visa
+  monthlyLivingCostUsd Int? // rough student monthly living cost
+  costOfLivingIndex   Float? // 100 = US baseline
+  partTimeAllowed     Boolean @default(false)
+  workHoursPerWeek    Int? // permitted part-time hours during term
+  currency            String?
 
   universities University[]
   scholarships Scholarship[]

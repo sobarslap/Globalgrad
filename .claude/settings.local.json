@@ -18,7 +18,9 @@
       "Bash(echo \"exit=$?\")",
       "Bash(rm -rf src/graphify-out)",
       "Bash(git checkout *)",
-      "Bash(git add *)"
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git commit -q -m 'chore: allow git commit in local Claude settings *)"
     ]
   }
 }

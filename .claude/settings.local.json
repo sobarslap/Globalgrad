@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm -v)",
+      "Bash(pnpm -v)",
+      "Bash(docker -v)",
+      "Bash(git --version)",
+      "Bash(mkdir -p docs)",
+      "Bash(mv *.pdf docs/)",
+      "Bash(npx --yes create-next-app@latest . --ts --tailwind --eslint --app --src-dir --import-alias \"@/*\" --use-npm --no-turbopack --yes)",
+      "Bash(npx --yes create-next-app@latest study-abroad --ts --tailwind --eslint --app --src-dir --import-alias \"@/*\" --use-npm --no-turbopack --yes)",
+      "Bash(npm install *)",
+      "Bash(npx tsc *)",
+      "Bash(rm -f src/components/ui/splite.tsx)",
+      "Bash(npm uninstall *)",
+      "Bash(npm test *)",
+      "Bash(npx prisma *)",
+      "Bash(echo \"exit=$?\")",
+      "Bash(rm -rf src/graphify-out)",
+      "Bash(git checkout *)",
+      "Bash(git add *)"
+    ]
+  }
+}

@@ -1,0 +1,249 @@
+// GlobalGrad — Prisma schema (PostgreSQL / Neon).
+// Auth.js adapter models + the study-abroad domain. Embeddings/pgvector for the
+// Public Insight Engine are added in a later phase.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ---------- Roles & enums ----------
+enum Role {
+  STUDENT
+  CONTENT_MANAGER
+  ADMIN
+}
+
+enum DegreeLevel {
+  BACHELORS
+  MASTERS
+  PHD
+}
+
+enum ApplicationStatus {
+  PLANNED
+  PREPARING
+  APPLIED
+  INTERVIEW
+  OFFER_RECEIVED
+  REJECTED
+  VISA_PROCESSING
+  ENROLLED
+}
+
+enum DocStatus {
+  PENDING
+  PREPARED
+  SUBMITTED
+}
+
+// ---------- Auth.js (NextAuth Prisma adapter) ----------
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  passwordHash  String? // argon2id; null for OAuth-only accounts
+  role          Role      @default(STUDENT)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts       Account[]
+  sessions       Session[]
+  studentProfile StudentProfile?
+  applications   Application[]
+  auditLogs      AuditLog[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// Single-use, time-limited password reset tokens (store only a hash of the token).
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  userId    String
+  tokenHash String   @unique
+  expires   DateTime
+  usedAt    DateTime?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+// ---------- Domain ----------
+model StudentProfile {
+  id                   String      @id @default(cuid())
+  userId               String      @unique
+  cgpa                 Float
+  ielts                Float
+  researchPapers       Int         @default(0)
+  workExperienceMonths Int         @default(0)
+  targetLevel          DegreeLevel @default(MASTERS)
+  targetField          String
+  nationality          String
+  greTotal             Int?
+  budgetUsd            Int?
+  updatedAt            DateTime    @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Country {
+  id                 String   @id @default(cuid())
+  name               String   @unique
+  code               String   @unique
+  postStudyWorkMonths Int?
+  costOfLivingIndex  Float?
+  partTimeAllowed    Boolean  @default(false)
+  currency           String?
+
+  universities University[]
+  scholarships Scholarship[]
+}
+
+model University {
+  id        String    @id @default(cuid())
+  name      String
+  countryId String?
+  city      String?
+  worldRank Int?
+  published Boolean   @default(false) // Content-Manager verified before public
+
+  country  Country?  @relation(fields: [countryId], references: [id])
+  programs Program[]
+
+  @@index([name])
+}
+
+model Program {
+  id             String      @id @default(cuid())
+  universityId   String
+  programName    String
+  field          String
+  level          DegreeLevel
+  selectivity    Float // 0–100
+  minCgpa        Float
+  minIelts       Float
+  admitCgpa      Float
+  admitIelts     Float
+  valuesResearch Boolean     @default(false)
+  tuitionUsd     Int?
+  published      Boolean     @default(false)
+
+  university   University    @relation(fields: [universityId], references: [id], onDelete: Cascade)
+  applications Application[]
+  deadlines    Deadline[]
+
+  @@index([field])
+}
+
+model Scholarship {
+  id                    String        @id @default(cuid())
+  name                  String
+  provider              String
+  countryId             String?
+  eligibleNationalities String[]
+  eligibleFields        String[]
+  eligibleLevels        DegreeLevel[]
+  minCgpa               Float
+  minIelts              Float
+  meritCgpa             Float
+  valuesResearch        Boolean       @default(false)
+  amountUsd             Int?
+  published             Boolean       @default(false)
+
+  country   Country?   @relation(fields: [countryId], references: [id])
+  deadlines Deadline[]
+}
+
+model Application {
+  id        String            @id @default(cuid())
+  userId    String
+  programId String
+  status    ApplicationStatus @default(PLANNED)
+  notes     String?
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+
+  user      User                    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  program   Program                 @relation(fields: [programId], references: [id], onDelete: Cascade)
+  checklist DocumentChecklistItem[]
+
+  @@unique([userId, programId])
+  @@index([userId])
+}
+
+model DocumentChecklistItem {
+  id            String    @id @default(cuid())
+  applicationId String
+  name          String
+  status        DocStatus @default(PENDING)
+
+  application Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  @@index([applicationId])
+}
+
+model Deadline {
+  id            String    @id @default(cuid())
+  title         String
+  dueDate       DateTime
+  programId     String?
+  scholarshipId String?
+
+  program     Program?     @relation(fields: [programId], references: [id], onDelete: Cascade)
+  scholarship Scholarship? @relation(fields: [scholarshipId], references: [id], onDelete: Cascade)
+
+  @@index([dueDate])
+}
+
+// Server-side audit trail (never exposed to clients).
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  action    String
+  detail    String?
+  createdAt DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+}

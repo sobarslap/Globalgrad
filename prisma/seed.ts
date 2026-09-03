@@ -62,7 +62,7 @@ async function main() {
       uniId = uni.id;
       universityIds.set(p.university, uniId);
     }
-    await db.program.create({
+    const created = await db.program.create({
       data: {
         universityId: uniId,
         programName: p.programName,
@@ -75,6 +75,15 @@ async function main() {
         admitIelts: p.admitIelts,
         valuesResearch: p.valuesResearch,
         published: true,
+      },
+    });
+    // A staggered application deadline for each program (future dates).
+    const daysOut = 30 + (samplePrograms.indexOf(p) % 6) * 25;
+    await db.deadline.create({
+      data: {
+        title: `${p.university} — application deadline`,
+        dueDate: new Date(Date.now() + daysOut * 24 * 60 * 60 * 1000),
+        programId: created.id,
       },
     });
   }

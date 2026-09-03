@@ -1,7 +1,7 @@
-"use client";
-
 import Link from "next/link";
 import { GraduationCap } from "lucide-react";
+import { auth } from "@/lib/auth";
+import { signOutAction } from "@/lib/actions/auth";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/site/theme-toggle";
 
@@ -12,7 +12,10 @@ const links = [
   { href: "#testimonials", label: "Students" },
 ];
 
-export function Navbar() {
+export async function Navbar() {
+  const session = await auth();
+  const isLoggedIn = !!session?.user;
+
   return (
     <header className="fixed top-0 z-50 w-full border-b border-border/40 bg-background/70 backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
@@ -37,12 +40,32 @@ export function Navbar() {
 
         <div className="flex items-center gap-2">
           <ThemeToggle />
-          <Button asChild variant="ghost" size="sm" className="hidden sm:inline-flex">
-            <Link href="/sign-in">Sign in</Link>
-          </Button>
-          <Button asChild size="sm">
-            <Link href="/dashboard">Get started</Link>
-          </Button>
+          {isLoggedIn ? (
+            <>
+              <Button asChild variant="ghost" size="sm">
+                <Link href="/dashboard">Dashboard</Link>
+              </Button>
+              <form action={signOutAction}>
+                <Button type="submit" size="sm" variant="outline">
+                  Sign out
+                </Button>
+              </form>
+            </>
+          ) : (
+            <>
+              <Button
+                asChild
+                variant="ghost"
+                size="sm"
+                className="hidden sm:inline-flex"
+              >
+                <Link href="/sign-in">Sign in</Link>
+              </Button>
+              <Button asChild size="sm">
+                <Link href="/sign-up">Get started</Link>
+              </Button>
+            </>
+          )}
         </div>
       </div>
     </header>

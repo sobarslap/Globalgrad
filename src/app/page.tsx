@@ -18,7 +18,7 @@ export default function Home() {
           title="Get in. Get funded. Go global."
           subtitle="GlobalGrad scores your readiness, matches you to Safe / Target / Reach universities, finds scholarships you actually qualify for, and plans the money, deadlines and visa — with an AI advisor grounded in real data."
           ctaLabel="Start free"
-          ctaHref="/dashboard"
+          ctaHref="/sign-up"
         />
         <Interactive3D />
         <FeaturesSection />

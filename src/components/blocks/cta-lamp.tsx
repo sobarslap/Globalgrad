@@ -22,7 +22,7 @@ export function CtaLamp() {
           minutes.
         </p>
         <Button asChild size="lg" className="mt-8">
-          <Link href="/dashboard">Create your profile</Link>
+          <Link href="/sign-up">Create your profile</Link>
         </Button>
       </motion.div>
     </LampContainer>

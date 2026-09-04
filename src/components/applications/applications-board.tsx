@@ -7,6 +7,7 @@ import {
   CalendarClock,
   ChevronDown,
   ChevronUp,
+  Printer,
   Trash2,
   Wand2,
 } from "lucide-react";
@@ -77,8 +78,15 @@ export function ApplicationsBoard({
 
   return (
     <div className="space-y-8">
+      {/* Export */}
+      <div className="flex justify-end print:hidden">
+        <Button variant="outline" size="sm" onClick={() => window.print()}>
+          <Printer className="mr-1.5 h-4 w-4" /> Print / Save as PDF
+        </Button>
+      </div>
+
       {/* Strategy Builder */}
-      <div className="flex flex-col items-start justify-between gap-4 rounded-2xl border border-primary/30 bg-primary/5 p-5 sm:flex-row sm:items-center">
+      <div className="flex flex-col items-start justify-between gap-4 rounded-2xl border border-primary/30 bg-primary/5 p-5 print:hidden sm:flex-row sm:items-center">
         <div>
           <h2 className="flex items-center gap-2 font-semibold">
             <Wand2 className="h-4 w-4 text-primary" /> Application strategy
@@ -208,6 +216,7 @@ export function ApplicationsBoard({
                       variant="ghost"
                       size="icon"
                       aria-label="Toggle checklist"
+                      className="print:hidden"
                       onClick={() => setExpanded(isOpen ? null : a.id)}
                     >
                       {isOpen ? (
@@ -220,6 +229,7 @@ export function ApplicationsBoard({
                       variant="ghost"
                       size="icon"
                       aria-label="Remove application"
+                      className="print:hidden"
                       onClick={() => run(() => removeApplication(a.id))}
                     >
                       <Trash2 className="h-4 w-4 text-muted-foreground" />

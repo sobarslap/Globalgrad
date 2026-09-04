@@ -5,16 +5,23 @@ import { signOutAction } from "@/lib/actions/auth";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/site/theme-toggle";
 import { MobileNav } from "@/components/site/mobile-nav";
+import { MoreMenu } from "@/components/site/more-menu";
 
-const baseNav = [
+// Shown directly in the top bar on desktop.
+const primaryNav = [
   { href: "/feed", label: "Feed" },
   { href: "/dashboard", label: "Dashboard" },
   { href: "/search", label: "Search" },
   { href: "/advisor", label: "Advisor" },
   { href: "/applications", label: "Applications" },
   { href: "/cost", label: "Cost" },
-  { href: "/visa", label: "Visa" },
+];
+
+// Tucked into the "More" dropdown on desktop.
+const secondaryNav = [
   { href: "/countries", label: "Countries" },
+  { href: "/compare", label: "Compare" },
+  { href: "/visa", label: "Visa" },
   { href: "/similar", label: "Similar" },
   { href: "/reality", label: "Reality" },
   { href: "/insights", label: "Insights" },
@@ -23,27 +30,32 @@ const baseNav = [
 export async function AppHeader() {
   const session = await auth();
   const role = session?.user?.role;
-  const navItems = [
-    ...baseNav,
+  const roleNav = [
     ...(role === "CONTENT_MANAGER" || role === "ADMIN"
       ? [{ href: "/content", label: "Content" }]
       : []),
     ...(role === "ADMIN" ? [{ href: "/admin", label: "Admin" }] : []),
   ];
+  const moreNav = [...secondaryNav, ...roleNav];
+  const allNav = [
+    ...primaryNav,
+    ...moreNav,
+    { href: "/settings", label: "Settings" },
+  ];
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border/40 bg-background/70 backdrop-blur-xl">
+    <header className="sticky top-0 z-40 border-b border-border/40 bg-background/70 backdrop-blur-xl print:hidden">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
         <div className="flex items-center gap-3 lg:gap-6">
-          <MobileNav items={[...navItems, { href: "/settings", label: "Settings" }]} />
+          <MobileNav items={allNav} />
           <Link href="/" className="flex items-center gap-2 font-semibold">
             <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
               <GraduationCap className="h-5 w-5" />
             </span>
             GlobalGrad
           </Link>
-          <nav className="hidden items-center gap-3 lg:flex">
-            {navItems.map((n) => (
+          <nav className="hidden items-center gap-4 lg:flex">
+            {primaryNav.map((n) => (
               <Link
                 key={n.href}
                 href={n.href}
@@ -52,6 +64,7 @@ export async function AppHeader() {
                 {n.label}
               </Link>
             ))}
+            <MoreMenu items={moreNav} />
           </nav>
         </div>
 

@@ -18,30 +18,39 @@ export async function callGemini(
   const key = process.env.GEMINI_API_KEY;
   if (!key) return { ok: false, error: "AI is not configured." };
 
-  // Send the key in the x-goog-api-key header (works for both classic AIza keys
-  // and the newer AQ.* key format; the ?key= query param rejects the new format).
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`;
+  const payload = JSON.stringify({
+    systemInstruction: { parts: [{ text: systemInstruction }] },
+    contents: [{ role: "user", parts: [{ text: userPrompt }] }],
+    generationConfig: { temperature: 0.4, maxOutputTokens: 900 },
+  });
+
+  // Try API-key header first; if unauthorized, retry treating the key as an
+  // OAuth bearer token (the AQ.* format can be an OAuth access token).
+  const attempts: Record<string, string>[] = [
+    { "Content-Type": "application/json", "x-goog-api-key": key },
+    { "Content-Type": "application/json", Authorization: `Bearer ${key}` },
+  ];
 
   try {
-    const res = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "x-goog-api-key": key },
-      body: JSON.stringify({
-        systemInstruction: { parts: [{ text: systemInstruction }] },
-        contents: [{ role: "user", parts: [{ text: userPrompt }] }],
-        generationConfig: { temperature: 0.4, maxOutputTokens: 900 },
-      }),
-      // Advisor answers should be fresh, not cached.
-      cache: "no-store",
-    });
+    let res: Response | null = null;
+    for (const headers of attempts) {
+      res = await fetch(url, {
+        method: "POST",
+        headers,
+        body: payload,
+        cache: "no-store",
+      });
+      if (res.ok) break;
+      if (res.status !== 401 && res.status !== 403) break;
+    }
+    if (!res) return { ok: false, error: "The advisor is unavailable." };
 
     if (!res.ok) {
-      // Never surface the key or raw provider internals to the client.
       const status = res.status;
-      // Server-side diagnostic only (no key in the URL/body logged).
       const body = await res.text().catch(() => "");
       console.error(
-        `[gemini] status=${status} model=${MODEL} body=${body.slice(0, 500)}`
+        `[gemini] status=${status} model=${MODEL} body=${body.slice(0, 400)}`
       );
       return {
         ok: false,

@@ -7,7 +7,8 @@ const isProd = process.env.NODE_ENV === "production";
 // randomuser.me avatars + data URIs; fonts come from Google Fonts.
 const csp = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+  // 'unsafe-eval' is only needed for dev HMR; drop it in production.
+  `script-src 'self' 'unsafe-inline'${isProd ? "" : " 'unsafe-eval'"}`,
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   "img-src 'self' data: https:",
   "font-src 'self' https://fonts.gstatic.com",

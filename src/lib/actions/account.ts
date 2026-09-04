@@ -21,6 +21,10 @@ export async function deleteMyAccount(
   if (confirm !== "DELETE")
     return { error: 'Type "DELETE" to confirm account deletion.' };
 
+  // Record the deletion before it happens (cascade anonymizes userId to null).
+  await db.auditLog.create({
+    data: { userId: session.user.id, action: "user.account.deleted" },
+  });
   await db.user.delete({ where: { id: session.user.id } });
 
   // Clear the session and leave the app.

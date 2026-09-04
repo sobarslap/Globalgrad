@@ -7,6 +7,7 @@ import { db } from "@/lib/db";
 import { hashPassword } from "@/lib/password";
 import { rateLimit, clientIp } from "@/lib/rate-limit";
 import { sendEmail, emailShell } from "@/lib/mailer";
+import { baseUrl } from "@/lib/base-url";
 
 export type PwState = { ok?: boolean; error?: string; message?: string };
 
@@ -20,30 +21,13 @@ const passwordSchema = z
   .regex(/[A-Za-z]/, "Include a letter")
   .regex(/[0-9]/, "Include a number");
 
-/**
- * Trusted base URL for links in emails. Never derived from the request Host
- * header in production (that enables password-reset poisoning). Order: explicit
- * AUTH_URL → Vercel's production domain → localhost (dev only).
- */
-async function baseUrl(): Promise<string> {
-  if (process.env.AUTH_URL) return process.env.AUTH_URL;
-  const vercel = process.env.VERCEL_PROJECT_PRODUCTION_URL;
-  if (vercel) return `https://${vercel}`;
-  if (process.env.NODE_ENV !== "production") {
-    const h = await headers();
-    return `http://${h.get("host") ?? "localhost:3000"}`;
-  }
-  // Fail closed to the known production origin rather than trust the Host header.
-  return "https://globalgrad-wheat.vercel.app";
-}
-
 /** Step 1: request a reset link. Always returns a generic message (no enumeration). */
 export async function requestPasswordReset(
   _prev: PwState,
   formData: FormData
 ): Promise<PwState> {
   const ip = clientIp(await headers());
-  const rl = rateLimit(`pwreset:${ip}`, 3, 60 * 60 * 1000); // 3 / hour / IP
+  const rl = await rateLimit(`pwreset:${ip}`, 3, 60 * 60 * 1000); // 3 / hour / IP
   if (!rl.ok)
     return { error: `Too many requests. Try again in ${rl.retryAfterSec}s.` };
 
@@ -108,6 +92,9 @@ export async function resetPassword(
     // Invalidate any other outstanding tokens for this user.
     db.passwordResetToken.deleteMany({
       where: { userId: record.userId, usedAt: null },
+    }),
+    db.auditLog.create({
+      data: { userId: record.userId, action: "user.password.reset" },
     }),
   ]);
 

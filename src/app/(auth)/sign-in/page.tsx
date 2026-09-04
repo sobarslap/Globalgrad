@@ -66,6 +66,13 @@ export default function SignInPage() {
             Forgot password?
           </Link>
         </div>
+        <p className="mt-2 text-center text-xs text-muted-foreground">
+          Just signed up?{" "}
+          <Link href="/verify-email" className="hover:underline">
+            Verify your email
+          </Link>{" "}
+          first.
+        </p>
       </CardContent>
     </Card>
   );

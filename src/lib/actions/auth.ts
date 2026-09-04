@@ -6,6 +6,7 @@ import { AuthError } from "next-auth";
 import { db } from "@/lib/db";
 import { signIn, signOut } from "@/lib/auth";
 import { hashPassword } from "@/lib/password";
+import { sendVerification } from "@/lib/actions/verify";
 import { rateLimit, clientIp } from "@/lib/rate-limit";
 
 const signUpSchema = z.object({
@@ -18,14 +19,14 @@ const signUpSchema = z.object({
     .regex(/[0-9]/, "Include a number"),
 });
 
-export type AuthActionState = { error?: string; ok?: boolean };
+export type AuthActionState = { error?: string; ok?: boolean; message?: string };
 
 export async function signUp(
   _prev: AuthActionState,
   formData: FormData
 ): Promise<AuthActionState> {
   const ip = clientIp(await headers());
-  const rl = rateLimit(`signup:${ip}`, 5, 15 * 60 * 1000);
+  const rl = await rateLimit(`signup:${ip}`, 5, 15 * 60 * 1000);
   if (!rl.ok)
     return { error: `Too many attempts. Try again in ${rl.retryAfterSec}s.` };
 
@@ -46,13 +47,28 @@ export async function signUp(
   }
 
   const passwordHash = await hashPassword(password);
-  await db.user.create({
+  const user = await db.user.create({
     data: { name, email, passwordHash, role: "STUDENT" },
   });
 
-  // Sign the new user in; signIn throws a redirect on success.
-  await signIn("credentials", { email, password, redirectTo: "/dashboard" });
-  return { ok: true };
+  // Send a verification email. If email delivery isn't configured (no key), the
+  // mailer skips — auto-verify so the flow still works, then sign in.
+  const sent = await sendVerification(user.id, user.email);
+  if (sent.skipped) {
+    await db.user.update({
+      where: { id: user.id },
+      data: { emailVerified: new Date() },
+    });
+    await signIn("credentials", { email, password, redirectTo: "/dashboard" });
+    return { ok: true };
+  }
+
+  // Verification required — do not sign in until the email is confirmed.
+  return {
+    ok: true,
+    message:
+      "Account created. Check your email for a verification link, then sign in.",
+  };
 }
 
 export async function signOutAction() {
@@ -64,12 +80,20 @@ export async function signInWithCredentials(
   formData: FormData
 ): Promise<AuthActionState> {
   const ip = clientIp(await headers());
-  const rl = rateLimit(`login:${ip}`, 5, 60 * 1000); // 5/min/IP
-  if (!rl.ok)
-    return { error: `Too many attempts. Try again in ${rl.retryAfterSec}s.` };
-
-  const email = String(formData.get("email") ?? "");
+  const email = String(formData.get("email") ?? "").trim().toLowerCase();
   const password = String(formData.get("password") ?? "");
+
+  // Limit by IP and by target email (blunts credential-stuffing / lockout abuse).
+  const [byIp, byEmail] = await Promise.all([
+    rateLimit(`login:ip:${ip}`, 10, 60 * 1000), // 10/min/IP
+    email
+      ? rateLimit(`login:email:${email}`, 5, 10 * 60 * 1000) // 5/10min/email
+      : Promise.resolve({ ok: true, remaining: 0, retryAfterSec: 0 }),
+  ]);
+  if (!byIp.ok || !byEmail.ok) {
+    const wait = Math.max(byIp.retryAfterSec, byEmail.retryAfterSec);
+    return { error: `Too many attempts. Try again in ${wait}s.` };
+  }
 
   try {
     await signIn("credentials", { email, password, redirectTo: "/dashboard" });

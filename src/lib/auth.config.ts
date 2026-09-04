@@ -11,7 +11,8 @@ const googleEnabled =
 
 export const authConfig = {
   trustHost: true,
-  session: { strategy: "jwt" },
+  // Shorter sessions limit the window a stolen token stays valid.
+  session: { strategy: "jwt", maxAge: 24 * 60 * 60, updateAge: 60 * 60 },
   pages: { signIn: "/sign-in" },
   providers: googleEnabled ? [Google] : [],
   callbacks: {

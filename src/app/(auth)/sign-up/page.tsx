@@ -19,6 +19,14 @@ export default function SignUpPage() {
         <CardTitle>Create your account</CardTitle>
       </CardHeader>
       <CardContent>
+        {state.message ? (
+          <div className="space-y-4">
+            <p className="text-sm text-emerald-500">{state.message}</p>
+            <Button asChild className="w-full">
+              <Link href="/sign-in">Go to sign in</Link>
+            </Button>
+          </div>
+        ) : (
         <form action={action} className="space-y-4">
           <div className="space-y-1.5">
             <Label htmlFor="name">Name</Label>
@@ -58,6 +66,7 @@ export default function SignUpPage() {
             {pending ? "Creating…" : "Create account"}
           </Button>
         </form>
+        )}
 
         <p className="mt-4 text-center text-sm text-muted-foreground">
           Already have an account?{" "}

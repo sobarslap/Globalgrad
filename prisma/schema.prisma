@@ -105,6 +105,18 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
+// Single-use email verification tokens (store only a hash of the token).
+model EmailVerificationToken {
+  id        String    @id @default(cuid())
+  userId    String
+  tokenHash String    @unique
+  expires   DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
+}
+
 // Single-use, time-limited password reset tokens (store only a hash of the token).
 model PasswordResetToken {
   id        String   @id @default(cuid())
@@ -289,6 +301,16 @@ model ApplicantOutcome {
   applicant AnonymizedApplicant @relation(fields: [applicantId], references: [id], onDelete: Cascade)
 
   @@index([applicantId])
+}
+
+// Shared fixed-window rate-limit counters (works across serverless instances,
+// unlike in-memory). Keyed by e.g. "login:<ip>" or "advisor:<userId>".
+model RateLimit {
+  key     String   @id
+  count   Int      @default(0)
+  resetAt DateTime
+
+  @@index([resetAt])
 }
 
 // Server-side audit trail (never exposed to clients).

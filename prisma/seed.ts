@@ -110,6 +110,51 @@ async function main() {
     });
   }
 
+  // Anonymized past applicants (Similar Student Finder) — synthetic but plausible.
+  await db.applicantOutcome.deleteMany();
+  await db.anonymizedApplicant.deleteMany();
+  const unis = [
+    "MIT",
+    "ETH Zurich",
+    "TU Munich",
+    "University of Waterloo",
+    "University of Alberta",
+    "Monash University",
+    "Chalmers University",
+    "Regional State University",
+  ];
+  const nats = ["Bangladesh", "India", "Pakistan", "Nigeria", "Nepal"];
+  const rng = (n: number) => Math.floor(Math.random() * n);
+  for (let i = 0; i < 20; i++) {
+    const cgpa = Math.round((2.8 + Math.random() * 1.1) * 100) / 100; // 2.8–3.9
+    const ielts = Math.round((6.0 + Math.random() * 1.5) * 2) / 2; // 6.0–7.5
+    const research = rng(4);
+    // Strength drives admit/scholarship odds.
+    const strength = (cgpa - 2.8) / 1.1 + (ielts - 6) / 1.5 + research / 3;
+    const picks = [...unis].sort(() => Math.random() - 0.5).slice(0, 2 + rng(3));
+    await db.anonymizedApplicant.create({
+      data: {
+        cgpa,
+        ielts,
+        researchPapers: research,
+        targetField: "Computer Science",
+        nationality: nats[rng(nats.length)],
+        outcomes: {
+          create: picks.map((u) => {
+            const elitePenalty = /MIT|ETH|Waterloo/.test(u) ? 1.2 : 0.4;
+            const admitted = strength - elitePenalty + Math.random() * 0.6 > 0.2;
+            return {
+              university: u,
+              program: "MSc Computer Science",
+              admitted,
+              scholarship: admitted && Math.random() < 0.35,
+            };
+          }),
+        },
+      },
+    });
+  }
+
   // Staff accounts for role-gated dashboards (dev only).
   const staff = [
     { email: "admin@globalgrad.dev", name: "Platform Admin", role: "ADMIN" as const, password: "Admin1234" },

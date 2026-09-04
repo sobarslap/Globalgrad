@@ -238,6 +238,34 @@ model Deadline {
   @@index([dueDate])
 }
 
+// Anonymized past applicants for the Similar Student Finder (Module 3, F3).
+model AnonymizedApplicant {
+  id             String  @id @default(cuid())
+  cgpa           Float
+  ielts          Float
+  researchPapers Int     @default(0)
+  targetField    String
+  nationality    String
+  targetLevel    DegreeLevel @default(MASTERS)
+
+  outcomes ApplicantOutcome[]
+
+  @@index([targetField])
+}
+
+model ApplicantOutcome {
+  id          String  @id @default(cuid())
+  applicantId String
+  university  String
+  program     String?
+  admitted    Boolean
+  scholarship Boolean @default(false)
+
+  applicant AnonymizedApplicant @relation(fields: [applicantId], references: [id], onDelete: Cascade)
+
+  @@index([applicantId])
+}
+
 // Server-side audit trail (never exposed to clients).
 model AuditLog {
   id        String   @id @default(cuid())

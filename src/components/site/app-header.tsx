@@ -13,6 +13,8 @@ const baseNav = [
   { href: "/cost", label: "Cost" },
   { href: "/visa", label: "Visa" },
   { href: "/countries", label: "Countries" },
+  { href: "/similar", label: "Similar" },
+  { href: "/reality", label: "Reality" },
 ];
 
 export async function AppHeader() {
@@ -36,7 +38,7 @@ export async function AppHeader() {
             </span>
             GlobalGrad
           </Link>
-          <nav className="hidden items-center gap-4 md:flex">
+          <nav className="hidden items-center gap-3 lg:flex">
             {navItems.map((n) => (
               <Link
                 key={n.href}

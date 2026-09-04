@@ -51,7 +51,12 @@
       "Bash(curl -s -o /dev/null -w '%{http_code}\\\\n' https://globalgrad-wheat.vercel.app/api/cron/deadlines)",
       "Bash(curl -sI https://globalgrad-wheat.vercel.app)",
       "Bash(git commit -q -m 'docs: update SECURITY.md with post-review fixes; add ROADMAP.md *)",
-      "Bash(git commit -q -m 'feat\\(ux\\): mobile navigation menu \\(C1\\) *)"
+      "Bash(git commit -q -m 'feat\\(ux\\): mobile navigation menu \\(C1\\) *)",
+      "Bash(npm ci *)",
+      "Bash(grep -iE \"src[\\\\\\\\\\\\\\\\/]|error|problem\")",
+      "Bash(npx eslint *)",
+      "Bash(grep -iE \"src[\\\\\\\\/].*\\\\.\\(ts|tsx\\)|error|warning\")",
+      "Bash(grep -v \"^\\\\s*$\")"
     ]
   }
 }

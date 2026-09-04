@@ -114,7 +114,7 @@ export function AdvisorChat() {
       </form>
 
       <p className="text-xs text-muted-foreground">
-        AI guidance can be imperfect — it explains the engine's results but
+        AI guidance can be imperfect — it explains the engine&apos;s results but
         doesn&apos;t replace them. Verify specifics with official sources.
       </p>
     </div>

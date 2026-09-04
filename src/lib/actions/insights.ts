@@ -1,9 +1,8 @@
 "use server";
 
-import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import { callGemini } from "@/lib/ai";
-import { rateLimit, clientIp } from "@/lib/rate-limit";
+import { rateLimit } from "@/lib/rate-limit";
 import {
   getInsightSources,
   type InsightSourceView,

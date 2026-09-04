@@ -25,7 +25,13 @@
       "Bash(npm run *)",
       "Bash(git check-ignore *)",
       "Bash(grep -v \"^$\")",
-      "Bash(curl -sI http://localhost:3000/countries)"
+      "Bash(curl -sI http://localhost:3000/countries)",
+      "Bash(npx next *)",
+      "Bash(gh auth *)",
+      "Bash(gh api *)",
+      "mcp__de0b97c7-06a9-4c69-b379-5408e5ca4cb7__list_teams",
+      "Bash(node -e ' *)",
+      "Bash(git commit -q -m 'chore\\(deploy\\): add prisma generate postinstall for Vercel builds *)"
     ]
   }
 }

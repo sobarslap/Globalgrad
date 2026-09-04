@@ -7,7 +7,7 @@ import type { ContentItem, ContentOverview } from "@/lib/data/admin";
 import { setContentPublished } from "@/lib/actions/admin";
 import { Button } from "@/components/ui/button";
 
-type Kind = "university" | "program" | "scholarship";
+type Kind = "university" | "program" | "scholarship" | "insight";
 
 function Section({
   title,
@@ -105,6 +105,13 @@ export function ContentReview({ overview }: { overview: ContentOverview }) {
         title="Scholarships"
         kind="scholarship"
         items={overview.scholarships}
+        onToggle={toggle}
+        pending={pending}
+      />
+      <Section
+        title="Public insight sources"
+        kind="insight"
+        items={overview.insights}
         onToggle={toggle}
         pending={pending}
       />

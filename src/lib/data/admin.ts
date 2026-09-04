@@ -111,11 +111,12 @@ export interface ContentOverview {
   universities: ContentItem[];
   programs: ContentItem[];
   scholarships: ContentItem[];
+  insights: ContentItem[];
 }
 
 export async function getContentOverview(): Promise<ContentOverview | null> {
   if (!(await hasRole("CONTENT_MANAGER", "ADMIN"))) return null;
-  const [universities, programs, scholarships] = await Promise.all([
+  const [universities, programs, scholarships, insights] = await Promise.all([
     db.university.findMany({
       orderBy: { name: "asc" },
       include: { country: { select: { name: true } } },
@@ -125,6 +126,7 @@ export async function getContentOverview(): Promise<ContentOverview | null> {
       include: { university: { select: { name: true } } },
     }),
     db.scholarship.findMany({ orderBy: { name: "asc" } }),
+    db.insightSource.findMany({ orderBy: { title: "asc" } }),
   ]);
   return {
     universities: universities.map((u) => ({
@@ -144,6 +146,12 @@ export async function getContentOverview(): Promise<ContentOverview | null> {
       label: s.name,
       sub: s.provider,
       published: s.published,
+    })),
+    insights: insights.map((i) => ({
+      id: i.id,
+      label: i.title,
+      sub: `${i.sourceType} · ${i.country ?? "General"}`,
+      published: i.published,
     })),
   };
 }

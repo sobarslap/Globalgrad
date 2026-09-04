@@ -40,7 +40,7 @@ export async function setUserRole(
   return { ok: true };
 }
 
-type ContentKind = "university" | "program" | "scholarship";
+type ContentKind = "university" | "program" | "scholarship" | "insight";
 
 /** Publish/unpublish a content item — CONTENT_MANAGER or ADMIN. */
 export async function setContentPublished(
@@ -55,6 +55,8 @@ export async function setContentPublished(
     await db.university.update({ where: { id }, data: { published } });
   else if (kind === "program")
     await db.program.update({ where: { id }, data: { published } });
+  else if (kind === "insight")
+    await db.insightSource.update({ where: { id }, data: { published } });
   else await db.scholarship.update({ where: { id }, data: { published } });
 
   await audit(

@@ -15,6 +15,7 @@ const baseNav = [
   { href: "/countries", label: "Countries" },
   { href: "/similar", label: "Similar" },
   { href: "/reality", label: "Reality" },
+  { href: "/insights", label: "Insights" },
 ];
 
 export async function AppHeader() {

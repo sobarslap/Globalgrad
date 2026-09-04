@@ -42,6 +42,15 @@ enum DocStatus {
   SUBMITTED
 }
 
+enum InsightSourceType {
+  FAQ
+  EMBASSY
+  BLOG
+  FORUM
+  YOUTUBE
+  NEWS
+}
+
 // ---------- Auth.js (NextAuth Prisma adapter) ----------
 model User {
   id            String    @id @default(cuid())
@@ -236,6 +245,22 @@ model Deadline {
   scholarship Scholarship? @relation(fields: [scholarshipId], references: [id], onDelete: Cascade)
 
   @@index([dueDate])
+}
+
+// Curated public-source excerpts for the Public Insight Engine (Module 3, F1).
+// Content Managers verify/publish these before students see synthesized insights.
+model InsightSource {
+  id         String            @id @default(cuid())
+  title      String
+  url        String
+  sourceType InsightSourceType
+  country    String? // country name, or null for general
+  topic      String
+  snippet    String // the curated excerpt used for synthesis
+  published  Boolean           @default(true)
+  createdAt  DateTime          @default(now())
+
+  @@index([country])
 }
 
 // Anonymized past applicants for the Similar Student Finder (Module 3, F3).

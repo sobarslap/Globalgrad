@@ -1,6 +1,5 @@
 import { PrismaClient, DegreeLevel } from "@prisma/client";
 import { samplePrograms, sampleScholarships } from "../src/lib/data/sample";
-import { hashPassword } from "../src/lib/password";
 
 const db = new PrismaClient();
 
@@ -175,19 +174,9 @@ async function main() {
     await db.insightSource.create({ data: { ...s, published: true } });
   }
 
-  // Staff accounts for role-gated dashboards (dev only).
-  const staff = [
-    { email: "admin@globalgrad.dev", name: "Platform Admin", role: "ADMIN" as const, password: "Admin1234" },
-    { email: "manager@globalgrad.dev", name: "Content Manager", role: "CONTENT_MANAGER" as const, password: "Manager1234" },
-  ];
-  for (const s of staff) {
-    const passwordHash = await hashPassword(s.password);
-    await db.user.upsert({
-      where: { email: s.email },
-      update: { role: s.role, name: s.name, passwordHash },
-      create: { email: s.email, name: s.name, role: s.role, passwordHash },
-    });
-  }
+  // NOTE: staff (Admin / Content Manager) accounts are intentionally NOT seeded.
+  // Never hardcode credentials in a committed file. Assign roles from the Admin
+  // dashboard (or the maintenance script) instead.
 
   const [u, p, sch, c] = await Promise.all([
     db.university.count(),

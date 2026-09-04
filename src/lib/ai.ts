@@ -36,6 +36,11 @@ export async function callGemini(
     if (!res.ok) {
       // Never surface the key or raw provider internals to the client.
       const status = res.status;
+      // Server-side diagnostic only (no key in the URL/body logged).
+      const body = await res.text().catch(() => "");
+      console.error(
+        `[gemini] status=${status} model=${MODEL} body=${body.slice(0, 500)}`
+      );
       return {
         ok: false,
         error:

@@ -106,6 +106,8 @@ export interface Scholarship {
   meritCgpa: number;
   /** Whether research strengthens the application. */
   valuesResearch: boolean;
+  /** Award amount in USD, if known. */
+  amountUsd?: number;
 }
 
 export interface ScholarshipMatch {

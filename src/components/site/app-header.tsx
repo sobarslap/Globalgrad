@@ -6,8 +6,11 @@ import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/site/theme-toggle";
 
 const baseNav = [
+  { href: "/feed", label: "Feed" },
   { href: "/dashboard", label: "Dashboard" },
   { href: "/applications", label: "Applications" },
+  { href: "/cost", label: "Cost" },
+  { href: "/visa", label: "Visa" },
   { href: "/countries", label: "Countries" },
 ];
 

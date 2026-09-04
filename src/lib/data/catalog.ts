@@ -30,6 +30,39 @@ export async function getPublishedPrograms(): Promise<Program[]> {
   }));
 }
 
+export interface CostProgram {
+  id: string;
+  label: string;
+  tuitionUsd: number | null;
+  countryName: string | null;
+  monthlyLivingUsd: number | null;
+}
+
+/** Published programs with tuition + their country's living cost (Cost Calculator). */
+export async function getProgramsWithCost(): Promise<CostProgram[]> {
+  const rows = await db.program.findMany({
+    where: { published: true },
+    orderBy: { programName: "asc" },
+    include: {
+      university: {
+        select: {
+          name: true,
+          country: {
+            select: { name: true, monthlyLivingCostUsd: true },
+          },
+        },
+      },
+    },
+  });
+  return rows.map((r) => ({
+    id: r.id,
+    label: `${r.university.name} — ${r.programName}`,
+    tuitionUsd: r.tuitionUsd,
+    countryName: r.university.country?.name ?? null,
+    monthlyLivingUsd: r.university.country?.monthlyLivingCostUsd ?? null,
+  }));
+}
+
 /** All countries with macro data, for the Country Decision Dashboard. */
 export async function getCountries(): Promise<CountryInfo[]> {
   const rows = await db.country.findMany({ orderBy: { name: "asc" } });
@@ -61,5 +94,6 @@ export async function getPublishedScholarships(): Promise<Scholarship[]> {
     minIelts: r.minIelts,
     meritCgpa: r.meritCgpa,
     valuesResearch: r.valuesResearch,
+    amountUsd: r.amountUsd ?? undefined,
   }));
 }

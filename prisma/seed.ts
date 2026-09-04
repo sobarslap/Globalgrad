@@ -75,6 +75,8 @@ async function main() {
         admitCgpa: p.admitCgpa,
         admitIelts: p.admitIelts,
         valuesResearch: p.valuesResearch,
+        // Rough annual tuition scaled by selectivity (illustrative).
+        tuitionUsd: Math.round(8000 + p.selectivity * 380),
         published: true,
       },
     });
@@ -102,6 +104,7 @@ async function main() {
         minIelts: s.minIelts,
         meritCgpa: s.meritCgpa,
         valuesResearch: s.valuesResearch,
+        amountUsd: 10000 + Math.round(s.meritCgpa * 5000), // illustrative award
         published: true,
       },
     });

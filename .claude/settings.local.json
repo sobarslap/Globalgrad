@@ -31,7 +31,12 @@
       "Bash(gh api *)",
       "mcp__de0b97c7-06a9-4c69-b379-5408e5ca4cb7__list_teams",
       "Bash(node -e ' *)",
-      "Bash(git commit -q -m 'chore\\(deploy\\): add prisma generate postinstall for Vercel builds *)"
+      "Bash(git commit -q -m 'chore\\(deploy\\): add prisma generate postinstall for Vercel builds *)",
+      "Bash(git branch *)",
+      "Bash(git remote *)",
+      "Bash(git push *)",
+      "mcp__de0b97c7-06a9-4c69-b379-5408e5ca4cb7__create_git_project",
+      "Bash(echo \"tsc exit=$?\")"
     ]
   }
 }

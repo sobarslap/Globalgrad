@@ -1,4 +1,7 @@
 import { PrismaClient } from "@prisma/client";
+// Validate critical env vars at startup (fail-fast). Imported here because the
+// DB client is loaded by virtually every server path.
+import "@/lib/env";
 
 /**
  * Prisma client singleton — avoids exhausting Neon connections during dev HMR.

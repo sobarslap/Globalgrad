@@ -11,7 +11,7 @@ re-verified with the `security-review` skill before any deploy. This app has
 - [ ] All secrets (DATABASE_URL, AUTH_SECRET, Google client secret, AI + Resend keys)
       live in env vars, read server-side only.
 - [ ] No sensitive value uses a `NEXT_PUBLIC_` prefix (only genuinely public values may).
-- [ ] README warns to rotate any previously committed secret.
+- [x] README warns to rotate any previously exposed secret.
 
 ## 2. Personal Data Flow Audit (Bearer)
 - Data collected: email, password (hashed), name, and academic profile
@@ -26,7 +26,8 @@ re-verified with the `security-review` skill before any deploy. This app has
       audit logs anonymized (userId set null).
 
 ## 3. Pre-Deploy Production Audit (ECC)
-- [ ] App refuses to start if a critical env var is missing (validated env module).
+- [x] App refuses to start if a critical env var is missing — `src/lib/env.ts`
+      (Zod) is imported by `db.ts`, so it validates at startup.
 - [ ] No debug endpoints (`/test`, `/debug`, `/seed`) reachable in production.
 - [ ] Client errors are generic + correlation ID; stack traces server-side only.
 - [x] Security headers on every response (`next.config.ts`): nosniff, X-Frame-Options

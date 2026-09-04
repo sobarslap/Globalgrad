@@ -32,9 +32,9 @@ re-verified with the `security-review` skill before any deploy. This app has
 - [ ] Client errors are generic + correlation ID; stack traces server-side only.
 - [x] Security headers on every response (`next.config.ts`): nosniff, X-Frame-Options
       DENY, Referrer-Policy, Permissions-Policy, CSP; HSTS in production.
-- [x] Rate limiting on auth actions (login 5/min/IP, signup 5/15min/IP;
-      `src/lib/rate-limit.ts`). NOTE: in-memory/per-instance — swap for Upstash Redis
-      for multi-instance production.
+- [x] Rate limiting on auth + AI actions, **Postgres-backed** so limits hold across
+      serverless instances (`src/lib/rate-limit.ts`, `RateLimit` model). Login is
+      limited by IP and by target email.
 - [x] Same-origin (Next server actions/route handlers); no wildcard CORS.
 - [x] DB connection uses TLS (`sslmode=require`) — enforced by Neon.
 
@@ -44,9 +44,13 @@ re-verified with the `security-review` skill before any deploy. This app has
 - [x] Password reset tokens: random 32-byte, SHA-256-hashed at rest, single-use,
       15-min expiry, tied to one user; reset link uses a trusted origin (no Host-
       header poisoning). Flow: /forgot-password → /reset-password.
-- [x] Sessions/JWT: strong `AUTH_SECRET`, JWT strategy, invalidated on logout (signOut).
+- [x] Sessions/JWT: strong `AUTH_SECRET`, JWT strategy, 24h max age; invalidated on
+      logout. Role is **re-read from the DB per request** (node), so demoting a user
+      takes effect immediately; deleted users' claims are dropped.
+- [x] Email verification required to sign in (blocks registering with another
+      person's address); tokens single-use, hashed, 24h.
 - [x] Role checks enforced **server-side** in middleware (`/admin` ADMIN, `/content`
-      CONTENT_MANAGER|ADMIN) via the edge-safe `authorized` callback.
+      CONTENT_MANAGER|ADMIN) and re-checked in every privileged server action.
 - [x] All DB access via Prisma parameterized queries (no raw SQL).
 - [x] Inputs re-validated with Zod on the server (sign-up + saveProfile), not just client.
 

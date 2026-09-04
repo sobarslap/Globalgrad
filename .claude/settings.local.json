@@ -48,7 +48,9 @@
       "Bash(git commit -q -m 'fix\\(ai\\): fall back to Bearer auth if API-key header is rejected *)",
       "Bash(node -e \"console.log\\(require\\('crypto'\\).randomBytes\\(24\\).toString\\('base64url'\\)\\)\")",
       "Bash(curl -s -H \"Authorization: Bearer CxDhxVpEG8wqZLGWrGxX6JkI10bXDiAY\" https://globalgrad-wheat.vercel.app/api/cron/deadlines)",
-      "Bash(curl -s -o /dev/null -w '%{http_code}\\\\n' https://globalgrad-wheat.vercel.app/api/cron/deadlines)"
+      "Bash(curl -s -o /dev/null -w '%{http_code}\\\\n' https://globalgrad-wheat.vercel.app/api/cron/deadlines)",
+      "Bash(curl -sI https://globalgrad-wheat.vercel.app)",
+      "Bash(git commit -q -m 'docs: update SECURITY.md with post-review fixes; add ROADMAP.md *)"
     ]
   }
 }

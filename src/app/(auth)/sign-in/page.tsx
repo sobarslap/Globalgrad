@@ -58,12 +58,14 @@ export default function SignInPage() {
           </Button>
         </form>
 
-        <p className="mt-4 text-center text-sm text-muted-foreground">
-          No account?{" "}
+        <div className="mt-4 flex items-center justify-between text-sm text-muted-foreground">
           <Link href="/sign-up" className="text-primary hover:underline">
-            Create one
+            Create account
           </Link>
-        </p>
+          <Link href="/forgot-password" className="hover:underline">
+            Forgot password?
+          </Link>
+        </div>
       </CardContent>
     </Card>
   );

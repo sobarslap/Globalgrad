@@ -53,9 +53,12 @@ export async function AppHeader() {
         </div>
 
         <div className="flex items-center gap-3">
-          <span className="hidden text-sm text-muted-foreground sm:inline">
+          <Link
+            href="/settings"
+            className="hidden text-sm text-muted-foreground hover:text-foreground sm:inline"
+          >
             {session?.user?.email}
-          </span>
+          </Link>
           <ThemeToggle />
           <form action={signOutAction}>
             <Button type="submit" variant="ghost" size="sm">

@@ -4,6 +4,7 @@ import { auth } from "@/lib/auth";
 import { signOutAction } from "@/lib/actions/auth";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/site/theme-toggle";
+import { MobileNav } from "@/components/site/mobile-nav";
 
 const links = [
   { href: "/#features", label: "Features" },
@@ -26,7 +27,7 @@ export async function Navbar() {
           <span className="tracking-tight">GlobalGrad</span>
         </Link>
 
-        <nav className="hidden items-center gap-8 md:flex">
+        <nav className="hidden items-center gap-8 lg:flex">
           {links.map((l) => (
             <a
               key={l.href}
@@ -39,6 +40,17 @@ export async function Navbar() {
         </nav>
 
         <div className="flex items-center gap-2">
+          <MobileNav
+            items={
+              isLoggedIn
+                ? [...links, { href: "/dashboard", label: "Dashboard" }]
+                : [
+                    ...links,
+                    { href: "/sign-in", label: "Sign in" },
+                    { href: "/sign-up", label: "Get started" },
+                  ]
+            }
+          />
           <ThemeToggle />
           {isLoggedIn ? (
             <>

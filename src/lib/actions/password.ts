@@ -20,12 +20,21 @@ const passwordSchema = z
   .regex(/[A-Za-z]/, "Include a letter")
   .regex(/[0-9]/, "Include a number");
 
+/**
+ * Trusted base URL for links in emails. Never derived from the request Host
+ * header in production (that enables password-reset poisoning). Order: explicit
+ * AUTH_URL → Vercel's production domain → localhost (dev only).
+ */
 async function baseUrl(): Promise<string> {
   if (process.env.AUTH_URL) return process.env.AUTH_URL;
-  const h = await headers();
-  const host = h.get("host") ?? "localhost:3000";
-  const proto = h.get("x-forwarded-proto") ?? "https";
-  return `${proto}://${host}`;
+  const vercel = process.env.VERCEL_PROJECT_PRODUCTION_URL;
+  if (vercel) return `https://${vercel}`;
+  if (process.env.NODE_ENV !== "production") {
+    const h = await headers();
+    return `http://${h.get("host") ?? "localhost:3000"}`;
+  }
+  // Fail closed to the known production origin rather than trust the Host header.
+  return "https://globalgrad-wheat.vercel.app";
 }
 
 /** Step 1: request a reset link. Always returns a generic message (no enumeration). */

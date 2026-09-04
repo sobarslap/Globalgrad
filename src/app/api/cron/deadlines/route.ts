@@ -9,12 +9,14 @@ import { sendEmail, emailShell } from "@/lib/mailer";
  * No-ops safely if RESEND_API_KEY is unset (mailer skips).
  */
 export async function GET(req: Request) {
+  // Fail closed: without a configured secret the endpoint is disabled, and with
+  // one the caller must present it (Vercel Cron injects it automatically).
   const secret = process.env.CRON_SECRET;
-  if (secret) {
-    const auth = req.headers.get("authorization");
-    if (auth !== `Bearer ${secret}`) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+  if (!secret) {
+    return NextResponse.json({ error: "Not configured" }, { status: 503 });
+  }
+  if (req.headers.get("authorization") !== `Bearer ${secret}`) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const now = Date.now();
@@ -57,6 +59,11 @@ export async function GET(req: Request) {
     byUser.set(a.user.email, entry);
   }
 
+  const esc = (s: string) =>
+    s.replace(/[&<>"']/g, (c) =>
+      ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!
+    );
+
   let sent = 0;
   for (const [email, { name, items }] of byUser) {
     if (items.length === 0) continue;
@@ -64,14 +71,14 @@ export async function GET(req: Request) {
     const rows = items
       .map(
         (i) =>
-          `<li>${i.title} — <strong>${i.days} day${i.days === 1 ? "" : "s"}</strong> left</li>`
+          `<li>${esc(i.title)} — <strong>${i.days} day${i.days === 1 ? "" : "s"}</strong> left</li>`
       )
       .join("");
     const res = await sendEmail({
       to: email,
       subject: "Upcoming study-abroad deadlines",
       html: emailShell(
-        `Deadlines coming up${name ? `, ${name}` : ""}`,
+        `Deadlines coming up${name ? `, ${esc(name)}` : ""}`,
         `<p>You have deadlines within the next two weeks:</p><ul>${rows}</ul>
          <p>Review them in your <a href="https://globalgrad-wheat.vercel.app/applications" style="color:#7c3aed">Applications</a>.</p>`
       ),

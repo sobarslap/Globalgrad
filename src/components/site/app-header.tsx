@@ -9,6 +9,7 @@ import { MobileNav } from "@/components/site/mobile-nav";
 const baseNav = [
   { href: "/feed", label: "Feed" },
   { href: "/dashboard", label: "Dashboard" },
+  { href: "/search", label: "Search" },
   { href: "/advisor", label: "Advisor" },
   { href: "/applications", label: "Applications" },
   { href: "/cost", label: "Cost" },

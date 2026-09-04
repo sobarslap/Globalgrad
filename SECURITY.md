@@ -22,7 +22,8 @@ re-verified with the `security-review` skill before any deploy. This app has
 - [x] Session cookies `httpOnly` + `sameSite=lax` (Auth.js default; `secure` in prod).
       Dashboard profile moved from `localStorage` to server-side `StudentProfile`.
 - [x] `authorize` never returns the password hash; catalog loaders map only public fields.
-- [ ] Account deletion flow removes/anonymizes all personal data. (TODO)
+- [x] Account deletion flow (/settings) removes all personal data via cascade;
+      audit logs anonymized (userId set null).
 
 ## 3. Pre-Deploy Production Audit (ECC)
 - [ ] App refuses to start if a critical env var is missing (validated env module).
@@ -39,8 +40,9 @@ re-verified with the `security-review` skill before any deploy. This app has
 ## 4. Deep Security Audit — auth (Trail of Bits)
 - [x] Protected routes gated by middleware; `saveProfile`/`getMyProfile` key rows by
       the **session** user id only — a client can't target another user (no IDOR).
-- [ ] Password reset tokens: random, single-use, ≤15 min, tied to one user. (model
-      `PasswordResetToken` exists; flow not built yet — TODO)
+- [x] Password reset tokens: random 32-byte, SHA-256-hashed at rest, single-use,
+      15-min expiry, tied to one user; reset link uses a trusted origin (no Host-
+      header poisoning). Flow: /forgot-password → /reset-password.
 - [x] Sessions/JWT: strong `AUTH_SECRET`, JWT strategy, invalidated on logout (signOut).
 - [x] Role checks enforced **server-side** in middleware (`/admin` ADMIN, `/content`
       CONTENT_MANAGER|ADMIN) via the edge-safe `authorized` callback.

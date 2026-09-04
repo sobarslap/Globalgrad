@@ -25,16 +25,21 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         return token;
       }
       if (token.id) {
-        const current = await db.user.findUnique({
-          where: { id: token.id as string },
-          select: { role: true },
-        });
-        if (!current) {
-          // Account no longer exists — drop identifying claims.
-          token.id = undefined;
-          token.role = undefined;
-        } else {
-          token.role = current.role;
+        try {
+          const current = await db.user.findUnique({
+            where: { id: token.id as string },
+            select: { role: true },
+          });
+          if (current) {
+            token.role = current.role;
+          } else {
+            // Query succeeded but the account is gone — drop identifying claims.
+            token.id = undefined;
+            token.role = undefined;
+          }
+        } catch {
+          // Transient DB error: keep the existing claims rather than logging the
+          // user out. Role changes will be picked up on the next successful read.
         }
       }
       return token;
@@ -46,40 +51,21 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       credentials: { email: {}, password: {} },
       async authorize(raw) {
         const parsed = credentialsSchema.safeParse(raw);
-        if (!parsed.success) {
-          console.error("[authz] parse-failed");
-          return null;
-        }
+        if (!parsed.success) return null;
         const { email, password } = parsed.data;
 
         const user = await db.user.findUnique({
           where: { email: email.toLowerCase() },
         });
         // Constant-ish response: never reveal whether the email exists.
-        if (!user?.passwordHash) {
-          console.error("[authz] no-user-or-hash");
-          return null;
-        }
+        if (!user?.passwordHash) return null;
 
-        let ok = false;
-        try {
-          ok = await verifyPassword(user.passwordHash, password);
-        } catch (e) {
-          console.error("[authz] verify-threw", (e as Error).message);
-          return null;
-        }
-        if (!ok) {
-          console.error("[authz] bad-password");
-          return null;
-        }
+        const ok = await verifyPassword(user.passwordHash, password);
+        if (!ok) return null;
 
         // Block sign-in until the email is verified (prevents using an
         // account registered with someone else's address).
-        if (!user.emailVerified) {
-          console.error("[authz] not-verified");
-          return null;
-        }
-        console.error("[authz] success");
+        if (!user.emailVerified) return null;
 
         // Only non-sensitive fields flow into the JWT. No passwordHash.
         return {

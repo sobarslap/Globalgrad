@@ -3,7 +3,7 @@
  * client. Used by the AI advisor to *explain* rule-based results, never to
  * replace them.
  */
-const MODEL = process.env.GEMINI_MODEL || "gemini-2.0-flash";
+const MODEL = process.env.GEMINI_MODEL || "gemini-flash-latest";
 
 export interface GeminiResult {
   ok: boolean;

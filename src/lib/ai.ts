@@ -18,12 +18,14 @@ export async function callGemini(
   const key = process.env.GEMINI_API_KEY;
   if (!key) return { ok: false, error: "AI is not configured." };
 
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${key}`;
+  // Send the key in the x-goog-api-key header (works for both classic AIza keys
+  // and the newer AQ.* key format; the ?key= query param rejects the new format).
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`;
 
   try {
     const res = await fetch(url, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", "x-goog-api-key": key },
       body: JSON.stringify({
         systemInstruction: { parts: [{ text: systemInstruction }] },
         contents: [{ role: "user", parts: [{ text: userPrompt }] }],

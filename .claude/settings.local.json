@@ -40,7 +40,10 @@
       "Bash(curl -s -o /dev/null -w '%{http_code}\\\\n' https://globalgrad-wheat.vercel.app)",
       "Bash(curl -s -o /dev/null -w '%{http_code}\\\\n' https://generativelanguage.googleapis.com)",
       "Bash(curl -s -o /dev/null -w '%{http_code}\\\\n' https://www.google.com)",
-      "Bash(echo \"tsc=$?\")"
+      "Bash(echo \"tsc=$?\")",
+      "mcp__de0b97c7-06a9-4c69-b379-5408e5ca4cb7__list_deployments",
+      "mcp__de0b97c7-06a9-4c69-b379-5408e5ca4cb7__get_runtime_logs",
+      "Bash(git commit -q -m 'fix\\(ai\\): send Gemini key via x-goog-api-key header \\(supports new AQ.* key format\\) *)"
     ]
   }
 }

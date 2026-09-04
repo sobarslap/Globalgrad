@@ -46,21 +46,40 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       credentials: { email: {}, password: {} },
       async authorize(raw) {
         const parsed = credentialsSchema.safeParse(raw);
-        if (!parsed.success) return null;
+        if (!parsed.success) {
+          console.error("[authz] parse-failed");
+          return null;
+        }
         const { email, password } = parsed.data;
 
         const user = await db.user.findUnique({
           where: { email: email.toLowerCase() },
         });
         // Constant-ish response: never reveal whether the email exists.
-        if (!user?.passwordHash) return null;
+        if (!user?.passwordHash) {
+          console.error("[authz] no-user-or-hash");
+          return null;
+        }
 
-        const ok = await verifyPassword(user.passwordHash, password);
-        if (!ok) return null;
+        let ok = false;
+        try {
+          ok = await verifyPassword(user.passwordHash, password);
+        } catch (e) {
+          console.error("[authz] verify-threw", (e as Error).message);
+          return null;
+        }
+        if (!ok) {
+          console.error("[authz] bad-password");
+          return null;
+        }
 
         // Block sign-in until the email is verified (prevents using an
         // account registered with someone else's address).
-        if (!user.emailVerified) return null;
+        if (!user.emailVerified) {
+          console.error("[authz] not-verified");
+          return null;
+        }
+        console.error("[authz] success");
 
         // Only non-sensitive fields flow into the JWT. No passwordHash.
         return {

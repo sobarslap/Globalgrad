@@ -8,6 +8,7 @@ import { ThemeToggle } from "@/components/site/theme-toggle";
 const baseNav = [
   { href: "/feed", label: "Feed" },
   { href: "/dashboard", label: "Dashboard" },
+  { href: "/advisor", label: "Advisor" },
   { href: "/applications", label: "Applications" },
   { href: "/cost", label: "Cost" },
   { href: "/visa", label: "Visa" },

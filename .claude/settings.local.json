@@ -36,7 +36,11 @@
       "Bash(git remote *)",
       "Bash(git push *)",
       "mcp__de0b97c7-06a9-4c69-b379-5408e5ca4cb7__create_git_project",
-      "Bash(echo \"tsc exit=$?\")"
+      "Bash(echo \"tsc exit=$?\")",
+      "Bash(curl -s -o /dev/null -w '%{http_code}\\\\n' https://globalgrad-wheat.vercel.app)",
+      "Bash(curl -s -o /dev/null -w '%{http_code}\\\\n' https://generativelanguage.googleapis.com)",
+      "Bash(curl -s -o /dev/null -w '%{http_code}\\\\n' https://www.google.com)",
+      "Bash(echo \"tsc=$?\")"
     ]
   }
 }

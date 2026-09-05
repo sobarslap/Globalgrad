@@ -7,6 +7,7 @@ import { scoreReadiness } from "@/lib/engines/readiness";
 import { REALITY_CHECKS } from "@/lib/data/reality";
 import { AppHeader } from "@/components/site/app-header";
 import { Button } from "@/components/ui/button";
+import { ProgramCard } from "@/components/ui/program-card";
 
 export const metadata = { title: "Compare — GlobalGrad" };
 
@@ -127,6 +128,25 @@ export default async function ComparePage({
           </div>
           <Button type="submit">Compare selected</Button>
         </form>
+
+        {programs.length > 0 && (
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {programs.map((p) => {
+              const r = readiness.get(p.id);
+              return (
+                <ProgramCard
+                  key={p.id}
+                  meta={p.country ?? p.field}
+                  title={p.university}
+                  subtitle={p.programName}
+                  progress={r ? r.score : p.selectivity}
+                  accent={r ? r.bucket : "neutral"}
+                  progressLabel={r ? "Your readiness" : "Selectivity"}
+                />
+              );
+            })}
+          </div>
+        )}
 
         {programs.length > 0 ? (
           <div className="overflow-x-auto rounded-2xl border border-border/60">

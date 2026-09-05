@@ -68,6 +68,8 @@ model User {
   image         String?
   passwordHash  String? // argon2id; null for OAuth-only accounts
   role          Role      @default(STUDENT)
+  twoFactorEnabled Boolean @default(false)
+  twoFactorSecret  String? // base32 TOTP secret; set during setup, cleared on disable
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 

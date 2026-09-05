@@ -1,7 +1,9 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
+import { db } from "@/lib/db";
 import { AppHeader } from "@/components/site/app-header";
 import { DeleteAccount } from "@/components/account/delete-account";
+import { TwoFactorSettings } from "@/components/account/two-factor-settings";
 
 export const metadata = { title: "Settings — GlobalGrad" };
 
@@ -14,6 +16,11 @@ const roleLabel = (r: string) =>
 export default async function SettingsPage() {
   const session = await auth();
   if (!session?.user) redirect("/sign-in");
+
+  const account = await db.user.findUnique({
+    where: { id: session.user.id },
+    select: { twoFactorEnabled: true },
+  });
 
   return (
     <div className="min-h-screen">
@@ -38,6 +45,8 @@ export default async function SettingsPage() {
             </div>
           </dl>
         </section>
+
+        <TwoFactorSettings enabled={account?.twoFactorEnabled ?? false} />
 
         <DeleteAccount />
       </main>

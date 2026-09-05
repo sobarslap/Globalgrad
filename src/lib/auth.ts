@@ -5,10 +5,12 @@ import { z } from "zod";
 import { authConfig } from "@/lib/auth.config";
 import { db } from "@/lib/db";
 import { verifyPassword } from "@/lib/password";
+import { verifyTotp } from "@/lib/totp";
 
 const credentialsSchema = z.object({
   email: z.string().email(),
   password: z.string().min(1),
+  token: z.string().optional(), // TOTP code, required only when 2FA is enabled
 });
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
@@ -52,7 +54,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       async authorize(raw) {
         const parsed = credentialsSchema.safeParse(raw);
         if (!parsed.success) return null;
-        const { email, password } = parsed.data;
+        const { email, password, token } = parsed.data;
 
         const user = await db.user.findUnique({
           where: { email: email.toLowerCase() },
@@ -66,6 +68,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         // Block sign-in until the email is verified (prevents using an
         // account registered with someone else's address).
         if (!user.emailVerified) return null;
+
+        // Second factor: when enabled, a valid TOTP code is mandatory. A
+        // sentinel error lets the sign-in form prompt for the code.
+        if (user.twoFactorEnabled && user.twoFactorSecret) {
+          if (!token) throw new Error("2FA_REQUIRED");
+          if (!verifyTotp(user.twoFactorSecret, token)) return null;
+        }
 
         // Only non-sensitive fields flow into the JWT. No passwordHash.
         return {

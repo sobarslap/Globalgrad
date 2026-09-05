@@ -47,6 +47,26 @@ export default function SignInPage() {
             />
           </div>
 
+          {state.twoFactor && (
+            <div className="space-y-1.5">
+              <Label htmlFor="token">Authentication code</Label>
+              <Input
+                id="token"
+                name="token"
+                inputMode="numeric"
+                autoComplete="one-time-code"
+                pattern="[0-9]*"
+                maxLength={6}
+                placeholder="6-digit code"
+                autoFocus
+                required
+              />
+              <p className="text-xs text-muted-foreground">
+                Enter the code from your authenticator app.
+              </p>
+            </div>
+          )}
+
           {state.error && (
             <p className="text-sm text-destructive" role="alert">
               {state.error}
@@ -54,7 +74,11 @@ export default function SignInPage() {
           )}
 
           <Button type="submit" className="w-full" disabled={pending}>
-            {pending ? "Signing in…" : "Sign in"}
+            {pending
+              ? "Signing in…"
+              : state.twoFactor
+                ? "Verify & sign in"
+                : "Sign in"}
           </Button>
         </form>
 

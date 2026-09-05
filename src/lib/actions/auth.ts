@@ -19,7 +19,12 @@ const signUpSchema = z.object({
     .regex(/[0-9]/, "Include a number"),
 });
 
-export type AuthActionState = { error?: string; ok?: boolean; message?: string };
+export type AuthActionState = {
+  error?: string;
+  ok?: boolean;
+  message?: string;
+  twoFactor?: boolean; // sign-in needs a TOTP code to continue
+};
 
 export async function signUp(
   _prev: AuthActionState,
@@ -82,6 +87,7 @@ export async function signInWithCredentials(
   const ip = clientIp(await headers());
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
   const password = String(formData.get("password") ?? "");
+  const token = String(formData.get("token") ?? "").trim();
 
   // Limit by IP and by target email (blunts credential-stuffing / lockout abuse).
   const [byIp, byEmail] = await Promise.all([
@@ -96,10 +102,27 @@ export async function signInWithCredentials(
   }
 
   try {
-    await signIn("credentials", { email, password, redirectTo: "/dashboard" });
+    await signIn("credentials", {
+      email,
+      password,
+      token: token || undefined,
+      redirectTo: "/dashboard",
+    });
     return { ok: true };
   } catch (err) {
     if (err instanceof AuthError) {
+      // authorize() throws "2FA_REQUIRED" when a code is needed; next-auth wraps
+      // it, so scan the error chain for the sentinel.
+      let cause: unknown = err;
+      for (let i = 0; i < 4 && cause; i++) {
+        const msg = (cause as { message?: string })?.message;
+        if (msg === "2FA_REQUIRED") {
+          return token
+            ? { error: "That code isn't valid.", twoFactor: true }
+            : { twoFactor: true };
+        }
+        cause = (cause as { cause?: unknown })?.cause;
+      }
       return { error: "Invalid email or password." };
     }
     throw err; // re-throw redirects and unexpected errors

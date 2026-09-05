@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/site/theme-toggle";
 import { MobileNav } from "@/components/site/mobile-nav";
 import { MoreMenu } from "@/components/site/more-menu";
+import { NotificationBell } from "@/components/site/notification-bell";
+import { getMyNotifications, getUnreadCount } from "@/lib/data/notifications";
 
 // Shown directly in the top bar on desktop.
 const primaryNav = [
@@ -31,6 +33,10 @@ const secondaryNav = [
 export async function AppHeader() {
   const session = await auth();
   const role = session?.user?.role;
+  const userId = session?.user?.id;
+  const [notifications, unread] = userId
+    ? await Promise.all([getMyNotifications(userId, 15), getUnreadCount(userId)])
+    : [[], 0];
   const roleNav = [
     ...(role === "CONTENT_MANAGER" || role === "ADMIN"
       ? [{ href: "/content", label: "Content" }]
@@ -76,6 +82,7 @@ export async function AppHeader() {
           >
             {session?.user?.email}
           </Link>
+          {userId && <NotificationBell initial={notifications} unread={unread} />}
           <ThemeToggle />
           <form action={signOutAction}>
             <Button type="submit" variant="ghost" size="sm">

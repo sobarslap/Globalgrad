@@ -18,15 +18,22 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(db),
   callbacks: {
     ...authConfig.callbacks,
-    // Node-side JWT: on sign-in stamp id/role; on every later request re-read the
-    // current role from the DB so role changes (and deletions) take effect at once.
+    // Node-side JWT: on sign-in stamp id/role; on later requests re-read the
+    // current role from the DB so role changes (and deletions) take effect. This
+    // ran on EVERY request — one DB round-trip per navigation — so it is now
+    // throttled to at most once per ROLE_SYNC_MS. Role/deletion changes still
+    // propagate within that window (well under the 24h session), but most page
+    // clicks skip the DB entirely, which is the main navigation-latency win.
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
         if ("role" in user && user.role) token.role = user.role;
+        token.roleSyncedAt = Date.now();
         return token;
       }
-      if (token.id) {
+      const ROLE_SYNC_MS = 60_000;
+      const lastSync = (token.roleSyncedAt as number | undefined) ?? 0;
+      if (token.id && Date.now() - lastSync >= ROLE_SYNC_MS) {
         try {
           const current = await db.user.findUnique({
             where: { id: token.id as string },
@@ -34,6 +41,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           });
           if (current) {
             token.role = current.role;
+            token.roleSyncedAt = Date.now();
           } else {
             // Query succeeded but the account is gone — drop identifying claims.
             token.id = undefined;

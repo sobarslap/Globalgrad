@@ -29,3 +29,7 @@ jobs:
 
       - name: Unit tests
         run: npm test
+
+      # Fail the build on known high/critical advisories in the dep tree.
+      - name: Security audit
+        run: npm audit --audit-level=high

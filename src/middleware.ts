@@ -21,7 +21,8 @@ function buildCsp(nonce: string): string {
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "img-src 'self' data: https:",
     "font-src 'self' https://fonts.gstatic.com",
-    `connect-src 'self' https://*.sentry.io${isDev ? " ws: http://localhost:*" : ""}`,
+    // sentry.io = error reporting (B4); uploadthing/ufs = direct file uploads (A3).
+    `connect-src 'self' https://*.sentry.io https://*.uploadthing.com https://*.ufs.sh${isDev ? " ws: http://localhost:*" : ""}`,
     "object-src 'none'",
     "frame-ancestors 'none'",
     "base-uri 'self'",

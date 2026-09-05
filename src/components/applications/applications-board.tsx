@@ -7,9 +7,11 @@ import {
   CalendarClock,
   ChevronDown,
   ChevronUp,
+  FileText,
   Printer,
   Trash2,
   Wand2,
+  X,
 } from "lucide-react";
 import type { ApplicationStatus, DocStatus } from "@prisma/client";
 import type { ApplicationView } from "@/lib/data/applications";
@@ -17,8 +19,10 @@ import {
   buildBalancedPlan,
   updateApplicationStatus,
   setChecklistItemStatus,
+  removeChecklistFile,
   removeApplication,
 } from "@/lib/actions/applications";
+import { ChecklistUpload } from "@/components/applications/checklist-upload";
 import { Button } from "@/components/ui/button";
 
 const STATUSES: ApplicationStatus[] = [
@@ -250,24 +254,58 @@ export function ApplicationsBoard({
                               DOC_CYCLE.length
                           ];
                         return (
-                          <li key={item.id}>
-                            <button
-                              type="button"
-                              disabled={pending}
-                              onClick={() =>
-                                run(() =>
-                                  setChecklistItemStatus(item.id, next)
-                                )
-                              }
-                              className="flex w-full items-center justify-between rounded-lg border border-border/50 px-3 py-2 text-left text-sm transition-colors hover:border-primary/40"
-                            >
-                              <span>{item.name}</span>
+                          <li
+                            key={item.id}
+                            className="rounded-lg border border-border/50 px-3 py-2 text-sm"
+                          >
+                            <div className="flex items-center justify-between gap-2">
+                              <button
+                                type="button"
+                                disabled={pending}
+                                onClick={() =>
+                                  run(() =>
+                                    setChecklistItemStatus(item.id, next)
+                                  )
+                                }
+                                className="flex-1 text-left transition-colors hover:text-primary"
+                              >
+                                {item.name}
+                              </button>
                               <span
                                 className={`text-xs font-medium ${docColor[item.status]}`}
                               >
                                 {statusLabel(item.status)}
                               </span>
-                            </button>
+                            </div>
+                            <div className="mt-1.5 flex items-center gap-2 print:hidden">
+                              {item.fileUrl ? (
+                                <>
+                                  <a
+                                    href={item.fileUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center gap-1 text-xs text-primary hover:underline"
+                                  >
+                                    <FileText className="h-3 w-3" />
+                                    {item.fileName ?? "View file"}
+                                  </a>
+                                  <button
+                                    type="button"
+                                    disabled={pending}
+                                    onClick={() =>
+                                      run(() => removeChecklistFile(item.id))
+                                    }
+                                    aria-label="Remove uploaded file"
+                                    className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-destructive"
+                                  >
+                                    <X className="h-3 w-3" />
+                                    Remove
+                                  </button>
+                                </>
+                              ) : (
+                                <ChecklistUpload itemId={item.id} />
+                              )}
+                            </div>
                           </li>
                         );
                       })}

@@ -6,6 +6,8 @@ export interface ChecklistItemView {
   id: string;
   name: string;
   status: DocStatus;
+  fileUrl: string | null;
+  fileName: string | null;
 }
 
 export interface DeadlineView {
@@ -67,6 +69,8 @@ export async function getMyApplications(): Promise<ApplicationView[]> {
         id: c.id,
         name: c.name,
         status: c.status,
+        fileUrl: c.fileUrl,
+        fileName: c.fileName,
       })),
       deadlines: a.program.deadlines
         .map((d) => ({

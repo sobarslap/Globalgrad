@@ -257,6 +257,12 @@ model DocumentChecklistItem {
   name          String
   status        DocStatus @default(PENDING)
 
+  // Optional uploaded document (A3). fileKey is UploadThing's storage key, kept
+  // so the file can be deleted from storage when the row is cleared/replaced.
+  fileUrl       String?
+  fileName      String?
+  fileKey       String?
+
   application Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
 
   @@index([applicationId])

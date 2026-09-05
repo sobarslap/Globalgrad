@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { UTApi } from "uploadthing/server";
 import type { ApplicationStatus, DocStatus } from "@prisma/client";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
@@ -136,6 +137,40 @@ export async function setChecklistItemStatus(
   await db.documentChecklistItem.update({
     where: { id: itemId },
     data: { status },
+  });
+  revalidatePath("/applications");
+  return { ok: true };
+}
+
+/**
+ * Remove the uploaded document from a checklist item (A3) — ownership verified
+ * via the parent application. Deletes the file from UploadThing storage and
+ * resets the item to PENDING.
+ */
+export async function removeChecklistFile(
+  itemId: string
+): Promise<ActionResult> {
+  const userId = await requireUserId();
+  if (!userId) return { ok: false, error: "Not authenticated." };
+
+  const item = await db.documentChecklistItem.findUnique({
+    where: { id: itemId },
+    select: { fileKey: true, application: { select: { userId: true } } },
+  });
+  if (!item || item.application.userId !== userId) {
+    return { ok: false, error: "Not found." };
+  }
+
+  if (item.fileKey) {
+    try {
+      await new UTApi().deleteFiles(item.fileKey);
+    } catch {
+      // Non-fatal: still clear the DB reference below.
+    }
+  }
+  await db.documentChecklistItem.update({
+    where: { id: itemId },
+    data: { fileUrl: null, fileName: null, fileKey: null, status: "PENDING" },
   });
   revalidatePath("/applications");
   return { ok: true };

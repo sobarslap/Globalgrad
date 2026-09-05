@@ -6,8 +6,8 @@
       "schedule": "0 9 * * *"
     },
     {
-      "path": "/api/cron/embed-insights",
-      "schedule": "30 9 * * *"
+      "path": "/api/cron/crawl",
+      "schedule": "0 3 * * *"
     }
   ]
 }

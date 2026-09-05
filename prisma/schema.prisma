@@ -313,6 +313,24 @@ enum InsightOrigin {
   CRAWLED // fetched by the crawler, awaiting CM review
 }
 
+// Whitelisted pages the crawler fetches (A1). Admin/Content-Manager controlled.
+// Each successful, changed crawl produces an unpublished CRAWLED InsightSource.
+model CrawlSource {
+  id            String            @id @default(cuid())
+  url           String            @unique
+  title         String
+  sourceType    InsightSourceType
+  country       String?
+  topic         String
+  enabled       Boolean           @default(true)
+  lastCrawledAt DateTime?
+  lastHash      String?
+  lastStatus    String? // "ok" | "unchanged" | "error: …"
+  createdAt     DateTime          @default(now())
+
+  @@index([enabled])
+}
+
 // Anonymized past applicants for the Similar Student Finder (Module 3, F3).
 model AnonymizedApplicant {
   id             String  @id @default(cuid())

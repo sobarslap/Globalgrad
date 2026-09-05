@@ -155,3 +155,31 @@ export async function getContentOverview(): Promise<ContentOverview | null> {
     })),
   };
 }
+
+export interface ProgramRequirements {
+  id: string;
+  programName: string;
+  university: string;
+  minCgpa: number;
+  minIelts: number;
+  admitCgpa: number;
+  admitIelts: number;
+}
+
+/** Programs with their current admission requirements, for the CM editor. */
+export async function getProgramsForRequirements(): Promise<ProgramRequirements[]> {
+  if (!(await hasRole("CONTENT_MANAGER", "ADMIN"))) return [];
+  const rows = await db.program.findMany({
+    orderBy: [{ university: { name: "asc" } }, { programName: "asc" }],
+    include: { university: { select: { name: true } } },
+  });
+  return rows.map((p) => ({
+    id: p.id,
+    programName: p.programName,
+    university: p.university.name,
+    minCgpa: p.minCgpa,
+    minIelts: p.minIelts,
+    admitCgpa: p.admitCgpa,
+    admitIelts: p.admitIelts,
+  }));
+}

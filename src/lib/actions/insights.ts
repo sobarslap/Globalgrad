@@ -1,10 +1,11 @@
 "use server";
 
 import { auth } from "@/lib/auth";
-import { callGemini } from "@/lib/ai";
+import { callGemini, embedText } from "@/lib/ai";
 import { rateLimit } from "@/lib/rate-limit";
 import {
   getInsightSources,
+  searchInsightsBySimilarity,
   type InsightSourceView,
 } from "@/lib/data/insights";
 
@@ -45,7 +46,19 @@ export async function summarizeInsights(
       error: `Slow down — try again in ${rl.retryAfterSec}s.`,
     };
 
-  const sources = await getInsightSources(country);
+  // Semantic retrieval (A1): rank sources by pgvector similarity to a query
+  // embedding. Falls back to the plain country filter if embeddings aren't
+  // available (Gemini down, or sources not yet embedded).
+  const query = `Studying abroad in ${country}: student visa, financial proof, cost of living, housing, part-time work, scholarships, application process, common mistakes.`;
+  const queryEmbedding = await embedText(query);
+
+  let sources: InsightSourceView[] = [];
+  if (queryEmbedding) {
+    sources = await searchInsightsBySimilarity(queryEmbedding, country);
+  }
+  if (sources.length === 0) {
+    sources = await getInsightSources(country);
+  }
   if (sources.length === 0)
     return { ok: false, sources: [], error: "No sources for this country yet." };
 

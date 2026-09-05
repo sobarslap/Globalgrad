@@ -72,6 +72,52 @@ export async function callGemini(
   }
 }
 
+const EMBED_MODEL = process.env.GEMINI_EMBED_MODEL || "text-embedding-004";
+/** Embedding dimensionality of text-embedding-004 — must match vector(768). */
+export const EMBED_DIM = 768;
+
+/**
+ * Embed a piece of text into a 768-d vector via Gemini (A1). Used for pgvector
+ * semantic retrieval over insight sources. Returns null on any failure so
+ * callers can fall back to non-semantic retrieval. Same dual-auth as callGemini.
+ */
+export async function embedText(text: string): Promise<number[] | null> {
+  const key = process.env.GEMINI_API_KEY;
+  const input = text.trim().slice(0, 8000);
+  if (!key || !input) return null;
+
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${EMBED_MODEL}:embedContent`;
+  const payload = JSON.stringify({
+    model: `models/${EMBED_MODEL}`,
+    content: { parts: [{ text: input }] },
+  });
+  const attempts: Record<string, string>[] = [
+    { "Content-Type": "application/json", "x-goog-api-key": key },
+    { "Content-Type": "application/json", Authorization: `Bearer ${key}` },
+  ];
+
+  try {
+    let res: Response | null = null;
+    for (const headers of attempts) {
+      res = await fetch(url, { method: "POST", headers, body: payload, cache: "no-store" });
+      if (res.ok) break;
+      if (res.status !== 401 && res.status !== 403) break;
+    }
+    if (!res || !res.ok) {
+      if (res) {
+        const body = await res.text().catch(() => "");
+        console.error(`[gemini embed] status=${res.status} body=${body.slice(0, 300)}`);
+      }
+      return null;
+    }
+    const data = (await res.json()) as { embedding?: { values?: number[] } };
+    const values = data.embedding?.values;
+    return values && values.length === EMBED_DIM ? values : null;
+  } catch {
+    return null;
+  }
+}
+
 /**
  * Streaming variant (C7): yields answer text chunks as Gemini produces them via
  * the SSE `streamGenerateContent` endpoint. Reuses the same dual-auth strategy

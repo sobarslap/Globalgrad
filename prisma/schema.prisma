@@ -294,7 +294,23 @@ model InsightSource {
   published  Boolean           @default(true)
   createdAt  DateTime          @default(now())
 
+  // Crawl provenance (A1): where the text came from and when it was last fetched.
+  // null origin = the original hand-curated seed sources.
+  origin      InsightOrigin @default(CURATED)
+  fetchedAt   DateTime?
+  contentHash String? // dedupe / change-detection for re-crawls
+
+  // pgvector embedding of (title + snippet) for semantic retrieval (A1).
+  // Unsupported type — read/written via raw SQL (Prisma Client can't map it).
+  embedding Unsupported("vector(768)")?
+
   @@index([country])
+  @@index([origin, published])
+}
+
+enum InsightOrigin {
+  CURATED // hand-written seed excerpt
+  CRAWLED // fetched by the crawler, awaiting CM review
 }
 
 // Anonymized past applicants for the Similar Student Finder (Module 3, F3).

@@ -4,6 +4,10 @@
     {
       "path": "/api/cron/deadlines",
       "schedule": "0 9 * * *"
+    },
+    {
+      "path": "/api/cron/embed-insights",
+      "schedule": "30 9 * * *"
     }
   ]
 }

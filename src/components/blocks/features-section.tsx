@@ -12,6 +12,7 @@ import {
   Wallet,
   Plane,
 } from "lucide-react";
+import Link from "next/link";
 import { GradientCard } from "@/components/ui/gradient-card";
 
 const flagship = [
@@ -42,12 +43,12 @@ const flagship = [
 ];
 
 const secondary = [
-  { icon: Globe2, label: "Country Decision Dashboard" },
-  { icon: ClipboardList, label: "Smart Document Checklist" },
-  { icon: BellRing, label: "Deadline & Requirement Monitor" },
-  { icon: Users, label: "Similar Student Finder" },
-  { icon: Wallet, label: "Funding Gap Analyzer" },
-  { icon: Plane, label: "Visa Preparation Hub" },
+  { icon: Globe2, label: "Country Decision Dashboard", href: "/countries" },
+  { icon: ClipboardList, label: "Smart Document Checklist", href: "/applications" },
+  { icon: BellRing, label: "Deadline & Requirement Monitor", href: "/calendar" },
+  { icon: Users, label: "Similar Student Finder", href: "/similar" },
+  { icon: Wallet, label: "Funding Gap Analyzer", href: "/cost" },
+  { icon: Plane, label: "Visa Preparation Hub", href: "/visa" },
 ];
 
 export function FeaturesSection() {
@@ -79,16 +80,17 @@ export function FeaturesSection() {
         </div>
 
         <div className="mt-16 grid grid-cols-2 gap-4 sm:grid-cols-3">
-          {secondary.map(({ icon: Icon, label }) => (
-            <div
+          {secondary.map(({ icon: Icon, label, href }) => (
+            <Link
               key={label}
-              className="group flex items-center gap-3 rounded-xl border border-border/60 bg-card/40 p-4 transition-colors hover:border-primary/40"
+              href={href}
+              className="group flex items-center gap-3 rounded-xl border border-border/60 bg-card/40 p-4 transition-colors hover:border-primary/40 hover:bg-card/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary transition-transform group-hover:scale-110">
                 <Icon className="h-5 w-5" />
               </span>
               <span className="text-sm font-medium">{label}</span>
-            </div>
+            </Link>
           ))}
         </div>
       </div>

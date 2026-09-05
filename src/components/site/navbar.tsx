@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/site/theme-toggle";
 import { LanguageSwitcher } from "@/components/site/language-switcher";
 import { MobileNav } from "@/components/site/mobile-nav";
+import { HeaderShell } from "@/components/site/header-shell";
 
 export async function Navbar() {
   const session = await auth();
@@ -21,7 +22,7 @@ export async function Navbar() {
   ];
 
   return (
-    <header className="fixed top-0 z-50 w-full border-b border-border/40 bg-background/70 backdrop-blur-xl">
+    <HeaderShell>
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
         <Link href="/" className="flex items-center gap-2 font-semibold">
           <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
@@ -84,6 +85,6 @@ export async function Navbar() {
           )}
         </div>
       </div>
-    </header>
+    </HeaderShell>
   );
 }

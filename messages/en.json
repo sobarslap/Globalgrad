@@ -27,7 +27,8 @@
   },
   "Landing": {
     "eyebrow": "Study abroad, decided with data",
-    "title": "Get in. Get funded. Go global.",
+    "title": "Get in. Get funded.",
+    "highlight": "Go global.",
     "subtitle": "GlobalGrad scores your readiness, matches you to Safe / Target / Reach universities, finds scholarships you actually qualify for, and plans the money, deadlines and visa — with an AI advisor grounded in real data.",
     "cta": "Start free"
   }

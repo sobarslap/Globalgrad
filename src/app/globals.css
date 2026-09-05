@@ -196,3 +196,44 @@
     transform: rotate(360deg);
   }
 }
+
+/* Retro perspective grid (hero-section-dark) */
+@keyframes grid {
+  0% {
+    transform: translateY(-50%);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+.animate-grid {
+  animation: grid 20s linear infinite;
+}
+
+/* Shiny button light sweep */
+.shiny-sheen {
+  background: linear-gradient(
+    -75deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.5) 50%,
+    transparent 100%
+  );
+  background-size: 250% 100%;
+  background-position: 150% 0;
+  animation: shiny-sweep 3s ease-in-out infinite;
+}
+@keyframes shiny-sweep {
+  0%,
+  60% {
+    background-position: 150% 0;
+  }
+  100% {
+    background-position: -150% 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .shiny-sheen,
+  .animate-grid {
+    animation: none;
+  }
+}

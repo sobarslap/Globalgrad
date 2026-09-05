@@ -1,9 +1,12 @@
+import { Redis } from "@upstash/redis";
 import { db } from "@/lib/db";
 
 /**
- * Shared fixed-window rate limiter backed by Postgres, so limits actually hold
- * across serverless instances (an in-memory Map does not). A small race window
- * can allow marginal over-counting — acceptable for abuse prevention.
+ * Shared fixed-window rate limiter (B3). When Upstash Redis is configured it
+ * runs there — a single atomic INCR per hit, which holds across serverless
+ * instances without a DB write. Otherwise (or if Redis errors) it falls back to
+ * the Postgres limiter below, so local/dev and outages still enforce limits.
+ * A small race window can allow marginal over-counting — fine for abuse control.
  */
 export interface RateLimitResult {
   ok: boolean;
@@ -11,11 +14,60 @@ export interface RateLimitResult {
   retryAfterSec: number;
 }
 
+let redis: Redis | null | undefined; // undefined = not yet resolved
+function getRedis(): Redis | null {
+  if (redis !== undefined) return redis;
+  const url = process.env.UPSTASH_REDIS_REST_URL;
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+  redis = url && token ? new Redis({ url, token }) : null;
+  return redis;
+}
+
+/**
+ * Upstash path. Returns a result, or null to signal "not configured / errored —
+ * use the fallback". Fixed window: the first hit in a window sets the TTL; the
+ * key self-heals if it ever loses its expiry.
+ */
+async function rateLimitRedis(
+  r: Redis,
+  key: string,
+  limit: number,
+  windowMs: number
+): Promise<RateLimitResult | null> {
+  const k = `rl:${key}`;
+  try {
+    const count = await r.incr(k);
+    if (count === 1) {
+      await r.pexpire(k, windowMs);
+      return { ok: true, remaining: limit - 1, retryAfterSec: 0 };
+    }
+    if (count > limit) {
+      let ttl = await r.pttl(k);
+      if (ttl < 0) {
+        // Missing expiry (edge case): re-arm it so the key can't block forever.
+        await r.pexpire(k, windowMs);
+        ttl = windowMs;
+      }
+      return { ok: false, remaining: 0, retryAfterSec: Math.ceil(ttl / 1000) };
+    }
+    return { ok: true, remaining: Math.max(0, limit - count), retryAfterSec: 0 };
+  } catch (err) {
+    console.error("[rate-limit] Upstash error, falling back to Postgres:", err);
+    return null;
+  }
+}
+
 export async function rateLimit(
   key: string,
   limit: number,
   windowMs: number
 ): Promise<RateLimitResult> {
+  const r = getRedis();
+  if (r) {
+    const res = await rateLimitRedis(r, key, limit, windowMs);
+    if (res) return res;
+  }
+
   const now = new Date();
   const resetAt = new Date(now.getTime() + windowMs);
 

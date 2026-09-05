@@ -14,6 +14,11 @@ const schema = z.object({
   AUTH_GOOGLE_SECRET: z.string().optional(),
   RESEND_API_KEY: z.string().optional(),
   GEMINI_API_KEY: z.string().optional(),
+  // Optional distributed rate limiting (B3). When both are set, hot paths use
+  // Upstash Redis; otherwise the limiter falls back to Postgres.
+  UPSTASH_REDIS_REST_URL: z.string().url().optional(),
+  UPSTASH_REDIS_REST_TOKEN: z.string().optional(),
+  NEXT_PUBLIC_SENTRY_DSN: z.string().url().optional(),
   NODE_ENV: z
     .enum(["development", "test", "production"])
     .default("development"),

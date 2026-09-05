@@ -12,7 +12,8 @@ const csp = [
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   "img-src 'self' data: https:",
   "font-src 'self' https://fonts.gstatic.com",
-  `connect-src 'self'${isProd ? "" : " ws: http://localhost:*"}`,
+  // Allow the browser Sentry SDK (B4) to POST errors/traces to its ingest host.
+  `connect-src 'self' https://*.sentry.io${isProd ? "" : " ws: http://localhost:*"}`,
   "frame-ancestors 'none'",
   "base-uri 'self'",
   "form-action 'self'",

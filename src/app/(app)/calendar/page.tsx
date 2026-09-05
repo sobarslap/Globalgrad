@@ -25,7 +25,7 @@ export default async function CalendarPage() {
   return (
     <div className="min-h-screen">
       <AppHeader />
-      <main className="mx-auto max-w-3xl space-y-8 px-6 py-10">
+      <main id="main-content" className="mx-auto max-w-3xl space-y-8 px-6 py-10">
         <div>
           <h1 className="text-3xl font-semibold tracking-tight">Calendar</h1>
           <p className="mt-1 text-muted-foreground">

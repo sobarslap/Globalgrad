@@ -37,7 +37,7 @@ export default async function AdminPage() {
   return (
     <div className="min-h-screen">
       <AppHeader />
-      <main className="mx-auto max-w-6xl space-y-10 px-6 py-10">
+      <main id="main-content" className="mx-auto max-w-6xl space-y-10 px-6 py-10">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-semibold tracking-tight">Admin</h1>

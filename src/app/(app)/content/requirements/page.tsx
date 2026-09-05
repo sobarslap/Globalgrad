@@ -18,7 +18,7 @@ export default async function RequirementsPage() {
   return (
     <div className="min-h-screen">
       <AppHeader />
-      <main className="mx-auto max-w-6xl space-y-8 px-6 py-10">
+      <main id="main-content" className="mx-auto max-w-6xl space-y-8 px-6 py-10">
         <div>
           <Link
             href="/content"

@@ -12,7 +12,7 @@ export default function Home() {
   return (
     <>
       <Navbar />
-      <main className="flex-1">
+      <main id="main-content" className="flex-1">
         <Hero
           eyebrow="Study abroad, decided with data"
           title="Get in. Get funded. Go global."

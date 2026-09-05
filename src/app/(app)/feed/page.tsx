@@ -41,7 +41,7 @@ export default async function FeedPage() {
     return (
       <div className="min-h-screen">
         <AppHeader />
-        <main className="mx-auto max-w-3xl px-6 py-10">
+        <main id="main-content" className="mx-auto max-w-3xl px-6 py-10">
           <h1 className="text-3xl font-semibold tracking-tight">Your feed</h1>
           <p className="mt-3 text-muted-foreground">
             Add your profile to get a personalized feed of matches, scholarships
@@ -128,7 +128,7 @@ export default async function FeedPage() {
   return (
     <div className="min-h-screen">
       <AppHeader />
-      <main className="mx-auto max-w-3xl space-y-6 px-6 py-10">
+      <main id="main-content" className="mx-auto max-w-3xl space-y-6 px-6 py-10">
         <div>
           <h1 className="flex items-center gap-2 text-3xl font-semibold tracking-tight">
             <Sparkles className="h-6 w-6 text-primary" /> Your feed

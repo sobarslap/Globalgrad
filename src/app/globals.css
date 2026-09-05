@@ -155,6 +155,31 @@
     color: hsl(var(--foreground));
     font-family: var(--font-sans), Arial, Helvetica, sans-serif;
   }
+  /* C2 a11y: a consistent, visible keyboard-focus ring for interactive
+     elements (mouse clicks use :focus, not :focus-visible, so this only shows
+     for keyboard/AT users). */
+  a:focus-visible,
+  button:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible,
+  [tabindex]:focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+  }
+  /* C2 a11y: honor the OS "reduce motion" setting — near-instant transitions
+     and no infinite/looping animations for users prone to motion sickness. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
 }
 
 /* Spline / Suspense fallback loader */

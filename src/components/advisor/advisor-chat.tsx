@@ -150,7 +150,12 @@ export function AdvisorChat() {
           placeholder="Ask the advisor…"
           disabled={pending}
         />
-        <Button type="submit" size="icon" disabled={pending || !input.trim()}>
+        <Button
+          type="submit"
+          size="icon"
+          disabled={pending || !input.trim()}
+          aria-label="Send question to the advisor"
+        >
           <Send className="h-4 w-4" />
         </Button>
       </form>

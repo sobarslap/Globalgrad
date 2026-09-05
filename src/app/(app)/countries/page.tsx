@@ -13,7 +13,7 @@ export default async function CountriesPage() {
   return (
     <>
       <Navbar />
-      <main className="mx-auto min-h-screen max-w-6xl px-6 pb-20 pt-24">
+      <main id="main-content" className="mx-auto min-h-screen max-w-6xl px-6 pb-20 pt-24">
         <div className="mb-8">
           <h1 className="text-3xl font-semibold tracking-tight md:text-4xl">
             Country Decision Dashboard

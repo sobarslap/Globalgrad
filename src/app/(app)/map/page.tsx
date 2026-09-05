@@ -15,7 +15,7 @@ export default async function MapPage() {
   return (
     <div className="min-h-screen">
       <AppHeader />
-      <main className="mx-auto max-w-5xl space-y-6 px-6 py-10">
+      <main id="main-content" className="mx-auto max-w-5xl space-y-6 px-6 py-10">
         <div>
           <h1 className="text-3xl font-semibold tracking-tight">University map</h1>
           <p className="mt-1 text-muted-foreground">

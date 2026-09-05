@@ -158,6 +158,8 @@ model Country {
   partTimeAllowed     Boolean @default(false)
   workHoursPerWeek    Int? // permitted part-time hours during term
   currency            String?
+  latitude            Float? // approximate country centroid for maps
+  longitude           Float?
 
   universities University[]
   scholarships Scholarship[]
@@ -169,6 +171,8 @@ model University {
   countryId String?
   city      String?
   worldRank Int?
+  latitude  Float? // campus location for maps
+  longitude Float?
   published Boolean   @default(false) // Content-Manager verified before public
 
   country  Country?  @relation(fields: [countryId], references: [id])

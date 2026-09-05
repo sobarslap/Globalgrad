@@ -20,6 +20,7 @@ const primaryNav = [
 // Tucked into the "More" dropdown on desktop.
 const secondaryNav = [
   { href: "/countries", label: "Countries" },
+  { href: "/map", label: "Map" },
   { href: "/compare", label: "Compare" },
   { href: "/visa", label: "Visa" },
   { href: "/similar", label: "Similar" },

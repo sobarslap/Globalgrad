@@ -97,19 +97,35 @@ export async function* streamGemini(
     { "Content-Type": "application/json", Authorization: `Bearer ${key}` },
   ];
 
+  // Gemini's free tier throws transient 503/429s under load; a short retry
+  // almost always succeeds. Retrying is safe here because nothing has streamed
+  // to the client yet when we inspect the initial response.
+  const RETRIABLE = new Set([429, 503]);
+  const MAX_TRIES = 3;
   let res: Response | null = null;
-  for (const headers of attempts) {
-    res = await fetch(url, { method: "POST", headers, body: payload });
-    if (res.ok) break;
-    if (res.status !== 401 && res.status !== 403) break;
+  for (let attempt = 0; attempt < MAX_TRIES; attempt++) {
+    for (const headers of attempts) {
+      res = await fetch(url, { method: "POST", headers, body: payload });
+      if (res.ok) break;
+      if (res.status !== 401 && res.status !== 403) break; // try Bearer only on auth errors
+    }
+    if (res?.ok) break;
+    if (!res || !RETRIABLE.has(res.status)) break; // non-transient → give up now
+    if (attempt < MAX_TRIES - 1)
+      await new Promise((r) => setTimeout(r, 400 * (attempt + 1)));
   }
+
   if (!res || !res.ok || !res.body) {
     const status = res?.status;
     if (status && res) {
       const body = await res.text().catch(() => "");
       console.error(`[gemini stream] status=${status} body=${body.slice(0, 400)}`);
     }
-    throw new Error("The advisor is temporarily unavailable.");
+    throw new Error(
+      status === 429 || status === 503
+        ? "The advisor is busy right now — please try again in a moment."
+        : "The advisor is temporarily unavailable."
+    );
   }
 
   // Parse the SSE stream: lines of `data: {json}`; each JSON is a partial

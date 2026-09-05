@@ -1,6 +1,10 @@
 import { redirect } from "next/navigation";
+import { AlertTriangle } from "lucide-react";
 import { auth } from "@/lib/auth";
-import { getMyApplications } from "@/lib/data/applications";
+import {
+  getMyApplications,
+  getMyRequirementChanges,
+} from "@/lib/data/applications";
 import { getMyProfile } from "@/lib/actions/profile";
 import { AppHeader } from "@/components/site/app-header";
 import { ApplicationsBoard } from "@/components/applications/applications-board";
@@ -11,9 +15,10 @@ export default async function ApplicationsPage() {
   const session = await auth();
   if (!session?.user) redirect("/sign-in");
 
-  const [applications, profile] = await Promise.all([
+  const [applications, profile, requirementChanges] = await Promise.all([
     getMyApplications(),
     getMyProfile(),
+    getMyRequirementChanges(),
   ]);
 
   return (
@@ -29,6 +34,22 @@ export default async function ApplicationsPage() {
             enrollment, work through document checklists, and watch deadlines.
           </p>
         </div>
+        {requirementChanges.length > 0 && (
+          <section className="rounded-2xl border border-amber-500/40 bg-amber-500/5 p-4">
+            <h2 className="flex items-center gap-2 text-sm font-semibold text-amber-600 dark:text-amber-400">
+              <AlertTriangle className="h-4 w-4" /> Requirement changes on your
+              tracked programs
+            </h2>
+            <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
+              {requirementChanges.map((c) => (
+                <li key={c.id}>
+                  <span className="font-medium text-foreground">{c.program}</span>{" "}
+                  — {c.field}: {c.oldValue} → {c.newValue}
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
         <ApplicationsBoard
           applications={applications}
           hasProfile={!!profile}

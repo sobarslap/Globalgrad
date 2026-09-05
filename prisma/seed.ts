@@ -11,15 +11,19 @@ const levelMap: Record<string, DegreeLevel> = {
 };
 
 // Rough country assignment for the sample universities (illustrative).
-const universityCountry: Record<string, { name: string; code: string }> = {
-  MIT: { name: "United States", code: "US" },
-  "ETH Zurich": { name: "Switzerland", code: "CH" },
-  "TU Munich": { name: "Germany", code: "DE" },
-  "University of Waterloo": { name: "Canada", code: "CA" },
-  "University of Alberta": { name: "Canada", code: "CA" },
-  "Monash University": { name: "Australia", code: "AU" },
-  "Chalmers University": { name: "Sweden", code: "SE" },
-  "Regional State University": { name: "United States", code: "US" },
+// city + lat/lng are approximate campus locations used for the map view.
+const universityCountry: Record<
+  string,
+  { name: string; code: string; city?: string; lat?: number; lng?: number }
+> = {
+  MIT: { name: "United States", code: "US", city: "Cambridge, MA", lat: 42.3601, lng: -71.0942 },
+  "ETH Zurich": { name: "Switzerland", code: "CH", city: "Zurich", lat: 47.3763, lng: 8.5476 },
+  "TU Munich": { name: "Germany", code: "DE", city: "Munich", lat: 48.1497, lng: 11.5679 },
+  "University of Waterloo": { name: "Canada", code: "CA", city: "Waterloo, ON", lat: 43.4723, lng: -80.5449 },
+  "University of Alberta": { name: "Canada", code: "CA", city: "Edmonton, AB", lat: 53.5232, lng: -113.5263 },
+  "Monash University": { name: "Australia", code: "AU", city: "Melbourne", lat: -37.9105, lng: 145.1345 },
+  "Chalmers University": { name: "Sweden", code: "SE", city: "Gothenburg", lat: 57.689, lng: 11.9746 },
+  "Regional State University": { name: "United States", code: "US", city: "Lincoln, NE", lat: 40.8, lng: -96.7 },
 };
 
 async function main() {
@@ -32,13 +36,13 @@ async function main() {
 
   // Countries — macro data is illustrative (verify against official sources).
   const countryData = [
-    { name: "United States", code: "US", flagEmoji: "🇺🇸", postStudyWorkMonths: 12, monthlyLivingCostUsd: 1500, costOfLivingIndex: 100, partTimeAllowed: true, workHoursPerWeek: 20, currency: "USD" },
-    { name: "Canada", code: "CA", flagEmoji: "🇨🇦", postStudyWorkMonths: 36, monthlyLivingCostUsd: 1200, costOfLivingIndex: 72, partTimeAllowed: true, workHoursPerWeek: 24, currency: "CAD" },
-    { name: "United Kingdom", code: "GB", flagEmoji: "🇬🇧", postStudyWorkMonths: 24, monthlyLivingCostUsd: 1400, costOfLivingIndex: 78, partTimeAllowed: true, workHoursPerWeek: 20, currency: "GBP" },
-    { name: "Germany", code: "DE", flagEmoji: "🇩🇪", postStudyWorkMonths: 18, monthlyLivingCostUsd: 1100, costOfLivingIndex: 70, partTimeAllowed: true, workHoursPerWeek: 20, currency: "EUR" },
-    { name: "Australia", code: "AU", flagEmoji: "🇦🇺", postStudyWorkMonths: 24, monthlyLivingCostUsd: 1600, costOfLivingIndex: 83, partTimeAllowed: true, workHoursPerWeek: 24, currency: "AUD" },
-    { name: "Switzerland", code: "CH", flagEmoji: "🇨🇭", postStudyWorkMonths: 6, monthlyLivingCostUsd: 2000, costOfLivingIndex: 122, partTimeAllowed: true, workHoursPerWeek: 15, currency: "CHF" },
-    { name: "Sweden", code: "SE", flagEmoji: "🇸🇪", postStudyWorkMonths: 12, monthlyLivingCostUsd: 1000, costOfLivingIndex: 74, partTimeAllowed: true, workHoursPerWeek: 40, currency: "SEK" },
+    { name: "United States", code: "US", flagEmoji: "🇺🇸", postStudyWorkMonths: 12, monthlyLivingCostUsd: 1500, costOfLivingIndex: 100, partTimeAllowed: true, workHoursPerWeek: 20, currency: "USD", latitude: 39.8, longitude: -98.6 },
+    { name: "Canada", code: "CA", flagEmoji: "🇨🇦", postStudyWorkMonths: 36, monthlyLivingCostUsd: 1200, costOfLivingIndex: 72, partTimeAllowed: true, workHoursPerWeek: 24, currency: "CAD", latitude: 56.1, longitude: -106.3 },
+    { name: "United Kingdom", code: "GB", flagEmoji: "🇬🇧", postStudyWorkMonths: 24, monthlyLivingCostUsd: 1400, costOfLivingIndex: 78, partTimeAllowed: true, workHoursPerWeek: 20, currency: "GBP", latitude: 55.4, longitude: -3.4 },
+    { name: "Germany", code: "DE", flagEmoji: "🇩🇪", postStudyWorkMonths: 18, monthlyLivingCostUsd: 1100, costOfLivingIndex: 70, partTimeAllowed: true, workHoursPerWeek: 20, currency: "EUR", latitude: 51.2, longitude: 10.4 },
+    { name: "Australia", code: "AU", flagEmoji: "🇦🇺", postStudyWorkMonths: 24, monthlyLivingCostUsd: 1600, costOfLivingIndex: 83, partTimeAllowed: true, workHoursPerWeek: 24, currency: "AUD", latitude: -25.3, longitude: 133.8 },
+    { name: "Switzerland", code: "CH", flagEmoji: "🇨🇭", postStudyWorkMonths: 6, monthlyLivingCostUsd: 2000, costOfLivingIndex: 122, partTimeAllowed: true, workHoursPerWeek: 15, currency: "CHF", latitude: 46.8, longitude: 8.2 },
+    { name: "Sweden", code: "SE", flagEmoji: "🇸🇪", postStudyWorkMonths: 12, monthlyLivingCostUsd: 1000, costOfLivingIndex: 74, partTimeAllowed: true, workHoursPerWeek: 40, currency: "SEK", latitude: 60.1, longitude: 18.6 },
   ];
   const countryIds = new Map<string, string>();
   for (const c of countryData) {
@@ -56,6 +60,9 @@ async function main() {
         data: {
           name: p.university,
           countryId: meta ? countryIds.get(meta.code) : undefined,
+          city: meta?.city,
+          latitude: meta?.lat,
+          longitude: meta?.lng,
           published: true,
         },
       });

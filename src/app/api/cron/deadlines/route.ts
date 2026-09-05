@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { sendEmail, emailShell } from "@/lib/mailer";
+import { notify } from "@/lib/notify";
 
 /**
  * Deadline & Requirement Monitor email digest (Module 2, F4).
@@ -29,7 +30,7 @@ export async function GET(req: Request) {
       program: { deadlines: { some: { dueDate: { gte: new Date(), lte: horizon } } } },
     },
     include: {
-      user: { select: { email: true, name: true } },
+      user: { select: { id: true, email: true, name: true } },
       program: {
         include: {
           university: { select: { name: true } },
@@ -38,6 +39,23 @@ export async function GET(req: Request) {
       },
     },
   });
+
+  // In-app notifications (deduped per deadline so re-runs don't pile up).
+  let notified = 0;
+  for (const a of apps) {
+    for (const d of a.program.deadlines) {
+      const days = Math.ceil((d.dueDate.getTime() - now) / (24 * 60 * 60 * 1000));
+      await notify({
+        userId: a.user.id,
+        type: "DEADLINE",
+        title: `${a.program.university.name} — ${a.program.programName}`,
+        body: `Deadline in ${days} day${days === 1 ? "" : "s"}.`,
+        href: "/applications",
+        dedupeKey: `deadline:${d.id}`,
+      });
+      notified += 1;
+    }
+  }
 
   // Group upcoming deadlines by user into a single digest.
   const byUser = new Map<
@@ -86,5 +104,5 @@ export async function GET(req: Request) {
     if (res.ok) sent += 1;
   }
 
-  return NextResponse.json({ users: byUser.size, emailsSent: sent });
+  return NextResponse.json({ users: byUser.size, emailsSent: sent, notified });
 }

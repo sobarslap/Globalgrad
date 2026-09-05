@@ -51,6 +51,14 @@ enum InsightSourceType {
   NEWS
 }
 
+enum NotificationType {
+  DEADLINE
+  REQUIREMENT_CHANGE
+  MATCH
+  SCHOLARSHIP
+  SYSTEM
+}
+
 // ---------- Auth.js (NextAuth Prisma adapter) ----------
 model User {
   id            String    @id @default(cuid())
@@ -60,6 +68,8 @@ model User {
   image         String?
   passwordHash  String? // argon2id; null for OAuth-only accounts
   role          Role      @default(STUDENT)
+  twoFactorEnabled Boolean @default(false)
+  twoFactorSecret  String? // base32 TOTP secret; set during setup, cleared on disable
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
@@ -68,6 +78,7 @@ model User {
   studentProfile StudentProfile?
   applications   Application[]
   auditLogs      AuditLog[]
+  notifications  Notification[]
 }
 
 model Account {
@@ -158,6 +169,8 @@ model Country {
   partTimeAllowed     Boolean @default(false)
   workHoursPerWeek    Int? // permitted part-time hours during term
   currency            String?
+  latitude            Float? // approximate country centroid for maps
+  longitude           Float?
 
   universities University[]
   scholarships Scholarship[]
@@ -169,6 +182,8 @@ model University {
   countryId String?
   city      String?
   worldRank Int?
+  latitude  Float? // campus location for maps
+  longitude Float?
   published Boolean   @default(false) // Content-Manager verified before public
 
   country  Country?  @relation(fields: [countryId], references: [id])
@@ -192,9 +207,10 @@ model Program {
   tuitionUsd     Int?
   published      Boolean     @default(false)
 
-  university   University    @relation(fields: [universityId], references: [id], onDelete: Cascade)
-  applications Application[]
-  deadlines    Deadline[]
+  university         University           @relation(fields: [universityId], references: [id], onDelete: Cascade)
+  applications       Application[]
+  deadlines          Deadline[]
+  requirementChanges RequirementChange[]
 
   @@index([field])
 }
@@ -324,4 +340,39 @@ model AuditLog {
   user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   @@index([userId])
+}
+
+// In-app notifications (Module 4-adjacent; complements email). Deadline reminders,
+// requirement changes, new matches, scholarship alerts.
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  type      NotificationType
+  title     String
+  body      String?
+  href      String? // deep link into the app
+  dedupeKey String? // stable key to avoid re-notifying for the same event
+  read      Boolean          @default(false)
+  createdAt DateTime         @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, dedupeKey])
+  @@index([userId, read])
+}
+
+// Detected admission-requirement changes for a program (Module 2, F4).
+// Written when a Content Manager edits a program's requirements; students with
+// an application to that program are notified.
+model RequirementChange {
+  id         String   @id @default(cuid())
+  programId  String
+  field      String // e.g. "minIelts", "minCgpa"
+  oldValue   String
+  newValue   String
+  detectedAt DateTime @default(now())
+
+  program Program @relation(fields: [programId], references: [id], onDelete: Cascade)
+
+  @@index([programId])
 }

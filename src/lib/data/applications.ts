@@ -80,3 +80,50 @@ export async function getMyApplications(): Promise<ApplicationView[]> {
     };
   });
 }
+
+export interface RequirementChangeView {
+  id: string;
+  program: string;
+  field: string;
+  oldValue: string;
+  newValue: string;
+  detectedAt: Date;
+}
+
+/**
+ * Recent admission-requirement changes on programs the current user is tracking
+ * (Module 2, F4). Surfaced on the Applications page.
+ */
+export async function getMyRequirementChanges(
+  limit = 10,
+): Promise<RequirementChangeView[]> {
+  const session = await auth();
+  const userId = session?.user?.id;
+  if (!userId) return [];
+
+  const apps = await db.application.findMany({
+    where: { userId },
+    select: { programId: true },
+  });
+  const programIds = apps.map((a) => a.programId);
+  if (programIds.length === 0) return [];
+
+  const rows = await db.requirementChange.findMany({
+    where: { programId: { in: programIds } },
+    orderBy: { detectedAt: "desc" },
+    take: limit,
+    include: {
+      program: {
+        select: { programName: true, university: { select: { name: true } } },
+      },
+    },
+  });
+  return rows.map((r) => ({
+    id: r.id,
+    program: `${r.program.university.name} — ${r.program.programName}`,
+    field: r.field,
+    oldValue: r.oldValue,
+    newValue: r.newValue,
+    detectedAt: r.detectedAt,
+  }));
+}

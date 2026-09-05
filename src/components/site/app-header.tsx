@@ -1,54 +1,55 @@
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { GraduationCap } from "lucide-react";
 import { auth } from "@/lib/auth";
 import { signOutAction } from "@/lib/actions/auth";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/site/theme-toggle";
+import { LanguageSwitcher } from "@/components/site/language-switcher";
 import { MobileNav } from "@/components/site/mobile-nav";
 import { MoreMenu } from "@/components/site/more-menu";
 import { NotificationBell } from "@/components/site/notification-bell";
 import { getMyNotifications, getUnreadCount } from "@/lib/data/notifications";
 
-// Shown directly in the top bar on desktop.
-const primaryNav = [
-  { href: "/feed", label: "Feed" },
-  { href: "/dashboard", label: "Dashboard" },
-  { href: "/search", label: "Search" },
-  { href: "/advisor", label: "Advisor" },
-  { href: "/applications", label: "Applications" },
-  { href: "/calendar", label: "Calendar" },
-  { href: "/cost", label: "Cost" },
-];
-
-// Tucked into the "More" dropdown on desktop.
-const secondaryNav = [
-  { href: "/countries", label: "Countries" },
-  { href: "/map", label: "Map" },
-  { href: "/compare", label: "Compare" },
-  { href: "/visa", label: "Visa" },
-  { href: "/similar", label: "Similar" },
-  { href: "/reality", label: "Reality" },
-  { href: "/insights", label: "Insights" },
-];
-
 export async function AppHeader() {
   const session = await auth();
+  const t = await getTranslations("Nav");
   const role = session?.user?.role;
   const userId = session?.user?.id;
   const [notifications, unread] = userId
     ? await Promise.all([getMyNotifications(userId, 15), getUnreadCount(userId)])
     : [[], 0];
+
+  // Nav labels are translated (C8); hrefs are stable.
+  const primaryNav = [
+    { href: "/feed", label: t("feed") },
+    { href: "/dashboard", label: t("dashboard") },
+    { href: "/search", label: t("search") },
+    { href: "/advisor", label: t("advisor") },
+    { href: "/applications", label: t("applications") },
+    { href: "/calendar", label: t("calendar") },
+    { href: "/cost", label: t("cost") },
+  ];
+  const secondaryNav = [
+    { href: "/countries", label: t("countries") },
+    { href: "/map", label: t("map") },
+    { href: "/compare", label: t("compare") },
+    { href: "/visa", label: t("visa") },
+    { href: "/similar", label: t("similar") },
+    { href: "/reality", label: t("reality") },
+    { href: "/insights", label: t("insights") },
+  ];
   const roleNav = [
     ...(role === "CONTENT_MANAGER" || role === "ADMIN"
-      ? [{ href: "/content", label: "Content" }]
+      ? [{ href: "/content", label: t("content") }]
       : []),
-    ...(role === "ADMIN" ? [{ href: "/admin", label: "Admin" }] : []),
+    ...(role === "ADMIN" ? [{ href: "/admin", label: t("admin") }] : []),
   ];
   const moreNav = [...secondaryNav, ...roleNav];
   const allNav = [
     ...primaryNav,
     ...moreNav,
-    { href: "/settings", label: "Settings" },
+    { href: "/settings", label: t("settings") },
   ];
 
   return (
@@ -84,10 +85,11 @@ export async function AppHeader() {
             {session?.user?.email}
           </Link>
           {userId && <NotificationBell initial={notifications} unread={unread} />}
+          <LanguageSwitcher />
           <ThemeToggle />
           <form action={signOutAction}>
             <Button type="submit" variant="ghost" size="sm">
-              Sign out
+              {t("signOut")}
             </Button>
           </form>
         </div>

@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import { Navbar } from "@/components/site/navbar";
 import { Footer } from "@/components/site/footer";
 import { Hero } from "@/components/ui/hero-1";
@@ -8,16 +9,17 @@ import { IntegrationsSection } from "@/components/blocks/integrations-section";
 import { TestimonialsSection } from "@/components/blocks/testimonials-section";
 import { CtaLamp } from "@/components/blocks/cta-lamp";
 
-export default function Home() {
+export default async function Home() {
+  const t = await getTranslations("Landing");
   return (
     <>
       <Navbar />
       <main id="main-content" className="flex-1">
         <Hero
-          eyebrow="Study abroad, decided with data"
-          title="Get in. Get funded. Go global."
-          subtitle="GlobalGrad scores your readiness, matches you to Safe / Target / Reach universities, finds scholarships you actually qualify for, and plans the money, deadlines and visa — with an AI advisor grounded in real data."
-          ctaLabel="Start free"
+          eyebrow={t("eyebrow")}
+          title={t("title")}
+          subtitle={t("subtitle")}
+          ctaLabel={t("cta")}
           ctaHref="/sign-up"
         />
         <Interactive3D />

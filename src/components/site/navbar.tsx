@@ -1,21 +1,24 @@
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { GraduationCap } from "lucide-react";
 import { auth } from "@/lib/auth";
 import { signOutAction } from "@/lib/actions/auth";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/site/theme-toggle";
+import { LanguageSwitcher } from "@/components/site/language-switcher";
 import { MobileNav } from "@/components/site/mobile-nav";
-
-const links = [
-  { href: "/#features", label: "Features" },
-  { href: "/#how", label: "How it works" },
-  { href: "/countries", label: "Countries" },
-  { href: "/#testimonials", label: "Students" },
-];
 
 export async function Navbar() {
   const session = await auth();
+  const t = await getTranslations("Nav");
   const isLoggedIn = !!session?.user;
+
+  const links = [
+    { href: "/#features", label: t("features") },
+    { href: "/#how", label: t("howItWorks") },
+    { href: "/countries", label: t("countries") },
+    { href: "/#testimonials", label: t("students") },
+  ];
 
   return (
     <header className="fixed top-0 z-50 w-full border-b border-border/40 bg-background/70 backdrop-blur-xl">
@@ -43,23 +46,24 @@ export async function Navbar() {
           <MobileNav
             items={
               isLoggedIn
-                ? [...links, { href: "/dashboard", label: "Dashboard" }]
+                ? [...links, { href: "/dashboard", label: t("dashboard") }]
                 : [
                     ...links,
-                    { href: "/sign-in", label: "Sign in" },
-                    { href: "/sign-up", label: "Get started" },
+                    { href: "/sign-in", label: t("signIn") },
+                    { href: "/sign-up", label: t("getStarted") },
                   ]
             }
           />
+          <LanguageSwitcher />
           <ThemeToggle />
           {isLoggedIn ? (
             <>
               <Button asChild variant="ghost" size="sm">
-                <Link href="/dashboard">Dashboard</Link>
+                <Link href="/dashboard">{t("dashboard")}</Link>
               </Button>
               <form action={signOutAction}>
                 <Button type="submit" size="sm" variant="outline">
-                  Sign out
+                  {t("signOut")}
                 </Button>
               </form>
             </>
@@ -71,10 +75,10 @@ export async function Navbar() {
                 size="sm"
                 className="hidden sm:inline-flex"
               >
-                <Link href="/sign-in">Sign in</Link>
+                <Link href="/sign-in">{t("signIn")}</Link>
               </Button>
               <Button asChild size="sm">
-                <Link href="/sign-up">Get started</Link>
+                <Link href="/sign-up">{t("getStarted")}</Link>
               </Button>
             </>
           )}

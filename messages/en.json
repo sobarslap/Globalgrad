@@ -1,0 +1,34 @@
+{
+  "Nav": {
+    "feed": "Feed",
+    "dashboard": "Dashboard",
+    "search": "Search",
+    "advisor": "Advisor",
+    "applications": "Applications",
+    "calendar": "Calendar",
+    "cost": "Cost",
+    "countries": "Countries",
+    "map": "Map",
+    "compare": "Compare",
+    "visa": "Visa",
+    "similar": "Similar",
+    "reality": "Reality",
+    "insights": "Insights",
+    "content": "Content",
+    "admin": "Admin",
+    "settings": "Settings",
+    "more": "More",
+    "signIn": "Sign in",
+    "signOut": "Sign out",
+    "getStarted": "Get started",
+    "features": "Features",
+    "howItWorks": "How it works",
+    "students": "Students"
+  },
+  "Landing": {
+    "eyebrow": "Study abroad, decided with data",
+    "title": "Get in. Get funded. Go global.",
+    "subtitle": "GlobalGrad scores your readiness, matches you to Safe / Target / Reach universities, finds scholarships you actually qualify for, and plans the money, deadlines and visa — with an AI advisor grounded in real data.",
+    "cta": "Start free"
+  }
+}

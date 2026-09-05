@@ -37,15 +37,19 @@ export function ProfileForm({ defaultValues, onSubmit }: ProfileFormProps) {
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>Your academic profile</CardTitle>
+      <CardHeader className="space-y-1 pb-2">
+        <CardTitle className="text-xl">Your academic profile</CardTitle>
+        <p className="text-sm text-muted-foreground">
+          Fill this in to generate your readiness score and matches. All fields
+          take a few seconds.
+        </p>
       </CardHeader>
-      <CardContent>
+      <CardContent className="pt-6">
         <form
           onSubmit={handleSubmit((v) =>
             onSubmit(v as unknown as StudentProfileValues)
           )}
-          className="grid gap-4 sm:grid-cols-2"
+          className="grid gap-x-6 gap-y-6 sm:grid-cols-2"
         >
           <div className={fieldWrap}>
             <Label htmlFor="cgpa">CGPA (4.0 scale)</Label>

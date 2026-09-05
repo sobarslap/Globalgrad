@@ -80,6 +80,11 @@ export async function signOutAction() {
   await signOut({ redirectTo: "/" });
 }
 
+/** OAuth sign-in with Google. No-op-safe: only reachable when Google is configured. */
+export async function signInWithGoogle() {
+  await signIn("google", { redirectTo: "/dashboard" });
+}
+
 export async function signInWithCredentials(
   _prev: AuthActionState,
   formData: FormData

@@ -11,6 +11,21 @@ updates:
         dependency-type: "production"
       development-dependencies:
         dependency-type: "development"
+    # Block breaking MAJOR bumps for deliberately pinned toolchain packages
+    # (Prisma is pinned to 6 — 7 needs prisma.config.ts + a driver adapter; the
+    # TS/ESLint/@types/node majors also broke the Vercel build). Minor and patch
+    # updates for these still flow normally.
+    ignore:
+      - dependency-name: "prisma"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@prisma/client"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "eslint"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
 
   # GitHub Actions used in CI.
   - package-ecosystem: "github-actions"

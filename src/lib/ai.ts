@@ -72,50 +72,79 @@ export async function callGemini(
   }
 }
 
-const EMBED_MODEL = process.env.GEMINI_EMBED_MODEL || "text-embedding-004";
-/** Embedding dimensionality of text-embedding-004 — must match vector(768). */
+/** Embedding dimensionality — must match the vector(768) column. */
 export const EMBED_DIM = 768;
+
+// Different keys/projects expose different embedding models, so we try known
+// ones in order and cache the first that works. `gemini-embedding-001` needs an
+// explicit outputDimensionality to return 768 (its native size is larger).
+const EMBED_MODELS = [
+  process.env.GEMINI_EMBED_MODEL,
+  "gemini-embedding-001",
+  "text-embedding-004",
+  "embedding-001",
+].filter((m): m is string => !!m);
+let workingEmbedModel: string | null = null;
+
+async function embedWithModel(
+  model: string,
+  input: string,
+  key: string
+): Promise<number[] | null> {
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:embedContent`;
+  const body: Record<string, unknown> = {
+    model: `models/${model}`,
+    content: { parts: [{ text: input }] },
+  };
+  if (model.startsWith("gemini-embedding")) body.outputDimensionality = EMBED_DIM;
+  const payload = JSON.stringify(body);
+
+  const attempts: Record<string, string>[] = [
+    { "Content-Type": "application/json", "x-goog-api-key": key },
+    { "Content-Type": "application/json", Authorization: `Bearer ${key}` },
+  ];
+  let res: Response | null = null;
+  for (const headers of attempts) {
+    res = await fetch(url, { method: "POST", headers, body: payload, cache: "no-store" });
+    if (res.ok) break;
+    if (res.status !== 401 && res.status !== 403) break;
+  }
+  if (!res || !res.ok) {
+    if (res) {
+      const b = await res.text().catch(() => "");
+      console.error(`[gemini embed] model=${model} status=${res.status} body=${b.slice(0, 200)}`);
+    }
+    return null;
+  }
+  const data = (await res.json()) as { embedding?: { values?: number[] } };
+  const values = data.embedding?.values;
+  return values && values.length === EMBED_DIM ? values : null;
+}
 
 /**
  * Embed a piece of text into a 768-d vector via Gemini (A1). Used for pgvector
- * semantic retrieval over insight sources. Returns null on any failure so
- * callers can fall back to non-semantic retrieval. Same dual-auth as callGemini.
+ * semantic retrieval. Returns null on any failure so callers fall back to
+ * non-semantic retrieval. Auto-discovers a supported embedding model.
  */
 export async function embedText(text: string): Promise<number[] | null> {
   const key = process.env.GEMINI_API_KEY;
   const input = text.trim().slice(0, 8000);
   if (!key || !input) return null;
 
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${EMBED_MODEL}:embedContent`;
-  const payload = JSON.stringify({
-    model: `models/${EMBED_MODEL}`,
-    content: { parts: [{ text: input }] },
-  });
-  const attempts: Record<string, string>[] = [
-    { "Content-Type": "application/json", "x-goog-api-key": key },
-    { "Content-Type": "application/json", Authorization: `Bearer ${key}` },
-  ];
-
-  try {
-    let res: Response | null = null;
-    for (const headers of attempts) {
-      res = await fetch(url, { method: "POST", headers, body: payload, cache: "no-store" });
-      if (res.ok) break;
-      if (res.status !== 401 && res.status !== 403) break;
-    }
-    if (!res || !res.ok) {
-      if (res) {
-        const body = await res.text().catch(() => "");
-        console.error(`[gemini embed] status=${res.status} body=${body.slice(0, 300)}`);
-      }
-      return null;
-    }
-    const data = (await res.json()) as { embedding?: { values?: number[] } };
-    const values = data.embedding?.values;
-    return values && values.length === EMBED_DIM ? values : null;
-  } catch {
-    return null;
+  // Fast path: a model already known to work this runtime.
+  if (workingEmbedModel) {
+    const v = await embedWithModel(workingEmbedModel, input, key);
+    if (v) return v;
+    workingEmbedModel = null; // it stopped working — rediscover below
   }
+  for (const model of EMBED_MODELS) {
+    const v = await embedWithModel(model, input, key);
+    if (v) {
+      workingEmbedModel = model;
+      return v;
+    }
+  }
+  return null;
 }
 
 /**

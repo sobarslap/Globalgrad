@@ -24,15 +24,29 @@ const universityCountry: Record<
   "Monash University": { name: "Australia", code: "AU", city: "Melbourne", lat: -37.9105, lng: 145.1345 },
   "Chalmers University": { name: "Sweden", code: "SE", city: "Gothenburg", lat: 57.689, lng: 11.9746 },
   "Regional State University": { name: "United States", code: "US", city: "Lincoln, NE", lat: 40.8, lng: -96.7 },
+  "Stanford University": { name: "United States", code: "US", city: "Stanford, CA", lat: 37.4275, lng: -122.1697 },
+  "Carnegie Mellon University": { name: "United States", code: "US", city: "Pittsburgh, PA", lat: 40.4433, lng: -79.9436 },
+  "University of Toronto": { name: "Canada", code: "CA", city: "Toronto, ON", lat: 43.6629, lng: -79.3957 },
+  "University of British Columbia": { name: "Canada", code: "CA", city: "Vancouver, BC", lat: 49.2606, lng: -123.246 },
+  "University of Oxford": { name: "United Kingdom", code: "GB", city: "Oxford", lat: 51.7548, lng: -1.2544 },
+  "Imperial College London": { name: "United Kingdom", code: "GB", city: "London", lat: 51.4988, lng: -0.1749 },
+  "University of Melbourne": { name: "Australia", code: "AU", city: "Melbourne", lat: -37.7963, lng: 144.9614 },
+  "Delft University of Technology": { name: "Netherlands", code: "NL", city: "Delft", lat: 52.0022, lng: 4.3736 },
+  "University of Amsterdam": { name: "Netherlands", code: "NL", city: "Amsterdam", lat: 52.3555, lng: 4.9558 },
+  "KTH Royal Institute of Technology": { name: "Sweden", code: "SE", city: "Stockholm", lat: 59.347, lng: 18.0731 },
+  "National University of Singapore": { name: "Singapore", code: "SG", city: "Singapore", lat: 1.2966, lng: 103.7764 },
+  "Trinity College Dublin": { name: "Ireland", code: "IE", city: "Dublin", lat: 53.3438, lng: -6.2546 },
 };
 
 async function main() {
-  // Idempotent: clear domain tables (order respects FKs).
+  // Idempotent + non-destructive on the catalog: universities and programs are
+  // upserted by natural key so their ids (and therefore any student's
+  // Applications, which FK to Program with onDelete: Cascade) are preserved.
+  // Only tables with no user-data FK are cleared and rebuilt. Deadlines are
+  // rebuilt from scratch (nothing references them); scholarships are cleared
+  // after deadlines so the optional Deadline→Scholarship FK never blocks.
   await db.deadline.deleteMany();
-  await db.program.deleteMany();
-  await db.university.deleteMany();
   await db.scholarship.deleteMany();
-  await db.country.deleteMany();
 
   // Countries — macro data is illustrative (verify against official sources).
   const countryData = [
@@ -43,50 +57,74 @@ async function main() {
     { name: "Australia", code: "AU", flagEmoji: "🇦🇺", postStudyWorkMonths: 24, monthlyLivingCostUsd: 1600, costOfLivingIndex: 83, partTimeAllowed: true, workHoursPerWeek: 24, currency: "AUD", latitude: -25.3, longitude: 133.8 },
     { name: "Switzerland", code: "CH", flagEmoji: "🇨🇭", postStudyWorkMonths: 6, monthlyLivingCostUsd: 2000, costOfLivingIndex: 122, partTimeAllowed: true, workHoursPerWeek: 15, currency: "CHF", latitude: 46.8, longitude: 8.2 },
     { name: "Sweden", code: "SE", flagEmoji: "🇸🇪", postStudyWorkMonths: 12, monthlyLivingCostUsd: 1000, costOfLivingIndex: 74, partTimeAllowed: true, workHoursPerWeek: 40, currency: "SEK", latitude: 60.1, longitude: 18.6 },
+    { name: "Netherlands", code: "NL", flagEmoji: "🇳🇱", postStudyWorkMonths: 12, monthlyLivingCostUsd: 1200, costOfLivingIndex: 76, partTimeAllowed: true, workHoursPerWeek: 16, currency: "EUR", latitude: 52.1, longitude: 5.3 },
+    { name: "Singapore", code: "SG", flagEmoji: "🇸🇬", postStudyWorkMonths: 12, monthlyLivingCostUsd: 1400, costOfLivingIndex: 90, partTimeAllowed: true, workHoursPerWeek: 16, currency: "SGD", latitude: 1.35, longitude: 103.8 },
+    { name: "Ireland", code: "IE", flagEmoji: "🇮🇪", postStudyWorkMonths: 24, monthlyLivingCostUsd: 1300, costOfLivingIndex: 80, partTimeAllowed: true, workHoursPerWeek: 20, currency: "EUR", latitude: 53.4, longitude: -8.2 },
+    { name: "France", code: "FR", flagEmoji: "🇫🇷", postStudyWorkMonths: 24, monthlyLivingCostUsd: 1150, costOfLivingIndex: 74, partTimeAllowed: true, workHoursPerWeek: 20, currency: "EUR", latitude: 46.2, longitude: 2.2 },
+    { name: "New Zealand", code: "NZ", flagEmoji: "🇳🇿", postStudyWorkMonths: 36, monthlyLivingCostUsd: 1300, costOfLivingIndex: 77, partTimeAllowed: true, workHoursPerWeek: 20, currency: "NZD", latitude: -40.9, longitude: 174.9 },
   ];
   const countryIds = new Map<string, string>();
   for (const c of countryData) {
-    const created = await db.country.create({ data: c });
+    // Upsert by unique code so re-runs keep the same country row/id.
+    const created = await db.country.upsert({
+      where: { code: c.code },
+      update: c,
+      create: c,
+    });
     countryIds.set(c.code, created.id);
   }
 
-  // Universities + programs
+  // Universities + programs — found-or-created by natural key (never deleted),
+  // so existing ids survive and student Applications stay intact.
   const universityIds = new Map<string, string>();
   for (const p of samplePrograms) {
     let uniId = universityIds.get(p.university);
     if (!uniId) {
       const meta = universityCountry[p.university];
-      const uni = await db.university.create({
-        data: {
-          name: p.university,
-          countryId: meta ? countryIds.get(meta.code) : undefined,
-          city: meta?.city,
-          latitude: meta?.lat,
-          longitude: meta?.lng,
-          published: true,
-        },
+      const uniData = {
+        name: p.university,
+        countryId: meta ? countryIds.get(meta.code) : undefined,
+        city: meta?.city,
+        latitude: meta?.lat,
+        longitude: meta?.lng,
+        published: true,
+      };
+      const existing = await db.university.findFirst({
+        where: { name: p.university },
+        select: { id: true },
       });
+      const uni = existing
+        ? await db.university.update({ where: { id: existing.id }, data: uniData })
+        : await db.university.create({ data: uniData });
       uniId = uni.id;
       universityIds.set(p.university, uniId);
     }
-    const created = await db.program.create({
-      data: {
-        universityId: uniId,
-        programName: p.programName,
-        field: p.field,
-        level: levelMap[p.level],
-        selectivity: p.selectivity,
-        minCgpa: p.minCgpa,
-        minIelts: p.minIelts,
-        admitCgpa: p.admitCgpa,
-        admitIelts: p.admitIelts,
-        valuesResearch: p.valuesResearch,
-        // Rough annual tuition scaled by selectivity (illustrative).
-        tuitionUsd: Math.round(8000 + p.selectivity * 380),
-        published: true,
-      },
+
+    const programData = {
+      universityId: uniId,
+      programName: p.programName,
+      field: p.field,
+      level: levelMap[p.level],
+      selectivity: p.selectivity,
+      minCgpa: p.minCgpa,
+      minIelts: p.minIelts,
+      admitCgpa: p.admitCgpa,
+      admitIelts: p.admitIelts,
+      valuesResearch: p.valuesResearch,
+      // Rough annual tuition scaled by selectivity (illustrative).
+      tuitionUsd: Math.round(8000 + p.selectivity * 380),
+      published: true,
+    };
+    const existingProgram = await db.program.findFirst({
+      where: { universityId: uniId, programName: p.programName },
+      select: { id: true },
     });
-    // A staggered application deadline for each program (future dates).
+    const created = existingProgram
+      ? await db.program.update({ where: { id: existingProgram.id }, data: programData })
+      : await db.program.create({ data: programData });
+
+    // A staggered application deadline for each program (future dates). The
+    // deadline table was cleared above, so this rebuilds a clean set.
     const daysOut = 30 + (samplePrograms.indexOf(p) % 6) * 25;
     await db.deadline.create({
       data: {
@@ -128,10 +166,18 @@ async function main() {
     "Monash University",
     "Chalmers University",
     "Regional State University",
+    "Stanford University",
+    "Carnegie Mellon University",
+    "University of Toronto",
+    "University of Oxford",
+    "Imperial College London",
+    "National University of Singapore",
+    "KTH Royal Institute of Technology",
+    "Trinity College Dublin",
   ];
-  const nats = ["Bangladesh", "India", "Pakistan", "Nigeria", "Nepal"];
+  const nats = ["Bangladesh", "India", "Pakistan", "Nigeria", "Nepal", "Kenya", "Sri Lanka"];
   const rng = (n: number) => Math.floor(Math.random() * n);
-  for (let i = 0; i < 20; i++) {
+  for (let i = 0; i < 40; i++) {
     const cgpa = Math.round((2.8 + Math.random() * 1.1) * 100) / 100; // 2.8–3.9
     const ielts = Math.round((6.0 + Math.random() * 1.5) * 2) / 2; // 6.0–7.5
     const research = rng(4);
@@ -147,7 +193,10 @@ async function main() {
         nationality: nats[rng(nats.length)],
         outcomes: {
           create: picks.map((u) => {
-            const elitePenalty = /MIT|ETH|Waterloo/.test(u) ? 1.2 : 0.4;
+            const elitePenalty =
+              /MIT|ETH|Waterloo|Stanford|Carnegie|Oxford|Imperial|Singapore/.test(u)
+                ? 1.2
+                : 0.4;
             const admitted = strength - elitePenalty + Math.random() * 0.6 > 0.2;
             return {
               university: u,

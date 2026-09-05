@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -19,7 +20,13 @@ export const metadata: Metadata = {
     "Personalized study-abroad decisions: readiness scoring, smart university matching, scholarship eligibility, funding analysis, visa prep, and an AI advisor grounded in real data.",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  // The middleware sets a per-request nonce (B1); pass it to next-themes so its
+  // pre-hydration inline script carries the nonce and isn't blocked by the CSP.
+  // Reading headers() also opts the whole tree into dynamic rendering, which
+  // nonce-based CSP requires.
+  const nonce = (await headers()).get("x-nonce") ?? undefined;
+
   return (
     <html
       lang="en"
@@ -40,6 +47,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           defaultTheme="dark"
           enableSystem
           disableTransitionOnChange
+          nonce={nonce}
         >
           {children}
         </ThemeProvider>

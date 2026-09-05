@@ -2,25 +2,9 @@ import type { NextConfig } from "next";
 
 const isProd = process.env.NODE_ENV === "production";
 
-// Content Security Policy. 'unsafe-inline'/'unsafe-eval' are required by Next's
-// runtime (and dev HMR); tighten with nonces later. Images allow the seeded
-// randomuser.me avatars + data URIs; fonts come from Google Fonts.
-const csp = [
-  "default-src 'self'",
-  // 'unsafe-eval' is only needed for dev HMR; drop it in production.
-  `script-src 'self' 'unsafe-inline'${isProd ? "" : " 'unsafe-eval'"}`,
-  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-  "img-src 'self' data: https:",
-  "font-src 'self' https://fonts.gstatic.com",
-  // Allow the browser Sentry SDK (B4) to POST errors/traces to its ingest host.
-  `connect-src 'self' https://*.sentry.io${isProd ? "" : " ws: http://localhost:*"}`,
-  "frame-ancestors 'none'",
-  "base-uri 'self'",
-  "form-action 'self'",
-]
-  .join("; ")
-  .concat(isProd ? "; upgrade-insecure-requests" : "");
-
+// NOTE: the Content-Security-Policy is now set per-request in `src/middleware.ts`
+// (nonce-based, B1) — a static header can't carry a per-request nonce. These are
+// the remaining static security headers, applied to every response.
 const securityHeaders = [
   { key: "X-Content-Type-Options", value: "nosniff" },
   { key: "X-Frame-Options", value: "DENY" },
@@ -29,7 +13,6 @@ const securityHeaders = [
     key: "Permissions-Policy",
     value: "camera=(), microphone=(), geolocation=()",
   },
-  { key: "Content-Security-Policy", value: csp },
   // HSTS only in production (avoid pinning localhost over http in dev).
   ...(isProd
     ? [

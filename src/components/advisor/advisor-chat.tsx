@@ -22,6 +22,11 @@ export function AdvisorChat() {
   const [error, setError] = useState<string | null>(null);
   const endRef = useRef<HTMLDivElement>(null);
 
+  const scrollToEnd = () =>
+    requestAnimationFrame(() =>
+      endRef.current?.scrollIntoView({ behavior: "smooth" })
+    );
+
   const ask = (question: string) => {
     const q = question.trim();
     if (!q || pending) return;
@@ -29,15 +34,52 @@ export function AdvisorChat() {
     setMessages((m) => [...m, { role: "user", text: q }]);
     setInput("");
     start(async () => {
-      const res = await askAdvisor(q);
-      if (res.ok && res.text) {
-        setMessages((m) => [...m, { role: "advisor", text: res.text! }]);
-      } else {
-        setError(res.error ?? "Something went wrong.");
+      // Stream tokens from the C7 endpoint for a snappier feel; fall back to the
+      // non-streaming server action if the stream can't be reached.
+      try {
+        const res = await fetch("/api/advisor/stream", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ question: q }),
+        });
+
+        if (!res.ok || !res.body) {
+          const data = await res.json().catch(() => null);
+          throw new Error(data?.error ?? "The advisor is unavailable.");
+        }
+
+        // Open an empty advisor bubble, then append chunks as they arrive.
+        setMessages((m) => [...m, { role: "advisor", text: "" }]);
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder();
+        let acc = "";
+        for (;;) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          acc += decoder.decode(value, { stream: true });
+          const text = acc;
+          setMessages((m) => {
+            const next = [...m];
+            next[next.length - 1] = { role: "advisor", text };
+            return next;
+          });
+          scrollToEnd();
+        }
+
+        // A stream that produced only an inline error → drop the empty bubble.
+        if (!acc.trim() || acc.trimStart().startsWith("[error]")) {
+          setMessages((m) => m.slice(0, -1));
+          setError(acc.replace(/^\s*\[error\]\s*/, "") || "Something went wrong.");
+        }
+      } catch {
+        const res = await askAdvisor(q);
+        if (res.ok && res.text) {
+          setMessages((m) => [...m, { role: "advisor", text: res.text! }]);
+        } else {
+          setError(res.error ?? "Something went wrong.");
+        }
       }
-      requestAnimationFrame(() =>
-        endRef.current?.scrollIntoView({ behavior: "smooth" })
-      );
+      scrollToEnd();
     });
   };
 
@@ -84,7 +126,7 @@ export function AdvisorChat() {
             </div>
           </div>
         ))}
-        {pending && (
+        {pending && messages[messages.length - 1]?.role !== "advisor" && (
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Sparkles className="h-4 w-4 animate-pulse text-primary" />
             Thinking…

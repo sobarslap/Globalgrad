@@ -1,10 +1,11 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
 import { z } from "zod";
 import type { Role } from "@prisma/client";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { CATALOG_TAG } from "@/lib/data/catalog";
 import { notify } from "@/lib/notify";
 import {
   diffRequirements,
@@ -72,6 +73,7 @@ export async function setContentPublished(
     `${kind}:${id} → ${published ? "published" : "unpublished"}`
   );
 
+  updateTag(CATALOG_TAG);
   revalidatePath("/content");
   revalidatePath("/admin");
   return { ok: true };
@@ -152,6 +154,7 @@ export async function updateProgramRequirements(
   }
 
   await audit(actorId, "program.requirements.update", `${programId}: ${summary}`);
+  updateTag(CATALOG_TAG);
   revalidatePath("/content");
   revalidatePath("/applications");
   return { ok: true };

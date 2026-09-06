@@ -11,10 +11,13 @@ export function SiteBackground() {
   return (
     <div
       aria-hidden
-      className="pointer-events-none fixed inset-0 -z-10 overflow-hidden text-primary opacity-[0.10] dark:opacity-[0.14]"
+      className="pointer-events-none fixed inset-0 -z-10 overflow-hidden text-primary opacity-[0.09] dark:opacity-[0.12]"
     >
-      <FloatingPaths position={1} />
-      <FloatingPaths position={-1} />
+      {/* Static (non-animated) so the whole-site backdrop costs nothing at
+          runtime — the animated variant ran 72 infinite path tweens on every
+          page and starved the main thread. */}
+      <FloatingPaths position={1} count={16} animate={false} />
+      <FloatingPaths position={-1} count={16} animate={false} />
     </div>
   );
 }

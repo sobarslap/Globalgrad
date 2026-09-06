@@ -26,6 +26,7 @@ export function IntegrationsSection() {
       <div className="mx-auto max-w-6xl px-6">
         <ImageStreamHero
           images={IMAGES}
+          cards={7}
           className="h-[440px] w-full rounded-3xl border border-border/60 bg-card/40 sm:h-[520px]"
         >
           {/* readability scrim over the moving corridor */}

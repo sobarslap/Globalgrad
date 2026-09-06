@@ -3,8 +3,18 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 
-export function FloatingPaths({ position }: { position: number }) {
-    const paths = Array.from({ length: 36 }, (_, i) => ({
+export function FloatingPaths({
+    position,
+    count = 36,
+    animate = true,
+}: {
+    position: number;
+    /** Number of ribbons per set. Fewer = cheaper. @default 36 */
+    count?: number;
+    /** Animate each path (expensive) or render a static ribbon. @default true */
+    animate?: boolean;
+}) {
+    const paths = Array.from({ length: count }, (_, i) => ({
         id: i,
         d: `M-${380 - i * 5 * position} -${189 + i * 6}C-${
             380 - i * 5 * position
@@ -27,26 +37,37 @@ export function FloatingPaths({ position }: { position: number }) {
                 fill="none"
             >
                 <title>Background Paths</title>
-                {paths.map((path) => (
-                    <motion.path
-                        key={path.id}
-                        d={path.d}
-                        stroke="currentColor"
-                        strokeWidth={path.width}
-                        strokeOpacity={0.1 + path.id * 0.03}
-                        initial={{ pathLength: 0.3, opacity: 0.6 }}
-                        animate={{
-                            pathLength: 1,
-                            opacity: [0.3, 0.6, 0.3],
-                            pathOffset: [0, 1, 0],
-                        }}
-                        transition={{
-                            duration: path.duration,
-                            repeat: Number.POSITIVE_INFINITY,
-                            ease: "linear",
-                        }}
-                    />
-                ))}
+                {paths.map((path) =>
+                    animate ? (
+                        <motion.path
+                            key={path.id}
+                            d={path.d}
+                            stroke="currentColor"
+                            strokeWidth={path.width}
+                            strokeOpacity={0.1 + path.id * 0.03}
+                            initial={{ pathLength: 0.3, opacity: 0.6 }}
+                            animate={{
+                                pathLength: 1,
+                                opacity: [0.3, 0.6, 0.3],
+                                pathOffset: [0, 1, 0],
+                            }}
+                            transition={{
+                                duration: path.duration,
+                                repeat: Number.POSITIVE_INFINITY,
+                                ease: "linear",
+                            }}
+                        />
+                    ) : (
+                        <path
+                            key={path.id}
+                            d={path.d}
+                            stroke="currentColor"
+                            strokeWidth={path.width}
+                            strokeOpacity={0.1 + path.id * 0.03}
+                            fill="none"
+                        />
+                    ),
+                )}
             </svg>
         </div>
     );

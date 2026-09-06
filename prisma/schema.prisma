@@ -226,6 +226,27 @@ model University {
   @@index([name])
 }
 
+/**
+ * Public university catalog imported from the open Hipolabs dataset. Kept
+ * separate from `University` (the curated, program-bearing entities the
+ * matching engine and admin manage) so a bulk import of thousands of real
+ * institutions can be browsed without polluting matching, the map, or the
+ * admin content surface. Denormalized country name/code — this is a flat,
+ * read-mostly browse catalog.
+ */
+model CatalogUniversity {
+  id          String  @id @default(cuid())
+  name        String
+  country     String // display name, e.g. "Japan"
+  countryCode String // ISO alpha-2, e.g. "JP"
+  city        String?
+  website     String?
+
+  @@unique([name, countryCode])
+  @@index([countryCode])
+  @@index([country])
+}
+
 model Program {
   id             String      @id @default(cuid())
   universityId   String

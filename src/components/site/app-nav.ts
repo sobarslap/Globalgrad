@@ -32,6 +32,7 @@ export function buildAppNav(
   ];
   const explore: NavItem[] = [
     { href: "/countries", label: t("countries") },
+    { href: "/universities", label: t("universities") },
     { href: "/map", label: t("map") },
     { href: "/compare", label: t("compare") },
     { href: "/visa", label: t("visa") },

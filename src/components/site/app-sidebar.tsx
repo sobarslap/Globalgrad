@@ -41,6 +41,7 @@ const icons: Record<string, LucideIcon> = {
   "/calendar": Calendar,
   "/cost": Wallet,
   "/countries": Globe2,
+  "/universities": GraduationCap,
   "/map": Map,
   "/compare": GitCompareArrows,
   "/visa": Plane,

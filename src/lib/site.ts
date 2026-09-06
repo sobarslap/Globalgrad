@@ -43,6 +43,7 @@ export const PUBLIC_ROUTES: { path: string; priority: number; changeFrequency: "
   { path: "/about", priority: 0.7, changeFrequency: "monthly" },
   { path: "/contact", priority: 0.6, changeFrequency: "monthly" },
   { path: "/countries", priority: 0.8, changeFrequency: "weekly" },
+  { path: "/universities", priority: 0.7, changeFrequency: "weekly" },
   { path: "/visa", priority: 0.8, changeFrequency: "weekly" },
   { path: "/cost", priority: 0.7, changeFrequency: "monthly" },
   { path: "/insights", priority: 0.7, changeFrequency: "daily" },

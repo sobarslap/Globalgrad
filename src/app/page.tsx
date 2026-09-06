@@ -8,6 +8,7 @@ import { HowItWorks } from "@/components/blocks/how-it-works";
 import { IntegrationsSection } from "@/components/blocks/integrations-section";
 import { TestimonialsSection } from "@/components/blocks/testimonials-section";
 import { PricingSection } from "@/components/blocks/pricing-section";
+import { FaqSection } from "@/components/blocks/faq-section";
 import { CtaSection } from "@/components/blocks/cta-section";
 
 export default async function Home() {
@@ -31,6 +32,7 @@ export default async function Home() {
         <IntegrationsSection />
         <TestimonialsSection />
         <PricingSection />
+        <FaqSection />
         <CtaSection />
       </main>
       <Footer />

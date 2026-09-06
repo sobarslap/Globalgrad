@@ -6,60 +6,64 @@ import {
   type Testimonial,
 } from "@/components/ui/testimonials-columns-1";
 
+// Illustrative scenarios, not real customer reviews — this is a portfolio
+// project with a demo dataset, so inventing named students with stock photos and
+// specific admission claims would be dishonest. Each card shows the kind of
+// clarity a feature produces, labelled by the applicant profile it fits.
 const testimonials: Testimonial[] = [
   {
-    text: "The readiness score told me exactly what was holding me back. I fixed my IELTS, re-ran the match, and three reach schools became targets.",
-    image: "https://randomuser.me/api/portraits/women/1.jpg",
-    name: "Nusrat Jahan",
-    role: "MSc CS applicant, admitted to TU Munich",
+    text: "The readiness score pinpoints what's holding a profile back — raise an IELTS band, re-run the match, and reach schools can shift into the target bucket.",
+    initials: "RS",
+    name: "Readiness Scorecard",
+    role: "MSc Computer Science profile",
   },
   {
-    text: "Scholarship matching saved me weeks. It ignored everything I wasn't eligible for and surfaced two funds I'd never heard of.",
-    image: "https://randomuser.me/api/portraits/men/2.jpg",
-    name: "Rafiul Karim",
-    role: "Data Science, fully funded",
+    text: "Scholarship matching hides everything you're not eligible for and surfaces the funds you'd never have found on your own.",
+    initials: "SE",
+    name: "Scholarship Eligibility",
+    role: "Data Science profile",
   },
   {
-    text: "The funding-gap analyzer was brutally honest — and then it showed me cheaper countries where my plan actually worked.",
-    image: "https://randomuser.me/api/portraits/women/3.jpg",
-    name: "Sara Malik",
-    role: "MBA applicant",
+    text: "The funding-gap analyzer is honest about the numbers, then points to cheaper countries where the same plan actually balances.",
+    initials: "FG",
+    name: "Funding Gap Analyzer",
+    role: "MBA profile",
   },
   {
-    text: "Deadline alerts alone were worth it. I stopped living in spreadsheets and the tracker kept eight applications straight.",
-    image: "https://randomuser.me/api/portraits/men/4.jpg",
-    name: "Omar Rahman",
-    role: "MEng applicant",
+    text: "Deadline alerts and the application tracker replace the spreadsheet — eight applications, every status and due date in one board.",
+    initials: "AT",
+    name: "Application Tracker",
+    role: "MEng profile",
   },
   {
-    text: "The AI advisor explained why one program fit me better than a higher-ranked one. That reasoning changed my whole shortlist.",
-    image: "https://randomuser.me/api/portraits/women/5.jpg",
-    name: "Zainab Hussain",
-    role: "Public Policy applicant",
+    text: "The AI advisor explains why one program fits a profile better than a higher-ranked one — the reasoning, not just a ranking.",
+    initials: "AI",
+    name: "AI Advisor",
+    role: "Public Policy profile",
   },
   {
-    text: "Seeing anonymized students with my exact CGPA and IELTS — and where they got in — gave me the confidence to aim higher.",
-    image: "https://randomuser.me/api/portraits/men/7.jpg",
-    name: "Farhan Siddiqui",
-    role: "MSc Robotics applicant",
+    text: "The Similar Student Finder compares your CGPA and test scores against anonymized past applicants and where they were admitted.",
+    initials: "SS",
+    name: "Similar Student Finder",
+    role: "MSc Robotics profile",
   },
   {
-    text: "The reality check saved me from a city I couldn't afford. Hidden housing costs, right there before I applied.",
-    image: "https://randomuser.me/api/portraits/women/8.jpg",
-    name: "Aliza Khan",
-    role: "MSc Finance applicant",
+    text: "The reality check surfaces hidden housing and living costs for a city before you commit an application fee to it.",
+    initials: "RC",
+    name: "Reality Check",
+    role: "MSc Finance profile",
   },
   {
-    text: "Visa prep was the part I dreaded. The hub laid out documents, timelines and common mistakes step by step.",
-    image: "https://randomuser.me/api/portraits/men/9.jpg",
-    name: "Hasan Ali",
-    role: "PhD applicant",
+    text: "The visa hub lays out documents, financial-proof thresholds, timelines and common mistakes, country by country.",
+    initials: "VH",
+    name: "Visa Preparation Hub",
+    role: "PhD profile",
   },
   {
-    text: "It felt less like a search engine and more like a strategist. Everything connected — profile, money, deadlines, decision.",
-    image: "https://randomuser.me/api/portraits/women/6.jpg",
-    name: "Maya Chowdhury",
-    role: "MSc Biotech applicant",
+    text: "Everything connects — profile, money, deadlines, decision — so it reads less like a search engine and more like a strategy.",
+    initials: "DC",
+    name: "Decision Core",
+    role: "MSc Biotech profile",
   },
 ];
 
@@ -79,13 +83,14 @@ export function TestimonialsSection() {
           className="mx-auto flex max-w-[600px] flex-col items-center justify-center"
         >
           <div className="flex justify-center">
-            <div className="rounded-lg border px-4 py-1 text-sm">Student stories</div>
+            <div className="rounded-lg border px-4 py-1 text-sm">How it helps</div>
           </div>
           <h2 className="mt-5 text-center text-4xl font-bold tracking-tighter md:text-5xl">
-            Decisions students trusted
+            Decisions, made with data
           </h2>
           <p className="mt-5 text-center opacity-75">
-            Real outcomes from applicants who planned with data instead of guesswork.
+            Illustrative scenarios showing the kind of clarity each part of the
+            platform gives an applicant — not customer reviews.
           </p>
         </motion.div>
 

@@ -10,6 +10,7 @@ import {
 } from "@/lib/actions/auth";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { PasswordInput } from "@/components/ui/password-input";
 
 const initial: AuthActionState = {};
 
@@ -85,10 +86,9 @@ export function SignInForm({ googleEnabled }: { googleEnabled: boolean }) {
                 Forgot password?
               </Link>
             </div>
-            <Input
+            <PasswordInput
               id="password"
               name="password"
-              type="password"
               autoComplete="current-password"
               required
             />
@@ -146,16 +146,12 @@ export function SignInForm({ googleEnabled }: { googleEnabled: boolean }) {
 
       <p className="mt-6 px-4 text-center text-xs leading-relaxed text-muted-foreground">
         By continuing, you agree to our{" "}
-        <Link href="/#" className="underline hover:text-foreground">
+        <Link href="/terms" className="underline hover:text-foreground">
           Terms
-        </Link>
-        ,{" "}
-        <Link href="/#" className="underline hover:text-foreground">
-          Privacy Notice
         </Link>{" "}
         and{" "}
-        <Link href="/#" className="underline hover:text-foreground">
-          Cookie Notice
+        <Link href="/privacy" className="underline hover:text-foreground">
+          Privacy Policy
         </Link>
         .
       </p>

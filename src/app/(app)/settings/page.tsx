@@ -3,8 +3,11 @@ import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { DeleteAccount } from "@/components/account/delete-account";
 import { TwoFactorSettings } from "@/components/account/two-factor-settings";
+import { BillingSettings } from "@/components/account/billing-settings";
+import { getUserBilling } from "@/lib/data/billing";
+import { isStripeConfigured } from "@/lib/stripe";
 
-export const metadata = { title: "Settings — GlobalGrad" };
+export const metadata = { title: "Settings" };
 
 const roleLabel = (r: string) =>
   r
@@ -12,14 +15,23 @@ const roleLabel = (r: string) =>
     .replace(/_/g, " ")
     .replace(/\b\w/g, (c) => c.toUpperCase());
 
-export default async function SettingsPage() {
+export default async function SettingsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ checkout?: string }>;
+}) {
   const session = await auth();
   if (!session?.user) redirect("/sign-in");
 
-  const account = await db.user.findUnique({
-    where: { id: session.user.id },
-    select: { twoFactorEnabled: true },
-  });
+  const { checkout } = await searchParams;
+
+  const [account, billing] = await Promise.all([
+    db.user.findUnique({
+      where: { id: session.user.id },
+      select: { twoFactorEnabled: true },
+    }),
+    getUserBilling(session.user.id),
+  ]);
 
   return (
     <div className="min-h-screen">
@@ -43,6 +55,12 @@ export default async function SettingsPage() {
             </div>
           </dl>
         </section>
+
+        <BillingSettings
+          billing={billing}
+          configured={isStripeConfigured}
+          justSubscribed={checkout === "success"}
+        />
 
         <TwoFactorSettings enabled={account?.twoFactorEnabled ?? false} />
 

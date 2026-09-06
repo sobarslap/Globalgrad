@@ -73,12 +73,46 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
+  // Stripe billing (test mode). Set on first checkout; one Stripe customer per user.
+  stripeCustomerId String? @unique
+
   accounts       Account[]
   sessions       Session[]
   studentProfile StudentProfile?
   applications   Application[]
   auditLogs      AuditLog[]
   notifications  Notification[]
+  subscription   Subscription?
+}
+
+// ---------- Billing (Stripe) ----------
+enum PlanTier {
+  FREE
+  PRO
+  INSTITUTION
+}
+
+// Mirror of the user's current Stripe subscription. The webhook is the single
+// writer; the app reads this to know the active plan (never calls Stripe on the
+// render path). One row per user (upserted on subscription create/update).
+model Subscription {
+  id                   String    @id @default(cuid())
+  userId               String    @unique
+  stripeCustomerId     String
+  stripeSubscriptionId String    @unique
+  stripePriceId        String
+  plan                 PlanTier  @default(FREE)
+  // Raw Stripe status: active, trialing, past_due, canceled, incomplete, …
+  status               String
+  interval             String? // "month" | "year"
+  currentPeriodEnd     DateTime?
+  cancelAtPeriodEnd    Boolean   @default(false)
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([stripeCustomerId])
 }
 
 model Account {

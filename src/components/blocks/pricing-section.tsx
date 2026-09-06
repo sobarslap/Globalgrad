@@ -4,6 +4,8 @@ import { useState } from "react";
 import Link from "next/link";
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { startCheckout } from "@/lib/actions/billing";
+import type { PlanKey } from "@/lib/stripe";
 
 /**
  * PricingSection — rebuilt from Codehagen "Pricing" on 21st.dev: a monthly /
@@ -17,6 +19,8 @@ interface Tier {
   features: string[];
   cta: string;
   href: string;
+  /** When set, the CTA starts a Stripe Checkout for this plan; otherwise it's a link. */
+  planKey?: PlanKey;
   highlighted?: boolean;
 }
 
@@ -49,6 +53,7 @@ const tiers: Tier[] = [
     ],
     cta: "Start Pro",
     href: "/sign-up",
+    planKey: "pro",
     highlighted: true,
   },
   {
@@ -62,10 +67,19 @@ const tiers: Tier[] = [
       "Bulk document tracking",
       "Priority support",
     ],
-    cta: "Contact us",
+    cta: "Start Institution",
     href: "/sign-up",
+    planKey: "institution",
   },
 ];
+
+const btnClass = (highlighted?: boolean) =>
+  cn(
+    "mt-8 inline-flex h-11 w-full items-center justify-center rounded-full px-6 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+    highlighted
+      ? "bg-primary text-primary-foreground hover:bg-primary/90"
+      : "border border-border bg-background hover:bg-accent/10",
+  );
 
 export function PricingSection() {
   const [annual, setAnnual] = useState(true);
@@ -151,17 +165,23 @@ export function PricingSection() {
                     </li>
                   ))}
                 </ul>
-                <Link
-                  href={tier.href}
-                  className={cn(
-                    "mt-8 inline-flex h-11 items-center justify-center rounded-full px-6 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-                    tier.highlighted
-                      ? "bg-primary text-primary-foreground hover:bg-primary/90"
-                      : "border border-border bg-background hover:bg-accent/10"
-                  )}
-                >
-                  {tier.cta}
-                </Link>
+                {tier.planKey ? (
+                  <form action={startCheckout}>
+                    <input type="hidden" name="plan" value={tier.planKey} />
+                    <input
+                      type="hidden"
+                      name="interval"
+                      value={annual ? "year" : "month"}
+                    />
+                    <button type="submit" className={btnClass(tier.highlighted)}>
+                      {tier.cta}
+                    </button>
+                  </form>
+                ) : (
+                  <Link href={tier.href} className={btnClass(tier.highlighted)}>
+                    {tier.cta}
+                  </Link>
+                )}
               </div>
             );
           })}

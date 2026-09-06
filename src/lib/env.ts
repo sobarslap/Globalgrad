@@ -21,6 +21,15 @@ const schema = z.object({
   NEXT_PUBLIC_SENTRY_DSN: z.string().url().optional(),
   // Document uploads (A3). Required for uploads to work; the app runs without it.
   UPLOADTHING_TOKEN: z.string().optional(),
+  // Stripe billing (test mode). All optional: when unset, billing is disabled
+  // and the pricing CTAs fall back to sign-up. Set the secret + webhook secret
+  // and the four price IDs to enable checkout.
+  STRIPE_SECRET_KEY: z.string().startsWith("sk_").optional(),
+  STRIPE_WEBHOOK_SECRET: z.string().startsWith("whsec_").optional(),
+  STRIPE_PRICE_PRO_MONTHLY: z.string().startsWith("price_").optional(),
+  STRIPE_PRICE_PRO_YEARLY: z.string().startsWith("price_").optional(),
+  STRIPE_PRICE_INSTITUTION_MONTHLY: z.string().startsWith("price_").optional(),
+  STRIPE_PRICE_INSTITUTION_YEARLY: z.string().startsWith("price_").optional(),
   NODE_ENV: z
     .enum(["development", "test", "production"])
     .default("development"),

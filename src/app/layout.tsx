@@ -7,6 +7,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ScrollHelpers } from "@/components/site/scroll-helpers";
 import { CookieConsent } from "@/components/site/cookie-consent";
+import { SiteBackground } from "@/components/site/site-background";
 import { SITE, SITE_URL } from "@/lib/site";
 
 const geistSans = Geist({
@@ -134,6 +135,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
             disableTransitionOnChange
             nonce={nonce}
           >
+            <SiteBackground />
             {children}
             <ScrollHelpers />
             <CookieConsent />

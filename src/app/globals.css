@@ -9,58 +9,64 @@
   `hsl(var(--primary))` used by the imported components resolve correctly.
   Palette: violet primary + cyan accent (study-abroad "techy" vibe).
 */
+/*
+  Brand palette (colorhunt 3368A0 · 66A3BF · C8DFDB · F2EFE7):
+  deep ocean blue primary, soft steel-blue accent, pale mint surface,
+  warm cream background. Light-first; the dark block below is a derived
+  variant so both themes keep working.
+*/
 :root {
-  --background: 0 0% 100%;
-  --foreground: 240 10% 8%;
+  --background: 43 33% 94%;        /* F2EFE7 warm cream */
+  --foreground: 211 44% 14%;       /* deep slate-blue ink */
 
-  --card: 0 0% 100%;
-  --card-foreground: 240 10% 8%;
-  --popover: 0 0% 100%;
-  --popover-foreground: 240 10% 8%;
+  --card: 44 46% 97%;              /* lighter cream so cards lift off the page */
+  --card-foreground: 211 44% 14%;
+  --popover: 44 46% 97%;
+  --popover-foreground: 211 44% 14%;
 
-  --primary: 262 83% 58%;
-  --primary-foreground: 0 0% 100%;
-  --secondary: 240 5% 96%;
-  --secondary-foreground: 240 6% 10%;
-  --muted: 240 5% 96%;
-  --muted-foreground: 240 4% 46%;
-  --accent: 199 89% 48%;
-  --accent-foreground: 0 0% 100%;
+  --primary: 211 52% 41%;          /* 3368A0 */
+  --primary-foreground: 43 45% 97%;
+  --secondary: 169 27% 83%;        /* C8DFDB pale mint */
+  --secondary-foreground: 211 44% 18%;
+  --muted: 43 24% 88%;             /* muted cream */
+  --muted-foreground: 211 16% 38%;
+  --accent: 199 41% 57%;           /* 66A3BF steel blue */
+  --accent-foreground: 211 44% 12%;
 
-  --destructive: 0 84% 60%;
+  --destructive: 0 72% 50%;
   --destructive-foreground: 0 0% 100%;
 
-  --border: 240 6% 90%;
-  --input: 240 6% 90%;
-  --ring: 262 83% 58%;
+  --border: 200 22% 80%;
+  --input: 200 22% 80%;
+  --ring: 211 52% 41%;
 
   --radius: 0.75rem;
 }
 
 .dark {
-  --background: 240 10% 4%;
-  --foreground: 0 0% 98%;
+  --background: 211 45% 7%;        /* deep ocean night */
+  --foreground: 43 33% 92%;        /* cream ink */
 
-  --card: 240 10% 6%;
-  --card-foreground: 0 0% 98%;
-  --popover: 240 10% 6%;
-  --popover-foreground: 0 0% 98%;
+  --card: 211 40% 10%;
+  --card-foreground: 43 33% 92%;
+  --popover: 211 40% 10%;
+  --popover-foreground: 43 33% 92%;
 
-  --primary: 263 90% 66%;
-  --primary-foreground: 0 0% 100%;
-  --secondary: 240 4% 14%;
-  --secondary-foreground: 0 0% 98%;
-  --muted: 240 4% 14%;
-  --muted-foreground: 240 5% 65%;
-  --accent: 199 89% 55%;
-  --accent-foreground: 240 10% 4%;
+  --primary: 199 55% 60%;          /* brightened steel-blue for dark bg */
+  --primary-foreground: 211 60% 9%;
+  --secondary: 211 30% 16%;
+  --secondary-foreground: 43 33% 92%;
+  --muted: 211 30% 16%;
+  --muted-foreground: 200 20% 64%;
+  --accent: 199 45% 52%;
+  --accent-foreground: 43 33% 95%;
 
-  --destructive: 0 72% 51%;
+  --destructive: 0 62% 50%;
   --destructive-foreground: 0 0% 98%;
 
-  --border: 240 4% 16%;
-  --input: 240 4% 18%;
-  --ring: 263 90% 66%;
+  --border: 211 25% 20%;
+  --input: 211 25% 22%;
+  --ring: 199 55% 60%;
 }
 
 @theme inline {

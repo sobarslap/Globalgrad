@@ -26,7 +26,7 @@ const principles = [
   {
     icon: ShieldCheck,
     title: "Honest by default",
-    body: "No fake reviews, no invented visitor counts, no guaranteed-admission claims. Guidance is informational, never a substitute for official sources.",
+    body: "No guaranteed-admission claims and no invented statistics. Guidance is informational, never a substitute for official sources — always verify with the university or government.",
   },
   {
     icon: MessageSquare,

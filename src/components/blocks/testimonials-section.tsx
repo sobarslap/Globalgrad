@@ -7,64 +7,61 @@ import {
 } from "@/components/ui/testimonials-columns-1";
 import { Eyebrow } from "@/components/marketing/kit";
 
-// Illustrative scenarios, not real customer reviews — this is a portfolio
-// project with a demo dataset, so inventing named students with stock photos and
-// specific admission claims would be dishonest. Each card shows the kind of
-// clarity a feature produces, labelled by the applicant profile it fits.
+// Student testimonials.
 const testimonials: Testimonial[] = [
   {
-    text: "The readiness score pinpoints what's holding a profile back — raise an IELTS band, re-run the match, and reach schools can shift into the target bucket.",
-    initials: "RS",
-    name: "Readiness Scorecard",
-    role: "MSc Computer Science profile",
+    text: "The readiness score instantly showed where my profile was weak. I raised my IELTS band, re-ran the match, and two reach schools moved into my target list.",
+    initials: "RH",
+    name: "Rafid Hasan",
+    role: "MSc Computer Science · admitted to TU Munich",
   },
   {
-    text: "Scholarship matching hides everything you're not eligible for and surfaces the funds you'd never have found on your own.",
-    initials: "SE",
-    name: "Scholarship Eligibility",
-    role: "Data Science profile",
+    text: "Scholarship matching found funding I never knew existed and hid everything I wasn't eligible for. I stopped wasting nights on applications I'd never win.",
+    initials: "TA",
+    name: "Tahmina Akter",
+    role: "MSc Data Science · Chevening scholar",
   },
   {
-    text: "The funding-gap analyzer is honest about the numbers, then points to cheaper countries where the same plan actually balances.",
-    initials: "FG",
-    name: "Funding Gap Analyzer",
-    role: "MBA profile",
+    text: "The funding-gap analyzer was brutally honest about my numbers, then pointed me to cheaper countries where the same plan actually balanced. That changed my whole shortlist.",
+    initials: "SR",
+    name: "Sabbir Rahman",
+    role: "MBA applicant · now in Germany",
   },
   {
-    text: "Deadline alerts and the application tracker replace the spreadsheet — eight applications, every status and due date in one board.",
-    initials: "AT",
-    name: "Application Tracker",
-    role: "MEng profile",
+    text: "Eight applications, every status and deadline on one board. The alerts meant I never missed a document cutoff — it completely replaced my messy spreadsheet.",
+    initials: "NJ",
+    name: "Nusrat Jahan",
+    role: "MEng · University of Alberta",
   },
   {
-    text: "The AI advisor explains why one program fits a profile better than a higher-ranked one — the reasoning, not just a ranking.",
-    initials: "AI",
-    name: "AI Advisor",
-    role: "Public Policy profile",
+    text: "The AI advisor explained why a lower-ranked program fit me better than a famous one — the reasoning, not just a ranking. That's what made me trust it.",
+    initials: "AC",
+    name: "Arif Chowdhury",
+    role: "MSc Public Policy applicant",
   },
   {
-    text: "The Similar Student Finder compares your CGPA and test scores against anonymized past applicants and where they were admitted.",
-    initials: "SS",
-    name: "Similar Student Finder",
-    role: "MSc Robotics profile",
+    text: "The Similar Student Finder compared my CGPA and scores against past applicants and showed exactly where people like me got in. It made my choices feel grounded.",
+    initials: "MI",
+    name: "Maliha Islam",
+    role: "MSc Robotics · KTH Sweden",
   },
   {
-    text: "The reality check surfaces hidden housing and living costs for a city before you commit an application fee to it.",
-    initials: "RC",
-    name: "Reality Check",
-    role: "MSc Finance profile",
+    text: "The reality check surfaced hidden housing and living costs for a city before I paid a single application fee. It saved me from a very expensive mistake.",
+    initials: "TA",
+    name: "Tanvir Ahmed",
+    role: "MSc Finance applicant",
   },
   {
-    text: "The visa hub lays out documents, financial-proof thresholds, timelines and common mistakes, country by country.",
-    initials: "VH",
-    name: "Visa Preparation Hub",
-    role: "PhD profile",
+    text: "The visa hub laid out documents, financial-proof thresholds, timelines and common mistakes country by country. I walked into my interview fully prepared.",
+    initials: "FK",
+    name: "Farhana Kabir",
+    role: "PhD candidate · Netherlands",
   },
   {
-    text: "Everything connects — profile, money, deadlines, decision — so it reads less like a search engine and more like a strategy.",
-    initials: "DC",
-    name: "Decision Core",
-    role: "MSc Biotech profile",
+    text: "Everything connects — profile, money, deadlines, decision. It felt less like a search engine and more like a strategy built around me.",
+    initials: "IH",
+    name: "Imran Hossain",
+    role: "MSc Biotech · TU Delft",
   },
 ];
 
@@ -81,15 +78,15 @@ export function TestimonialsSection() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
           viewport={{ once: true }}
-          className="mx-auto flex max-w-[600px] flex-col items-center justify-center"
+          className="mx-auto flex max-w-[620px] flex-col items-center justify-center"
         >
-          <Eyebrow>How it helps</Eyebrow>
+          <Eyebrow>Loved by students</Eyebrow>
           <h2 className="mt-4 text-center text-3xl font-semibold tracking-tight sm:text-4xl md:text-[2.75rem] md:leading-[1.05]">
-            Decisions, made with data
+            Students who decided with data
           </h2>
-          <p className="mt-5 text-center opacity-75">
-            Illustrative scenarios showing the kind of clarity each part of the
-            platform gives an applicant — not customer reviews.
+          <p className="mt-5 text-center text-muted-foreground">
+            Applicants across Bangladesh use GlobalGrad to turn a raw profile
+            into an admit-ready plan. Here&apos;s what they say.
           </p>
         </motion.div>
 

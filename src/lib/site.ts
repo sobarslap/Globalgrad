@@ -24,7 +24,7 @@ export const SITE = {
     "Personalized study-abroad decisions: readiness scoring, smart university matching, scholarship eligibility, funding analysis, visa prep, and an AI advisor grounded in real data.",
   url: SITE_URL,
   /** Reachable inbox shown publicly (contact, legal pages, footer). */
-  email: "hello@globalgrad.app",
+  email: "zubairul.mahi@gmail.com",
   locale: "en_US",
   social: {
     github: "https://github.com/sobarslap/Globalgrad",

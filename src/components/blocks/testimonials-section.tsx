@@ -5,6 +5,7 @@ import {
   TestimonialsColumn,
   type Testimonial,
 } from "@/components/ui/testimonials-columns-1";
+import { Eyebrow } from "@/components/marketing/kit";
 
 // Illustrative scenarios, not real customer reviews — this is a portfolio
 // project with a demo dataset, so inventing named students with stock photos and
@@ -82,10 +83,8 @@ export function TestimonialsSection() {
           viewport={{ once: true }}
           className="mx-auto flex max-w-[600px] flex-col items-center justify-center"
         >
-          <div className="flex justify-center">
-            <div className="rounded-lg border px-4 py-1 text-sm">How it helps</div>
-          </div>
-          <h2 className="mt-5 text-center text-4xl font-bold tracking-tighter md:text-5xl">
+          <Eyebrow>How it helps</Eyebrow>
+          <h2 className="mt-4 text-center text-3xl font-semibold tracking-tight sm:text-4xl md:text-[2.75rem] md:leading-[1.05]">
             Decisions, made with data
           </h2>
           <p className="mt-5 text-center opacity-75">

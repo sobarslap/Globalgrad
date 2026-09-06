@@ -19,6 +19,7 @@ export async function Navbar() {
     { href: "/#how", label: t("howItWorks") },
     { href: "/countries", label: t("countries") },
     { href: "/#testimonials", label: t("students") },
+    { href: "/contact", label: t("contact") },
   ];
 
   return (

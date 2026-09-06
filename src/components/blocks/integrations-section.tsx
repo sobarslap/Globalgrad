@@ -8,16 +8,15 @@ import {
   GraduationCap,
 } from "lucide-react";
 import { OrbitingCircles } from "@/components/ui/orbiting-circles";
+import { Eyebrow } from "@/components/marketing/kit";
 
 export function IntegrationsSection() {
   return (
     <section id="integrations" className="relative py-24 md:py-32">
       <div className="mx-auto grid max-w-6xl items-center gap-12 px-6 lg:grid-cols-2">
         <div>
-          <span className="text-sm font-medium uppercase tracking-widest text-primary">
-            Always-fresh data
-          </span>
-          <h2 className="mt-4 text-4xl font-semibold tracking-tight md:text-5xl">
+          <Eyebrow>Always-fresh data</Eyebrow>
+          <h2 className="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl md:text-[2.75rem] md:leading-[1.05]">
             Wired into the sources that matter
           </h2>
           <p className="mt-4 text-lg text-muted-foreground">

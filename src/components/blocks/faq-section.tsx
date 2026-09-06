@@ -1,5 +1,6 @@
 import { headers } from "next/headers";
 import { ChevronDown } from "lucide-react";
+import { Eyebrow } from "@/components/marketing/kit";
 
 /**
  * FAQ block. Uses native <details>/<summary> for expand/collapse — accessible
@@ -52,8 +53,9 @@ export async function FaqSection() {
         nonce={nonce}
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <div className="text-center">
-        <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
+      <div className="flex flex-col items-center text-center">
+        <Eyebrow>FAQ</Eyebrow>
+        <h2 className="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">
           Frequently asked questions
         </h2>
         <p className="mt-4 text-muted-foreground">

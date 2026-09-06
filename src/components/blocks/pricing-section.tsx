@@ -6,6 +6,7 @@ import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { startCheckout } from "@/lib/actions/billing";
 import type { PlanKey } from "@/lib/stripe";
+import { Eyebrow } from "@/components/marketing/kit";
 
 /**
  * PricingSection — rebuilt from Codehagen "Pricing" on 21st.dev: a monthly /
@@ -87,11 +88,9 @@ export function PricingSection() {
   return (
     <section id="pricing" className="relative py-24 md:py-32">
       <div className="mx-auto max-w-6xl px-6">
-        <div className="mx-auto max-w-2xl text-center">
-          <span className="text-sm font-medium uppercase tracking-widest text-primary">
-            Pricing
-          </span>
-          <h2 className="mt-4 text-balance text-4xl font-semibold tracking-tight md:text-5xl">
+        <div className="mx-auto flex max-w-2xl flex-col items-center text-center">
+          <Eyebrow>Pricing</Eyebrow>
+          <h2 className="mt-4 text-balance text-3xl font-semibold tracking-tight sm:text-4xl md:text-[2.75rem] md:leading-[1.05]">
             Start free. Upgrade when it pays off.
           </h2>
           <p className="mt-4 text-balance text-lg text-muted-foreground">

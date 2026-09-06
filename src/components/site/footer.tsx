@@ -55,6 +55,7 @@ const columns: { title: string; links: { label: string; href: string }[] }[] = [
     title: "Company",
     links: [
       { label: "About", href: "/about" },
+      { label: "Contact", href: "/contact" },
       { label: "Sign in", href: "/sign-in" },
       { label: "Privacy Policy", href: "/privacy" },
       { label: "Terms of Service", href: "/terms" },

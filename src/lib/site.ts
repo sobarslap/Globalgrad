@@ -41,6 +41,7 @@ export const SITE = {
 export const PUBLIC_ROUTES: { path: string; priority: number; changeFrequency: "daily" | "weekly" | "monthly" }[] = [
   { path: "/", priority: 1.0, changeFrequency: "weekly" },
   { path: "/about", priority: 0.7, changeFrequency: "monthly" },
+  { path: "/contact", priority: 0.6, changeFrequency: "monthly" },
   { path: "/countries", priority: 0.8, changeFrequency: "weekly" },
   { path: "/visa", priority: 0.8, changeFrequency: "weekly" },
   { path: "/cost", priority: 0.7, changeFrequency: "monthly" },

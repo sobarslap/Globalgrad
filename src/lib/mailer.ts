@@ -13,6 +13,8 @@ export async function sendEmail(params: {
   to: string;
   subject: string;
   html: string;
+  /** Optional Reply-To — e.g. route replies to a contact-form sender. */
+  replyTo?: string;
 }): Promise<SendResult> {
   const key = process.env.RESEND_API_KEY;
   if (!key) return { ok: false, skipped: true };
@@ -30,6 +32,7 @@ export async function sendEmail(params: {
         to: params.to,
         subject: params.subject,
         html: params.html,
+        ...(params.replyTo ? { reply_to: params.replyTo } : {}),
       }),
       cache: "no-store",
     });

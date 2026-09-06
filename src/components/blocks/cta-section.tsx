@@ -1,13 +1,15 @@
 "use client";
 
+import Link from "next/link";
 import { motion } from "framer-motion";
-import { Check, Gauge, Target, Coins } from "lucide-react";
+import { Check } from "lucide-react";
 import { ShinyButton } from "@/components/ui/shiny-button";
+import { Marked, MatchReport } from "@/components/marketing/kit";
 
 /**
- * CtaSection — rebuilt from designali "Book A Demo 1" on 21st.dev: a display
- * heading, a benefits checklist, a primary CTA, and a framed product mockup.
- * Replaces the old clipped lamp CTA. Themeable.
+ * Closing CTA — a benefits checklist and dual call to action beside the same
+ * signature Match report used in the hero, tying the page's open and close
+ * together. Themeable.
  */
 const benefits = [
   "See your readiness score in minutes",
@@ -28,11 +30,8 @@ export function CtaSection() {
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <h2 className="text-balance text-4xl font-semibold tracking-tight md:text-5xl">
-            Plan your study abroad{" "}
-            <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-              the right way
-            </span>
+          <h2 className="text-balance text-3xl font-semibold tracking-tight sm:text-4xl md:text-[2.75rem] md:leading-[1.05]">
+            Plan your study abroad <Marked>the right way</Marked>
           </h2>
           <p className="mt-4 max-w-md text-lg text-muted-foreground">
             Free to start. Build your profile and see your first matches in
@@ -50,8 +49,14 @@ export function CtaSection() {
             ))}
           </ul>
 
-          <div className="mt-10">
+          <div className="mt-10 flex flex-col items-start gap-3 sm:flex-row sm:items-center">
             <ShinyButton href="/sign-up">Create your profile</ShinyButton>
+            <Link
+              href="/contact"
+              className="text-sm font-medium text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
+            >
+              or talk to the maker →
+            </Link>
           </div>
         </motion.div>
 
@@ -62,32 +67,8 @@ export function CtaSection() {
           transition={{ duration: 0.6, delay: 0.1 }}
           className="relative"
         >
-          <div className="absolute -inset-4 rounded-3xl bg-[radial-gradient(ellipse_at_center,hsl(var(--primary)/0.25),transparent_70%)] blur-2xl" />
-          <div className="relative rounded-2xl border border-border/60 bg-card/60 p-5 shadow-2xl backdrop-blur">
-            <div className="mb-4 flex items-center gap-1.5">
-              <span className="h-2.5 w-2.5 rounded-full bg-destructive/70" />
-              <span className="h-2.5 w-2.5 rounded-full bg-amber-400/70" />
-              <span className="h-2.5 w-2.5 rounded-full bg-emerald-400/70" />
-            </div>
-            <div className="space-y-3">
-              {[
-                { icon: Gauge, label: "Readiness score", value: "82 / 100", tint: "text-emerald-400" },
-                { icon: Target, label: "Target universities", value: "14 matched", tint: "text-primary" },
-                { icon: Coins, label: "Scholarships", value: "5 eligible", tint: "text-amber-400" },
-              ].map(({ icon: Icon, label, value, tint }) => (
-                <div
-                  key={label}
-                  className="flex items-center justify-between rounded-xl border border-border/50 bg-background/40 px-4 py-3"
-                >
-                  <span className="flex items-center gap-3 text-sm">
-                    <Icon className={`h-4 w-4 ${tint}`} />
-                    {label}
-                  </span>
-                  <span className="text-sm font-semibold">{value}</span>
-                </div>
-              ))}
-            </div>
-          </div>
+          <div className="pointer-events-none absolute -inset-4 rounded-3xl bg-[radial-gradient(ellipse_at_center,hsl(var(--primary)/0.25),transparent_70%)] blur-2xl" />
+          <MatchReport className="relative" />
         </motion.div>
       </div>
     </section>

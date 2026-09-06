@@ -1,7 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { Navbar } from "@/components/site/navbar";
 import { Footer } from "@/components/site/footer";
-import { HeroSection } from "@/components/ui/hero-section-dark";
+import { Hero } from "@/components/blocks/hero";
 import { Features8 } from "@/components/blocks/features-8";
 import { FeaturesSection } from "@/components/blocks/features-section";
 import { HowItWorks } from "@/components/blocks/how-it-works";
@@ -17,14 +17,12 @@ export default async function Home() {
     <>
       <Navbar />
       <main id="main-content" className="flex-1">
-        <HeroSection
-          title={t("eyebrow")}
-          subtitle={{ regular: t("title") + " ", gradient: t("highlight") }}
-          description={t("subtitle")}
+        <Hero
+          eyebrow={t("eyebrow")}
+          title={t("title")}
+          highlight={t("highlight")}
+          subtitle={t("subtitle")}
           ctaText={t("cta")}
-          ctaHref="/sign-up"
-          secondaryCtaText="See how it works"
-          secondaryCtaHref="/#how"
         />
         <Features8 />
         <FeaturesSection />

@@ -1,5 +1,3 @@
-"use client";
-
 import {
   Gauge,
   Target,
@@ -13,7 +11,7 @@ import {
   Plane,
 } from "lucide-react";
 import Link from "next/link";
-import { GradientCard } from "@/components/ui/gradient-card";
+import { SectionHeading } from "@/components/marketing/kit";
 
 const flagship = [
   {
@@ -53,38 +51,39 @@ const secondary = [
 
 export function FeaturesSection() {
   return (
-    <section id="features" className="relative py-24 md:py-32">
+    <section id="features" className="relative border-y border-border/40 bg-card/20 py-24 md:py-32">
       <div className="mx-auto max-w-6xl px-6">
-        <div className="mx-auto max-w-2xl text-center">
-          <span className="text-sm font-medium uppercase tracking-widest text-primary">
-            One platform, every decision
-          </span>
-          <h2 className="mt-4 text-balance text-4xl font-semibold tracking-tight md:text-5xl">
-            From a raw profile to an admit-ready strategy
-          </h2>
-          <p className="mt-4 text-balance text-lg text-muted-foreground">
-            Rule-based engines do the heavy lifting. AI explains the results.
-            You make confident, informed choices.
-          </p>
-        </div>
+        <SectionHeading
+          eyebrow="One platform, every decision"
+          title="From a raw profile to an admit-ready strategy"
+          lede="Rule-based engines do the heavy lifting. AI explains the results. You make confident, informed choices."
+        />
 
-        <div className="mt-16 flex flex-wrap items-stretch justify-center gap-8">
-          {flagship.map((f) => (
-            <GradientCard
-              key={f.title}
-              icon={f.icon}
-              title={f.title}
-              description={f.description}
-            />
+        <div className="mt-16 grid gap-4 sm:grid-cols-2">
+          {flagship.map(({ icon: Icon, title, description }) => (
+            <div
+              key={title}
+              className="group relative rounded-2xl border border-border/60 bg-background/60 p-6 transition-colors hover:border-primary/40"
+            >
+              <div className="flex items-center gap-3">
+                <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-primary/15 to-accent/15 text-primary ring-1 ring-inset ring-primary/20">
+                  <Icon className="h-5 w-5" />
+                </span>
+                <h3 className="text-base font-semibold">{title}</h3>
+              </div>
+              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                {description}
+              </p>
+            </div>
           ))}
         </div>
 
-        <div className="mt-16 grid grid-cols-2 gap-4 sm:grid-cols-3">
+        <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3">
           {secondary.map(({ icon: Icon, label, href }) => (
             <Link
               key={label}
               href={href}
-              className="group flex items-center gap-3 rounded-xl border border-border/60 bg-card/40 p-4 transition-colors hover:border-primary/40 hover:bg-card/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className="group flex items-center gap-3 rounded-xl border border-border/60 bg-background/60 p-4 transition-colors hover:border-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
               <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary transition-transform group-hover:scale-110">
                 <Icon className="h-5 w-5" />

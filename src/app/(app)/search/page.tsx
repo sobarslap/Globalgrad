@@ -4,7 +4,6 @@ import type { DegreeLevel } from "@prisma/client";
 import { auth } from "@/lib/auth";
 import { searchCatalog } from "@/lib/data/search";
 import { getCountries } from "@/lib/data/catalog";
-import { AppHeader } from "@/components/site/app-header";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { TrackButton } from "@/components/applications/track-button";
@@ -39,7 +38,6 @@ export default async function SearchPage({
 
   return (
     <div className="min-h-screen">
-      <AppHeader />
       <main id="main-content" className="mx-auto max-w-5xl space-y-8 px-6 py-10">
         <div>
           <h1 className="flex items-center gap-2 text-3xl font-semibold tracking-tight">

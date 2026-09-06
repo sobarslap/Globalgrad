@@ -5,7 +5,6 @@ import { getProgramOptions, getCompareData } from "@/lib/data/compare";
 import { getMyProfile } from "@/lib/actions/profile";
 import { scoreReadiness } from "@/lib/engines/readiness";
 import { REALITY_CHECKS } from "@/lib/data/reality";
-import { AppHeader } from "@/components/site/app-header";
 import { Button } from "@/components/ui/button";
 import { ProgramCard } from "@/components/ui/program-card";
 
@@ -97,7 +96,6 @@ export default async function ComparePage({
 
   return (
     <div className="min-h-screen">
-      <AppHeader />
       <main id="main-content" className="mx-auto max-w-6xl space-y-8 px-6 py-10">
         <div>
           <h1 className="flex items-center gap-2 text-3xl font-semibold tracking-tight">

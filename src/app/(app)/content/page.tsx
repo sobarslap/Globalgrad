@@ -2,7 +2,6 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { getContentOverview } from "@/lib/data/admin";
-import { AppHeader } from "@/components/site/app-header";
 import { ContentReview } from "@/components/admin/content-review";
 import { Button } from "@/components/ui/button";
 
@@ -18,7 +17,6 @@ export default async function ContentPage() {
 
   return (
     <div className="min-h-screen">
-      <AppHeader />
       <main id="main-content" className="mx-auto max-w-6xl space-y-8 px-6 py-10">
         <div className="flex items-start justify-between gap-4">
           <div>

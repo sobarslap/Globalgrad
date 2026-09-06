@@ -3,7 +3,6 @@ import { CalendarDays, Flag, CircleDot } from "lucide-react";
 import { auth } from "@/lib/auth";
 import { getMyCalendarItems } from "@/lib/data/calendar";
 import { groupByMonth, daysUntil } from "@/lib/engines/calendar";
-import { AppHeader } from "@/components/site/app-header";
 
 export const metadata = { title: "Calendar — GlobalGrad" };
 
@@ -24,7 +23,6 @@ export default async function CalendarPage() {
 
   return (
     <div className="min-h-screen">
-      <AppHeader />
       <main id="main-content" className="mx-auto max-w-3xl space-y-8 px-6 py-10">
         <div>
           <h1 className="text-3xl font-semibold tracking-tight">Calendar</h1>

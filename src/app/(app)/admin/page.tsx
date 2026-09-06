@@ -6,7 +6,6 @@ import {
   getAllUsers,
   getRecentAuditLogs,
 } from "@/lib/data/admin";
-import { AppHeader } from "@/components/site/app-header";
 import { UserTable } from "@/components/admin/user-table";
 import { Button } from "@/components/ui/button";
 
@@ -36,7 +35,6 @@ export default async function AdminPage() {
 
   return (
     <div className="min-h-screen">
-      <AppHeader />
       <main id="main-content" className="mx-auto max-w-6xl space-y-10 px-6 py-10">
         <div className="flex items-center justify-between">
           <div>

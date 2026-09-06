@@ -2,7 +2,6 @@ import { redirect } from "next/navigation";
 import { Home, Briefcase, Languages, Smile, AlertTriangle, Coins } from "lucide-react";
 import { auth } from "@/lib/auth";
 import { REALITY_CHECKS, type RealityCheck } from "@/lib/data/reality";
-import { AppHeader } from "@/components/site/app-header";
 
 export const metadata = { title: "University reality check — GlobalGrad" };
 
@@ -90,7 +89,6 @@ export default async function RealityPage() {
 
   return (
     <div className="min-h-screen">
-      <AppHeader />
       <main id="main-content" className="mx-auto max-w-5xl space-y-8 px-6 py-10">
         <div>
           <h1 className="text-3xl font-semibold tracking-tight">

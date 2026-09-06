@@ -1,7 +1,6 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { VISA_GUIDES } from "@/lib/data/visa";
-import { AppHeader } from "@/components/site/app-header";
 import { VisaHub } from "@/components/visa/visa-hub";
 
 export const metadata = { title: "Visa preparation — GlobalGrad" };
@@ -12,7 +11,6 @@ export default async function VisaPage() {
 
   return (
     <div className="min-h-screen">
-      <AppHeader />
       <main id="main-content" className="mx-auto max-w-6xl space-y-8 px-6 py-10">
         <div>
           <h1 className="text-3xl font-semibold tracking-tight">

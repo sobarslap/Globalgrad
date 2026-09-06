@@ -5,7 +5,6 @@ import { auth } from "@/lib/auth";
 import { getMyProfile } from "@/lib/actions/profile";
 import { getAnonymizedApplicants } from "@/lib/data/applicants";
 import { findSimilar } from "@/lib/engines/similar";
-import { AppHeader } from "@/components/site/app-header";
 
 export const metadata = { title: "Similar students — GlobalGrad" };
 
@@ -28,7 +27,6 @@ export default async function SimilarPage() {
   if (!profile) {
     return (
       <div className="min-h-screen">
-        <AppHeader />
         <main id="main-content" className="mx-auto max-w-3xl px-6 py-10">
           <h1 className="text-3xl font-semibold tracking-tight">
             Similar students
@@ -52,7 +50,6 @@ export default async function SimilarPage() {
 
   return (
     <div className="min-h-screen">
-      <AppHeader />
       <main id="main-content" className="mx-auto max-w-5xl space-y-8 px-6 py-10">
         <div>
           <h1 className="flex items-center gap-2 text-3xl font-semibold tracking-tight">

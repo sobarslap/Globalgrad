@@ -6,7 +6,6 @@ import {
   getMyRequirementChanges,
 } from "@/lib/data/applications";
 import { getMyProfile } from "@/lib/actions/profile";
-import { AppHeader } from "@/components/site/app-header";
 import { ApplicationsBoard } from "@/components/applications/applications-board";
 
 export const metadata = { title: "Applications — GlobalGrad" };
@@ -23,7 +22,6 @@ export default async function ApplicationsPage() {
 
   return (
     <div className="min-h-screen">
-      <AppHeader />
       <main id="main-content" className="mx-auto max-w-6xl space-y-8 px-6 py-10">
         <div>
           <h1 className="text-3xl font-semibold tracking-tight">

@@ -5,7 +5,6 @@ import {
   getPublishedPrograms,
   getPublishedScholarships,
 } from "@/lib/data/catalog";
-import { AppHeader } from "@/components/site/app-header";
 import { DashboardClient } from "@/components/dashboard/dashboard-client";
 
 export default async function DashboardPage() {
@@ -20,7 +19,6 @@ export default async function DashboardPage() {
 
   return (
     <div className="min-h-screen">
-      <AppHeader />
       <main id="main-content" className="mx-auto max-w-6xl space-y-10 px-6 py-10">
         <div>
           <h1 className="text-3xl font-semibold tracking-tight">

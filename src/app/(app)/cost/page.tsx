@@ -8,7 +8,6 @@ import {
 } from "@/lib/data/catalog";
 import { matchScholarships } from "@/lib/engines/scholarship";
 import { getFxRates } from "@/lib/fx";
-import { AppHeader } from "@/components/site/app-header";
 import { CostCalculator } from "@/components/cost/cost-calculator";
 
 export const metadata = { title: "Cost & funding — GlobalGrad" };
@@ -42,7 +41,6 @@ export default async function CostPage() {
 
   return (
     <div className="min-h-screen">
-      <AppHeader />
       <main id="main-content" className="mx-auto max-w-6xl space-y-8 px-6 py-10">
         <div>
           <h1 className="text-3xl font-semibold tracking-tight">

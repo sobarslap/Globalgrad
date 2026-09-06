@@ -1,7 +1,6 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { getMapUniversities } from "@/lib/data/map";
-import { AppHeader } from "@/components/site/app-header";
 import { UniversityMap } from "@/components/map/university-map";
 
 export const metadata = { title: "University map — GlobalGrad" };
@@ -14,7 +13,6 @@ export default async function MapPage() {
 
   return (
     <div className="min-h-screen">
-      <AppHeader />
       <main id="main-content" className="mx-auto max-w-5xl space-y-6 px-6 py-10">
         <div>
           <h1 className="text-3xl font-semibold tracking-tight">University map</h1>

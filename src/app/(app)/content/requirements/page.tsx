@@ -2,7 +2,6 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { getProgramsForRequirements } from "@/lib/data/admin";
-import { AppHeader } from "@/components/site/app-header";
 import { RequirementEditor } from "@/components/admin/requirement-editor";
 
 export const metadata = { title: "Program requirements — GlobalGrad" };
@@ -17,7 +16,6 @@ export default async function RequirementsPage() {
 
   return (
     <div className="min-h-screen">
-      <AppHeader />
       <main id="main-content" className="mx-auto max-w-6xl space-y-8 px-6 py-10">
         <div>
           <Link

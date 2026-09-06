@@ -1,7 +1,6 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { AppHeader } from "@/components/site/app-header";
 import { DeleteAccount } from "@/components/account/delete-account";
 import { TwoFactorSettings } from "@/components/account/two-factor-settings";
 
@@ -24,7 +23,6 @@ export default async function SettingsPage() {
 
   return (
     <div className="min-h-screen">
-      <AppHeader />
       <main id="main-content" className="mx-auto max-w-2xl space-y-8 px-6 py-10">
         <h1 className="text-3xl font-semibold tracking-tight">Settings</h1>
 

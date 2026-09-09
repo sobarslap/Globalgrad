@@ -150,7 +150,7 @@ export function MatchReport({ className }: { className?: string }) {
           <span className="h-2.5 w-2.5 rounded-full bg-emerald-400/70" />
         </div>
         <span className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
-          Match report
+          Match report · Example
         </span>
       </div>
 

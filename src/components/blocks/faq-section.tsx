@@ -18,7 +18,7 @@ const faqs = [
   },
   {
     q: "Where does the data come from?",
-    a: "It runs on a curated, realistic dataset — countries, universities, programs, scholarships, and anonymized past-applicant outcomes — chosen to demonstrate the full workflow. Public-source insights are shown with citations. It is representative rather than an exhaustive live catalog.",
+    a: "It runs on a curated dataset of real countries, universities, programs and scholarships compiled from official and public sources, with figures you should verify against the official pages before acting. Public-source insights are shown with citations. It is representative rather than an exhaustive live catalog.",
   },
   {
     q: "How does the scholarship eligibility engine work?",

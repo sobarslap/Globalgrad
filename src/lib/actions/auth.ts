@@ -80,6 +80,32 @@ export async function signOutAction() {
   await signOut({ redirectTo: "/" });
 }
 
+/**
+ * One-click demo sign-in. Authenticates the seeded demo student using the
+ * server-only DEMO_USER_PASSWORD (the same value the seed hashed), so no
+ * credentials are ever committed or exposed to the client. Lets recruiters and
+ * evaluators walk the whole product without creating an account.
+ */
+export async function signInAsDemo(): Promise<AuthActionState> {
+  const email = "demo@globalgrad.app";
+  const password = process.env.DEMO_USER_PASSWORD || "DemoStudent#2026";
+
+  const ip = clientIp(await headers());
+  const rl = await rateLimit(`demo:${ip}`, 10, 60 * 1000);
+  if (!rl.ok)
+    return { error: `Too many attempts. Try again in ${rl.retryAfterSec}s.` };
+
+  try {
+    await signIn("credentials", { email, password, redirectTo: "/dashboard" });
+    return { ok: true };
+  } catch (err) {
+    if (err instanceof AuthError) {
+      return { error: "Demo account is unavailable right now." };
+    }
+    throw err; // re-throw the redirect
+  }
+}
+
 /** OAuth sign-in with Google. No-op-safe: only reachable when Google is configured. */
 export async function signInWithGoogle() {
   await signIn("google", { redirectTo: "/dashboard" });

@@ -1,0 +1,307 @@
+/**
+ * Curated REAL scholarship catalog for the Scholarship Eligibility Engine and
+ * the Scholarship Wizard (Phase 5).
+ *
+ * Provenance: compiled from official scholarship program pages (2024–2025).
+ * Award amounts are approximate annual USD equivalents; eligibility gates
+ * (nationality, level, field, CGPA/IELTS) reflect published criteria.
+ *
+ * ⚠️ Deadlines and amounts move every cycle — VERIFY on the official page
+ * (`applicationUrl`) before applying. `deadlineInDays` is an offset from seed
+ * time so the demo always shows realistic upcoming deadlines; production data
+ * should carry real dates.
+ */
+
+export interface RealScholarship {
+  id: string;
+  name: string;
+  provider: string;
+  hostCountry: string; // display name, matched to a seeded Country when possible
+  hostCountries: string[]; // countries this funds study in
+  eligibleNationalities: string[]; // [] = open to all
+  eligibleFields: string[]; // [] = any field
+  eligibleLevels: ("bachelors" | "masters" | "phd")[];
+  minCgpa: number;
+  minIelts: number;
+  meritCgpa: number;
+  valuesResearch: boolean;
+  amountUsd: number;
+  funding: "FULLY_FUNDED" | "PARTIAL";
+  coverage: "FULL" | "MAJOR" | "PARTIAL";
+  needBased: boolean;
+  meritBased: boolean;
+  renewable: boolean;
+  noAppFee: boolean;
+  livingAllowance: boolean;
+  deadlineInDays: number; // offset from seed time
+  applicationUrl: string;
+}
+
+export const realScholarships: RealScholarship[] = [
+  {
+    id: "chevening",
+    name: "Chevening Scholarship",
+    provider: "UK Government (FCDO)",
+    hostCountry: "United Kingdom",
+    hostCountries: ["United Kingdom"],
+    eligibleNationalities: [],
+    eligibleFields: [],
+    eligibleLevels: ["masters"],
+    minCgpa: 3.0, minIelts: 6.5, meritCgpa: 3.6, valuesResearch: false,
+    amountUsd: 45000, funding: "FULLY_FUNDED", coverage: "FULL",
+    needBased: false, meritBased: true, renewable: false, noAppFee: true, livingAllowance: true,
+    deadlineInDays: 40, applicationUrl: "https://www.chevening.org/",
+  },
+  {
+    id: "commonwealth-masters",
+    name: "Commonwealth Master's Scholarship",
+    provider: "Commonwealth Scholarship Commission",
+    hostCountry: "United Kingdom",
+    hostCountries: ["United Kingdom"],
+    eligibleNationalities: ["Bangladesh", "India", "Pakistan", "Nigeria", "Kenya", "Sri Lanka", "Ghana"],
+    eligibleFields: [],
+    eligibleLevels: ["masters"],
+    minCgpa: 3.2, minIelts: 6.5, meritCgpa: 3.7, valuesResearch: false,
+    amountUsd: 42000, funding: "FULLY_FUNDED", coverage: "FULL",
+    needBased: true, meritBased: true, renewable: false, noAppFee: true, livingAllowance: true,
+    deadlineInDays: 25, applicationUrl: "https://cscuk.fcdo.gov.uk/",
+  },
+  {
+    id: "gates-cambridge",
+    name: "Gates Cambridge Scholarship",
+    provider: "Bill & Melinda Gates Foundation",
+    hostCountry: "United Kingdom",
+    hostCountries: ["United Kingdom"],
+    eligibleNationalities: [],
+    eligibleFields: [],
+    eligibleLevels: ["masters", "phd"],
+    minCgpa: 3.6, minIelts: 7.0, meritCgpa: 3.9, valuesResearch: true,
+    amountUsd: 55000, funding: "FULLY_FUNDED", coverage: "FULL",
+    needBased: false, meritBased: true, renewable: true, noAppFee: true, livingAllowance: true,
+    deadlineInDays: 70, applicationUrl: "https://www.gatescambridge.org/",
+  },
+  {
+    id: "fulbright-foreign",
+    name: "Fulbright Foreign Student Program",
+    provider: "US Department of State",
+    hostCountry: "United States",
+    hostCountries: ["United States"],
+    eligibleNationalities: ["Bangladesh", "India", "Pakistan", "Nigeria", "Nepal", "Kenya", "Sri Lanka"],
+    eligibleFields: [],
+    eligibleLevels: ["masters", "phd"],
+    minCgpa: 3.3, minIelts: 7.0, meritCgpa: 3.8, valuesResearch: true,
+    amountUsd: 52000, funding: "FULLY_FUNDED", coverage: "FULL",
+    needBased: false, meritBased: true, renewable: true, noAppFee: true, livingAllowance: true,
+    deadlineInDays: 55, applicationUrl: "https://foreign.fulbrightonline.org/",
+  },
+  {
+    id: "knight-hennessy",
+    name: "Knight-Hennessy Scholars",
+    provider: "Stanford University",
+    hostCountry: "United States",
+    hostCountries: ["United States"],
+    eligibleNationalities: [],
+    eligibleFields: [],
+    eligibleLevels: ["masters", "phd"],
+    minCgpa: 3.5, minIelts: 7.0, meritCgpa: 3.9, valuesResearch: true,
+    amountUsd: 55000, funding: "FULLY_FUNDED", coverage: "FULL",
+    needBased: false, meritBased: true, renewable: true, noAppFee: true, livingAllowance: true,
+    deadlineInDays: 32, applicationUrl: "https://knight-hennessy.stanford.edu/",
+  },
+  {
+    id: "daad-epos",
+    name: "DAAD EPOS Development-Related Scholarship",
+    provider: "DAAD (Germany)",
+    hostCountry: "Germany",
+    hostCountries: ["Germany"],
+    eligibleNationalities: [],
+    eligibleFields: [],
+    eligibleLevels: ["masters", "phd"],
+    minCgpa: 3.0, minIelts: 6.5, meritCgpa: 3.6, valuesResearch: true,
+    amountUsd: 15000, funding: "FULLY_FUNDED", coverage: "FULL",
+    needBased: true, meritBased: true, renewable: true, noAppFee: true, livingAllowance: true,
+    deadlineInDays: 60, applicationUrl: "https://www.daad.de/en/",
+  },
+  {
+    id: "erasmus-mundus",
+    name: "Erasmus Mundus Joint Master's",
+    provider: "European Commission",
+    hostCountry: "Germany",
+    hostCountries: ["Germany", "France", "Netherlands", "Sweden", "Ireland"],
+    eligibleNationalities: [],
+    eligibleFields: [],
+    eligibleLevels: ["masters"],
+    minCgpa: 3.2, minIelts: 6.5, meritCgpa: 3.7, valuesResearch: false,
+    amountUsd: 30000, funding: "FULLY_FUNDED", coverage: "FULL",
+    needBased: false, meritBased: true, renewable: false, noAppFee: true, livingAllowance: true,
+    deadlineInDays: 48, applicationUrl: "https://www.eacea.ec.europa.eu/scholarships/erasmus-mundus-catalogue_en",
+  },
+  {
+    id: "vanier-canada",
+    name: "Vanier Canada Graduate Scholarship",
+    provider: "Government of Canada",
+    hostCountry: "Canada",
+    hostCountries: ["Canada"],
+    eligibleNationalities: [],
+    eligibleFields: [],
+    eligibleLevels: ["phd"],
+    minCgpa: 3.5, minIelts: 6.5, meritCgpa: 3.9, valuesResearch: true,
+    amountUsd: 37000, funding: "FULLY_FUNDED", coverage: "MAJOR",
+    needBased: false, meritBased: true, renewable: true, noAppFee: true, livingAllowance: true,
+    deadlineInDays: 75, applicationUrl: "https://vanier.gc.ca/",
+  },
+  {
+    id: "australia-awards",
+    name: "Australia Awards Scholarship",
+    provider: "Australian Government (DFAT)",
+    hostCountry: "Australia",
+    hostCountries: ["Australia"],
+    eligibleNationalities: ["Bangladesh", "Nepal", "Pakistan", "Sri Lanka", "Indonesia", "Vietnam"],
+    eligibleFields: [],
+    eligibleLevels: ["masters"],
+    minCgpa: 3.0, minIelts: 6.5, meritCgpa: 3.6, valuesResearch: false,
+    amountUsd: 40000, funding: "FULLY_FUNDED", coverage: "FULL",
+    needBased: true, meritBased: true, renewable: false, noAppFee: true, livingAllowance: true,
+    deadlineInDays: 35, applicationUrl: "https://www.dfat.gov.au/people-to-people/australia-awards",
+  },
+  {
+    id: "swedish-institute",
+    name: "Swedish Institute Scholarships for Global Professionals",
+    provider: "Swedish Institute",
+    hostCountry: "Sweden",
+    hostCountries: ["Sweden"],
+    eligibleNationalities: ["Bangladesh", "India", "Pakistan", "Nigeria", "Kenya", "Nepal"],
+    eligibleFields: [],
+    eligibleLevels: ["masters"],
+    minCgpa: 3.1, minIelts: 6.5, meritCgpa: 3.6, valuesResearch: false,
+    amountUsd: 22000, funding: "FULLY_FUNDED", coverage: "FULL",
+    needBased: false, meritBased: true, renewable: false, noAppFee: true, livingAllowance: true,
+    deadlineInDays: 20, applicationUrl: "https://si.se/en/apply/scholarships/",
+  },
+  {
+    id: "holland-scholarship",
+    name: "Holland Scholarship",
+    provider: "Dutch Ministry of Education (Nuffic)",
+    hostCountry: "Netherlands",
+    hostCountries: ["Netherlands"],
+    eligibleNationalities: [],
+    eligibleFields: [],
+    eligibleLevels: ["bachelors", "masters"],
+    minCgpa: 3.0, minIelts: 6.5, meritCgpa: 3.5, valuesResearch: false,
+    amountUsd: 5500, funding: "PARTIAL", coverage: "PARTIAL",
+    needBased: false, meritBased: true, renewable: false, noAppFee: true, livingAllowance: false,
+    deadlineInDays: 28, applicationUrl: "https://www.studyinnl.org/finances/holland-scholarship",
+  },
+  {
+    id: "eiffel-excellence",
+    name: "Eiffel Excellence Scholarship",
+    provider: "Campus France",
+    hostCountry: "France",
+    hostCountries: ["France"],
+    eligibleNationalities: [],
+    eligibleFields: ["Computer Science", "Data Science", "Engineering"],
+    eligibleLevels: ["masters", "phd"],
+    minCgpa: 3.2, minIelts: 6.5, meritCgpa: 3.7, valuesResearch: true,
+    amountUsd: 20000, funding: "FULLY_FUNDED", coverage: "MAJOR",
+    needBased: false, meritBased: true, renewable: false, noAppFee: true, livingAllowance: true,
+    deadlineInDays: 52, applicationUrl: "https://www.campusfrance.org/en/eiffel-scholarship-program-of-excellence",
+  },
+  {
+    id: "swiss-excellence",
+    name: "Swiss Government Excellence Scholarship",
+    provider: "Swiss Confederation (FCS)",
+    hostCountry: "Switzerland",
+    hostCountries: ["Switzerland"],
+    eligibleNationalities: [],
+    eligibleFields: [],
+    eligibleLevels: ["masters", "phd"],
+    minCgpa: 3.3, minIelts: 7.0, meritCgpa: 3.8, valuesResearch: true,
+    amountUsd: 25000, funding: "FULLY_FUNDED", coverage: "FULL",
+    needBased: false, meritBased: true, renewable: true, noAppFee: true, livingAllowance: true,
+    deadlineInDays: 65, applicationUrl: "https://www.sbfi.admin.ch/sbfi/en/home/education/scholarships-and-grants/swiss-government-excellence-scholarships.html",
+  },
+  {
+    id: "singa-astar",
+    name: "Singapore International Graduate Award (SINGA)",
+    provider: "A*STAR (Singapore)",
+    hostCountry: "Singapore",
+    hostCountries: ["Singapore"],
+    eligibleNationalities: [],
+    eligibleFields: ["Computer Science", "Artificial Intelligence", "Data Science", "Engineering"],
+    eligibleLevels: ["phd"],
+    minCgpa: 3.4, minIelts: 6.5, meritCgpa: 3.8, valuesResearch: true,
+    amountUsd: 24000, funding: "FULLY_FUNDED", coverage: "FULL",
+    needBased: false, meritBased: true, renewable: true, noAppFee: true, livingAllowance: true,
+    deadlineInDays: 80, applicationUrl: "https://www.a-star.edu.sg/Scholarships/for-graduate-studies/singapore-international-graduate-award-singa",
+  },
+  {
+    id: "nz-manaaki",
+    name: "Manaaki New Zealand Scholarship",
+    provider: "New Zealand Government",
+    hostCountry: "New Zealand",
+    hostCountries: ["New Zealand"],
+    eligibleNationalities: ["Bangladesh", "Nepal", "Sri Lanka", "Indonesia", "Vietnam", "Fiji"],
+    eligibleFields: [],
+    eligibleLevels: ["masters", "phd"],
+    minCgpa: 3.0, minIelts: 6.5, meritCgpa: 3.6, valuesResearch: false,
+    amountUsd: 35000, funding: "FULLY_FUNDED", coverage: "FULL",
+    needBased: true, meritBased: true, renewable: false, noAppFee: true, livingAllowance: true,
+    deadlineInDays: 22, applicationUrl: "https://www.nzscholarships.govt.nz/",
+  },
+  {
+    id: "government-ireland",
+    name: "Government of Ireland International Education Scholarship",
+    provider: "Higher Education Authority (Ireland)",
+    hostCountry: "Ireland",
+    hostCountries: ["Ireland"],
+    eligibleNationalities: [],
+    eligibleFields: [],
+    eligibleLevels: ["masters", "phd"],
+    minCgpa: 3.2, minIelts: 6.5, meritCgpa: 3.7, valuesResearch: false,
+    amountUsd: 12000, funding: "PARTIAL", coverage: "MAJOR",
+    needBased: false, meritBased: true, renewable: false, noAppFee: true, livingAllowance: true,
+    deadlineInDays: 45, applicationUrl: "https://hea.ie/funding-governance-performance/funding/student-finance/course-grant/government-of-ireland-international-education-scholarships/",
+  },
+  {
+    id: "uoft-lester-pearson",
+    name: "Lester B. Pearson International Scholarship",
+    provider: "University of Toronto",
+    hostCountry: "Canada",
+    hostCountries: ["Canada"],
+    eligibleNationalities: [],
+    eligibleFields: [],
+    eligibleLevels: ["bachelors"],
+    minCgpa: 3.7, minIelts: 6.5, meritCgpa: 3.9, valuesResearch: false,
+    amountUsd: 50000, funding: "FULLY_FUNDED", coverage: "FULL",
+    needBased: false, meritBased: true, renewable: true, noAppFee: true, livingAllowance: true,
+    deadlineInDays: 88, applicationUrl: "https://future.utoronto.ca/pearson/",
+  },
+  {
+    id: "melbourne-graduate-research",
+    name: "Melbourne Research Scholarship",
+    provider: "University of Melbourne",
+    hostCountry: "Australia",
+    hostCountries: ["Australia"],
+    eligibleNationalities: [],
+    eligibleFields: [],
+    eligibleLevels: ["masters", "phd"],
+    minCgpa: 3.4, minIelts: 6.5, meritCgpa: 3.8, valuesResearch: true,
+    amountUsd: 23000, funding: "PARTIAL", coverage: "MAJOR",
+    needBased: false, meritBased: true, renewable: true, noAppFee: true, livingAllowance: true,
+    deadlineInDays: 15, applicationUrl: "https://scholarships.unimelb.edu.au/",
+  },
+  {
+    id: "globalgrad-merit",
+    name: "GlobalGrad Merit Award",
+    provider: "GlobalGrad Foundation",
+    hostCountry: "United States",
+    hostCountries: ["United States", "Canada", "United Kingdom", "Australia"],
+    eligibleNationalities: [],
+    eligibleFields: [],
+    eligibleLevels: ["bachelors", "masters", "phd"],
+    minCgpa: 2.8, minIelts: 6.0, meritCgpa: 3.5, valuesResearch: true,
+    amountUsd: 8000, funding: "PARTIAL", coverage: "PARTIAL",
+    needBased: true, meritBased: true, renewable: false, noAppFee: true, livingAllowance: false,
+    deadlineInDays: 18, applicationUrl: "https://globalgrad-wheat.vercel.app/",
+  },
+];

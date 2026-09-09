@@ -3,6 +3,7 @@
 import { useRef, useState, useTransition } from "react";
 import { Sparkles, Send, User } from "lucide-react";
 import { askAdvisor } from "@/lib/actions/advisor";
+import { ADVISOR_MODES, type AdvisorMode } from "@/lib/advisor-modes";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -18,6 +19,7 @@ const SUGGESTIONS = [
 export function AdvisorChat() {
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState("");
+  const [mode, setMode] = useState<AdvisorMode>("general");
   const [pending, start] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const endRef = useRef<HTMLDivElement>(null);
@@ -40,7 +42,7 @@ export function AdvisorChat() {
         const res = await fetch("/api/advisor/stream", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ question: q }),
+          body: JSON.stringify({ question: q, mode }),
         });
 
         if (!res.ok || !res.body) {
@@ -72,7 +74,7 @@ export function AdvisorChat() {
           setError(acc.replace(/^\s*\[error\]\s*/, "") || "Something went wrong.");
         }
       } catch {
-        const res = await askAdvisor(q);
+        const res = await askAdvisor(q, mode);
         if (res.ok && res.text) {
           setMessages((m) => [...m, { role: "advisor", text: res.text! }]);
         } else {
@@ -85,6 +87,25 @@ export function AdvisorChat() {
 
   return (
     <div className="flex flex-col gap-4">
+      {/* Focus modes */}
+      <div className="flex flex-wrap gap-2">
+        {ADVISOR_MODES.map((m) => (
+          <button
+            key={m.value}
+            type="button"
+            onClick={() => setMode(m.value)}
+            className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${
+              mode === m.value
+                ? "border-primary bg-primary/10 text-primary"
+                : "border-border/60 text-muted-foreground hover:border-primary/40"
+            }`}
+          >
+            <span className="mr-1">{m.emoji}</span>
+            {m.label}
+          </button>
+        ))}
+      </div>
+
       {messages.length === 0 && (
         <div className="rounded-2xl border border-border/60 p-5">
           <p className="mb-3 text-sm text-muted-foreground">

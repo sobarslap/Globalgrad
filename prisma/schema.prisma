@@ -59,6 +59,19 @@ enum NotificationType {
   SYSTEM
 }
 
+// How much of the total cost a scholarship covers.
+enum ScholarshipFunding {
+  FULLY_FUNDED
+  PARTIAL
+}
+
+// Depth of coverage for the wizard's coverage filter.
+enum Coverage {
+  FULL // tuition + stipend/living
+  MAJOR // most of tuition
+  PARTIAL // a contribution
+}
+
 // ---------- Auth.js (NextAuth Prisma adapter) ----------
 model User {
   id            String    @id @default(cuid())
@@ -260,6 +273,10 @@ model Program {
   admitIelts     Float
   valuesResearch Boolean     @default(false)
   tuitionUsd     Int?
+  minGre         Int? // minimum GRE total where required; null = not required
+  admitGre       Int? // typical admit GRE total
+  intake         String? // e.g. "Fall", "Fall/Winter"
+  applicationUrl String? // official program/apply page
   published      Boolean     @default(false)
 
   university         University           @relation(fields: [universityId], references: [id], onDelete: Cascade)
@@ -284,6 +301,18 @@ model Scholarship {
   valuesResearch        Boolean       @default(false)
   amountUsd             Int?
   published             Boolean       @default(false)
+
+  // Rich filter fields (Scholarship wizard). Backed by curated real data.
+  funding         ScholarshipFunding @default(PARTIAL)
+  coverage        Coverage           @default(PARTIAL)
+  needBased       Boolean            @default(false)
+  meritBased      Boolean            @default(true)
+  renewable       Boolean            @default(false)
+  noAppFee        Boolean            @default(true)
+  livingAllowance Boolean            @default(false)
+  deadlineAt      DateTime? // primary application deadline
+  applicationUrl  String? // official scholarship page
+  hostCountries   String[] // country display names this funds study in
 
   country   Country?   @relation(fields: [countryId], references: [id])
   deadlines Deadline[]

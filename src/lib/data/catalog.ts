@@ -29,7 +29,11 @@ export const getPublishedPrograms = unstable_cache(
 async function _getPublishedPrograms(): Promise<Program[]> {
   const rows = await db.program.findMany({
     where: { published: true },
-    include: { university: { select: { name: true } } },
+    include: {
+      university: {
+        select: { name: true, city: true, country: { select: { name: true } } },
+      },
+    },
   });
   return rows.map((r) => ({
     id: r.id,
@@ -43,6 +47,13 @@ async function _getPublishedPrograms(): Promise<Program[]> {
     admitCgpa: r.admitCgpa,
     admitIelts: r.admitIelts,
     valuesResearch: r.valuesResearch,
+    minGre: r.minGre ?? undefined,
+    admitGre: r.admitGre ?? undefined,
+    tuitionUsd: r.tuitionUsd ?? undefined,
+    country: r.university.country?.name ?? undefined,
+    city: r.university.city ?? undefined,
+    intake: r.intake ?? undefined,
+    applicationUrl: r.applicationUrl ?? undefined,
   }));
 }
 
@@ -126,5 +137,15 @@ async function _getPublishedScholarships(): Promise<Scholarship[]> {
     meritCgpa: r.meritCgpa,
     valuesResearch: r.valuesResearch,
     amountUsd: r.amountUsd ?? undefined,
+    funding: r.funding,
+    coverage: r.coverage,
+    needBased: r.needBased,
+    meritBased: r.meritBased,
+    renewable: r.renewable,
+    noAppFee: r.noAppFee,
+    livingAllowance: r.livingAllowance,
+    deadlineAt: r.deadlineAt ?? null,
+    applicationUrl: r.applicationUrl ?? undefined,
+    hostCountries: r.hostCountries,
   }));
 }

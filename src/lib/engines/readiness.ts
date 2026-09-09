@@ -84,6 +84,27 @@ export function scoreReadiness(
       )}; you have ${profile.ielts.toFixed(1)}.`,
     });
   }
+  // GRE gate — only when the program lists a minimum. A missing score on a
+  // GRE-required program is itself a gap the student should see.
+  if (program.minGre) {
+    if (profile.greTotal == null) {
+      meetsMinimums = false;
+      score -= 8;
+      flags.push({
+        kind: "weakness",
+        label: "GRE required",
+        detail: `Program lists a GRE minimum of ${program.minGre}; no GRE score on your profile.`,
+      });
+    } else if (profile.greTotal < program.minGre) {
+      meetsMinimums = false;
+      score -= 8;
+      flags.push({
+        kind: "weakness",
+        label: "GRE below minimum",
+        detail: `Program requires GRE ≥ ${program.minGre}; you have ${profile.greTotal}.`,
+      });
+    }
+  }
 
   // --- Strength flags ---
   if (profile.cgpa >= program.admitCgpa) {
@@ -116,6 +137,13 @@ export function scoreReadiness(
       detail: `${profile.workExperienceMonths} months strengthens your application.`,
     });
   }
+  if (program.minGre && profile.greTotal != null && profile.greTotal >= program.minGre) {
+    flags.push({
+      kind: "strength",
+      label: "GRE meets requirement",
+      detail: `GRE ${profile.greTotal} meets the listed minimum of ${program.minGre}.`,
+    });
+  }
 
   score = round1(clamp(score));
 
@@ -138,4 +166,86 @@ export function bucketFor(score: number, selectivity: number): MatchBucket {
   if (score >= safeThreshold) return "safe";
   if (score >= targetThreshold) return "target";
   return "reach";
+}
+
+/**
+ * Tier-level readiness scorecard (StudyCompass-style). Groups programs into
+ * Top / Mid / Accessible tiers by selectivity band, then aggregates the
+ * per-program readiness flags into a de-duplicated set of strengths,
+ * weaknesses, and actionable recommendations per tier.
+ */
+export type ReadinessTier = "top" | "mid" | "accessible";
+
+export interface TierReadiness {
+  tier: ReadinessTier;
+  label: string; // "Top-tier" | "Mid-tier" | "Accessible-tier"
+  score: number; // 0–100, averaged across programs in the band
+  programCount: number;
+  strengths: string[];
+  weaknesses: string[];
+  recommendations: string[];
+}
+
+const TIER_META: Record<ReadinessTier, { label: string; min: number; max: number }> = {
+  top: { label: "Top-tier", min: 66, max: 101 },
+  mid: { label: "Mid-tier", min: 33, max: 66 },
+  accessible: { label: "Accessible-tier", min: 0, max: 33 },
+};
+
+/** Map a recurring weakness label to a concrete recommendation. */
+function recommendationFor(label: string): string {
+  if (label.startsWith("CGPA"))
+    return "Prioritize programs with flexible GPA requirements, or strengthen your profile with projects, research, and strong references.";
+  if (label.startsWith("IELTS"))
+    return "Retake IELTS/TOEFL to lift your band before applying to this tier.";
+  if (label.startsWith("GRE"))
+    return "Sit or resit the GRE — several programs in this tier gate on it.";
+  return "Pair this tier with scholarship searches and lower-cost country options.";
+}
+
+export function scoreReadinessByTier(
+  profile: StudentProfile,
+  programs: Program[]
+): TierReadiness[] {
+  const tiers: ReadinessTier[] = ["top", "mid", "accessible"];
+  return tiers.map((tier) => {
+    const meta = TIER_META[tier];
+    const inBand = programs.filter(
+      (p) => p.selectivity >= meta.min && p.selectivity < meta.max
+    );
+    const results = inBand.map((p) => scoreReadiness(profile, p));
+
+    const avg =
+      results.length > 0
+        ? round1(results.reduce((s, r) => s + r.score, 0) / results.length)
+        : 0;
+
+    // De-duplicate flags by label, keeping the first (most representative) detail.
+    const seenS = new Map<string, string>();
+    const seenW = new Map<string, string>();
+    for (const r of results) {
+      for (const f of r.flags) {
+        const bag = f.kind === "strength" ? seenS : seenW;
+        if (!bag.has(f.label)) bag.set(f.label, f.detail);
+      }
+    }
+
+    const weaknesses = [...seenW.values()];
+    const recommendations =
+      weaknesses.length === 0
+        ? inBand.length > 0
+          ? ["You clear this tier — proceed to university matching and shortlist programs here."]
+          : []
+        : [...new Set([...seenW.keys()].map(recommendationFor))];
+
+    return {
+      tier,
+      label: meta.label,
+      score: avg,
+      programCount: inBand.length,
+      strengths: [...seenS.values()],
+      weaknesses,
+      recommendations,
+    };
+  });
 }

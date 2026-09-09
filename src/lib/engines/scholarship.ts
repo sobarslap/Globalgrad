@@ -1,5 +1,6 @@
 import type {
   Scholarship,
+  ScholarshipFilter,
   ScholarshipMatch,
   StudentProfile,
 } from "@/lib/domain/types";
@@ -112,4 +113,47 @@ export function matchScholarships(
       if (a.eligible !== b.eligible) return a.eligible ? -1 : 1;
       return b.matchPercent - a.matchPercent;
     });
+}
+
+const daysUntil = (d: string | Date | null | undefined): number | null => {
+  if (!d) return null;
+  const t = new Date(d).getTime();
+  if (Number.isNaN(t)) return null;
+  return Math.ceil((t - Date.now()) / (24 * 60 * 60 * 1000));
+};
+
+/**
+ * Apply the Scholarship-wizard filters (Phase 5) on top of scored matches.
+ * Pure and order-preserving — callers pass the output of `matchScholarships`.
+ */
+export function filterScholarships(
+  matches: ScholarshipMatch[],
+  filter: ScholarshipFilter
+): ScholarshipMatch[] {
+  const eqCILocal = (a: string, b: string) =>
+    a.trim().toLowerCase() === b.trim().toLowerCase();
+
+  return matches.filter(({ scholarship: s }) => {
+    if (filter.countries && filter.countries.length > 0) {
+      const hosts = s.hostCountries ?? [];
+      if (!hosts.some((h) => filter.countries!.some((c) => eqCILocal(c, h))))
+        return false;
+    }
+    if (filter.fundingType && filter.fundingType !== "ALL") {
+      if ((s.funding ?? "PARTIAL") !== filter.fundingType) return false;
+    }
+    if (filter.coverage && filter.coverage !== "ALL") {
+      if ((s.coverage ?? "PARTIAL") !== filter.coverage) return false;
+    }
+    if (filter.need === "NEED" && !s.needBased) return false;
+    if (filter.need === "MERIT" && !s.meritBased) return false;
+    if (filter.deadlineWithinDays) {
+      const d = daysUntil(s.deadlineAt);
+      if (d == null || d < 0 || d > filter.deadlineWithinDays) return false;
+    }
+    if (filter.renewable && !s.renewable) return false;
+    if (filter.noAppFee && !s.noAppFee) return false;
+    if (filter.livingAllowance && !s.livingAllowance) return false;
+    return true;
+  });
 }

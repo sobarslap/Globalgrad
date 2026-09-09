@@ -24,6 +24,9 @@ export function buildAppNav(
   const primary: NavItem[] = [
     { href: "/feed", label: t("feed") },
     { href: "/dashboard", label: t("dashboard") },
+    { href: "/matches", label: t("matches") },
+    { href: "/readiness", label: t("readiness") },
+    { href: "/scholarships", label: t("scholarships") },
     { href: "/search", label: t("search") },
     { href: "/advisor", label: t("advisor") },
     { href: "/applications", label: t("applications") },

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import type { ReactNode } from "react";
 import { headers } from "next/headers";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale } from "next-intl/server";
@@ -63,7 +64,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: { children: ReactNode }) {
   // The middleware sets a per-request nonce (B1); pass it to next-themes so its
   // pre-hydration inline script carries the nonce and isn't blocked by the CSP.
   // Reading headers() also opts the whole tree into dynamic rendering, which

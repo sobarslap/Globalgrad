@@ -1,27 +1,37 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 
 const STORAGE_KEY = "gg-cookie-consent";
 
+// No external changes to subscribe to — the value only changes on dismiss,
+// which re-renders via local state.
+const subscribe = () => () => {};
+
+/** True once the visitor has accepted/dismissed the notice (or if storage is unavailable). */
+const hasResponded = () => {
+  try {
+    return !!localStorage.getItem(STORAGE_KEY);
+  } catch {
+    // localStorage unavailable (private mode) — don't nag.
+    return true;
+  }
+};
+
 /**
  * Minimal, honest cookie banner. GlobalGrad only sets strictly-necessary
  * cookies (auth, language, theme), so this is a one-time acknowledgement rather
- * than a tracking gate — the choice is remembered in localStorage. Rendered
- * only after mount to avoid a hydration mismatch and to stay hidden for anyone
- * who has already responded.
+ * than a tracking gate — the choice is remembered in localStorage.
+ *
+ * `useSyncExternalStore` reads localStorage in an SSR-safe way: the server
+ * snapshot is always "responded" (banner hidden), so hydration matches, then
+ * the client reveals the banner only for a visitor who hasn't responded yet —
+ * no `useEffect` + `setState` and no hydration mismatch.
  */
 export function CookieConsent() {
-  const [show, setShow] = useState(false);
-
-  useEffect(() => {
-    try {
-      if (!localStorage.getItem(STORAGE_KEY)) setShow(true);
-    } catch {
-      // localStorage unavailable (private mode) — just don't nag.
-    }
-  }, []);
+  const responded = useSyncExternalStore(subscribe, hasResponded, () => true);
+  const [dismissed, setDismissed] = useState(false);
 
   const dismiss = (value: "accepted" | "dismissed") => {
     try {
@@ -29,10 +39,10 @@ export function CookieConsent() {
     } catch {
       /* ignore */
     }
-    setShow(false);
+    setDismissed(true);
   };
 
-  if (!show) return null;
+  if (responded || dismissed) return null;
 
   return (
     <div

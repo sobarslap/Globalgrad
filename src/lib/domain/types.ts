@@ -57,6 +57,17 @@ export interface Program {
   admitIelts: number;
   /** Whether the program weighs research heavily (e.g. PhD / research MSc). */
   valuesResearch: boolean;
+  /** Minimum GRE total (260–340) where required; undefined = not required. */
+  minGre?: number;
+  /** Typical admit GRE total, for realistic comparison. */
+  admitGre?: number;
+  /** Annual tuition in USD, if known — used by cards and the cost calculator. */
+  tuitionUsd?: number;
+  /** Display metadata for match cards. */
+  country?: string;
+  city?: string;
+  intake?: string;
+  applicationUrl?: string;
 }
 
 export type MatchBucket = "safe" | "target" | "reach";
@@ -108,6 +119,32 @@ export interface Scholarship {
   valuesResearch: boolean;
   /** Award amount in USD, if known. */
   amountUsd?: number;
+  /** How much of the cost it covers. */
+  funding?: "FULLY_FUNDED" | "PARTIAL";
+  coverage?: "FULL" | "MAJOR" | "PARTIAL";
+  needBased?: boolean;
+  meritBased?: boolean;
+  renewable?: boolean;
+  noAppFee?: boolean;
+  livingAllowance?: boolean;
+  /** Primary application deadline (ISO string or Date). */
+  deadlineAt?: string | Date | null;
+  applicationUrl?: string;
+  /** Country display names this scholarship funds study in. */
+  hostCountries?: string[];
+}
+
+/** Filter criteria for the scholarship wizard (Phase 5). */
+export interface ScholarshipFilter {
+  countries?: string[];
+  fundingType?: "FULLY_FUNDED" | "PARTIAL" | "ALL";
+  coverage?: "FULL" | "MAJOR" | "PARTIAL" | "ALL";
+  need?: "NEED" | "MERIT" | "BOTH";
+  /** Only scholarships with a deadline within this many days. */
+  deadlineWithinDays?: 30 | 60 | 90 | null;
+  renewable?: boolean;
+  noAppFee?: boolean;
+  livingAllowance?: boolean;
 }
 
 export interface ScholarshipMatch {

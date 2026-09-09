@@ -21,6 +21,9 @@ import {
   Shield,
   Settings,
   GraduationCap,
+  Compass,
+  Gauge,
+  Coins,
   Circle,
   type LucideIcon,
 } from "lucide-react";
@@ -35,6 +38,9 @@ import type { NavItem } from "@/components/site/app-nav";
 const icons: Record<string, LucideIcon> = {
   "/feed": Newspaper,
   "/dashboard": LayoutDashboard,
+  "/matches": Compass,
+  "/readiness": Gauge,
+  "/scholarships": Coins,
   "/search": Search,
   "/advisor": Bot,
   "/applications": FileText,

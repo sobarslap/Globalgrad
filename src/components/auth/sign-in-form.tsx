@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState } from "react";
+import { useActionState, useState, useTransition } from "react";
 import { ArrowRight } from "lucide-react";
 import {
+  signInAsDemo,
   signInWithCredentials,
   signInWithGoogle,
   type AuthActionState,
@@ -30,6 +31,16 @@ export function SignInForm({ googleEnabled }: { googleEnabled: boolean }) {
     signInWithCredentials,
     initial
   );
+  const [demoPending, startDemo] = useTransition();
+  const [demoError, setDemoError] = useState<string | null>(null);
+
+  const runDemo = () =>
+    startDemo(async () => {
+      setDemoError(null);
+      const res = await signInAsDemo();
+      // Success redirects (throws); a returned value means it failed.
+      if (res?.error) setDemoError(res.error);
+    });
 
   return (
     <div className="relative w-full max-w-md">
@@ -135,6 +146,30 @@ export function SignInForm({ googleEnabled }: { googleEnabled: boolean }) {
             )}
           </button>
         </form>
+
+        <div className="my-6 flex items-center gap-4">
+          <span className="h-px flex-1 bg-border" />
+          <span className="text-xs text-muted-foreground">or</span>
+          <span className="h-px flex-1 bg-border" />
+        </div>
+
+        <button
+          type="button"
+          onClick={runDemo}
+          disabled={demoPending}
+          className="flex h-11 w-full items-center justify-center gap-2 rounded-full border border-border bg-background/60 text-sm font-medium transition-colors hover:bg-accent/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-60"
+        >
+          {demoPending ? "Signing in…" : "Try the demo account"}
+        </button>
+        {demoError ? (
+          <p className="mt-2 text-center text-xs text-destructive" role="alert">
+            {demoError}
+          </p>
+        ) : (
+          <p className="mt-2 text-center text-xs text-muted-foreground">
+            Explore the full product instantly — no signup needed.
+          </p>
+        )}
 
         <p className="mt-6 text-center text-sm text-muted-foreground">
           New here?{" "}

@@ -352,4 +352,56 @@ export const realPrograms: RealProgram[] = [
     selectivity: 28, minCgpa: 2.7, minIelts: 6.0, admitCgpa: 3.0, admitIelts: 6.5, valuesResearch: false,
     tuitionUsd: 25000, intake: "Fall", applicationUrl: "https://www.otago.ac.nz/",
   },
+
+  // ─────────────────────────── Belgium ───────────────────────────
+  {
+    university: "KU Leuven", country: "Belgium", city: "Leuven", lat: 50.8798, lng: 4.7005, worldRank: 61,
+    programName: "MSc Artificial Intelligence", field: "Artificial Intelligence", level: "masters",
+    selectivity: 62, minCgpa: 3.1, minIelts: 6.5, admitCgpa: 3.4, admitIelts: 7.0, valuesResearch: true,
+    tuitionUsd: 6600, intake: "Fall", applicationUrl: "https://www.kuleuven.be/",
+  },
+  {
+    university: "Ghent University", country: "Belgium", city: "Ghent", lat: 51.0470, lng: 3.7274, worldRank: 143,
+    programName: "MSc Computer Science Engineering", field: "Computer Science", level: "masters",
+    selectivity: 50, minCgpa: 3.0, minIelts: 6.5, admitCgpa: 3.3, admitIelts: 6.5, valuesResearch: true,
+    tuitionUsd: 5800, intake: "Fall", applicationUrl: "https://www.ugent.be/en",
+  },
+  {
+    university: "University of Antwerp", country: "Belgium", city: "Antwerp", lat: 51.2194, lng: 4.4025, worldRank: 240,
+    programName: "Master of Computer Science", field: "Computer Science", level: "masters",
+    selectivity: 38, minCgpa: 2.8, minIelts: 6.5, admitCgpa: 3.1, admitIelts: 6.5, valuesResearch: false,
+    tuitionUsd: 5600, intake: "Fall", applicationUrl: "https://www.uantwerpen.be/en/",
+  },
+  {
+    university: "Hasselt University", country: "Belgium", city: "Hasselt", lat: 50.9307, lng: 5.3378, worldRank: 500,
+    programName: "Master of Statistics and Data Science", field: "Data Science", level: "masters",
+    selectivity: 30, minCgpa: 2.7, minIelts: 6.0, admitCgpa: 3.0, admitIelts: 6.5, valuesResearch: false,
+    tuitionUsd: 4200, intake: "Fall", applicationUrl: "https://www.uhasselt.be/en",
+  },
+
+  // ─────────────────────────── Poland ───────────────────────────
+  {
+    university: "AGH University of Krakow", country: "Poland", city: "Kraków", lat: 50.0665, lng: 19.9137, worldRank: 620,
+    programName: "MSc Data Science", field: "Data Science", level: "masters",
+    selectivity: 34, minCgpa: 2.8, minIelts: 6.0, admitCgpa: 3.0, admitIelts: 6.5, valuesResearch: false,
+    tuitionUsd: 3600, intake: "Fall", applicationUrl: "https://www.agh.edu.pl/en",
+  },
+  {
+    university: "Warsaw University of Technology", country: "Poland", city: "Warsaw", lat: 52.2206, lng: 21.0107, worldRank: 511,
+    programName: "MSc Computer Science", field: "Computer Science", level: "masters",
+    selectivity: 40, minCgpa: 2.9, minIelts: 6.0, admitCgpa: 3.1, admitIelts: 6.5, valuesResearch: true,
+    tuitionUsd: 4000, intake: "Fall", applicationUrl: "https://www.pw.edu.pl/engpw",
+  },
+  {
+    university: "Poznan University of Technology", country: "Poland", city: "Poznań", lat: 52.4028, lng: 16.9497, worldRank: 800,
+    programName: "MSc Artificial Intelligence", field: "Artificial Intelligence", level: "masters",
+    selectivity: 28, minCgpa: 2.7, minIelts: 6.0, admitCgpa: 3.0, admitIelts: 6.5, valuesResearch: false,
+    tuitionUsd: 3300, intake: "Fall", applicationUrl: "https://www.put.poznan.pl/en",
+  },
+  {
+    university: "Wroclaw University of Science and Technology", country: "Poland", city: "Wrocław", lat: 51.1093, lng: 17.0594, worldRank: 750,
+    programName: "MSc Computer Engineering", field: "Software Engineering", level: "masters",
+    selectivity: 26, minCgpa: 2.6, minIelts: 6.0, admitCgpa: 2.9, admitIelts: 6.5, valuesResearch: false,
+    tuitionUsd: 3400, intake: "Fall", applicationUrl: "https://pwr.edu.pl/en/",
+  },
 ];

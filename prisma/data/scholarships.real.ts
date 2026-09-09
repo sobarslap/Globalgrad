@@ -127,7 +127,7 @@ export const realScholarships: RealScholarship[] = [
     name: "Erasmus Mundus Joint Master's",
     provider: "European Commission",
     hostCountry: "Germany",
-    hostCountries: ["Germany", "France", "Netherlands", "Sweden", "Ireland"],
+    hostCountries: ["Germany", "France", "Netherlands", "Sweden", "Ireland", "Belgium", "Poland"],
     eligibleNationalities: [],
     eligibleFields: [],
     eligibleLevels: ["masters"],

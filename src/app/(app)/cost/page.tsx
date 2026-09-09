@@ -10,7 +10,7 @@ import { matchScholarships } from "@/lib/engines/scholarship";
 import { getFxRates } from "@/lib/fx";
 import { CostCalculator } from "@/components/cost/cost-calculator";
 
-export const metadata = { title: "Cost & funding — GlobalGrad" };
+export const metadata = { title: "Cost & funding" };
 
 export default async function CostPage() {
   const session = await auth();

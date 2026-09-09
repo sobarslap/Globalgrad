@@ -35,4 +35,6 @@ export const realCountries: RealCountry[] = [
   { name: "Ireland", code: "IE", flagEmoji: "🇮🇪", postStudyWorkMonths: 24, monthlyLivingCostUsd: 1300, costOfLivingIndex: 80, partTimeAllowed: true, workHoursPerWeek: 20, currency: "EUR", latitude: 53.4, longitude: -8.2 },
   { name: "France", code: "FR", flagEmoji: "🇫🇷", postStudyWorkMonths: 24, monthlyLivingCostUsd: 1150, costOfLivingIndex: 74, partTimeAllowed: true, workHoursPerWeek: 20, currency: "EUR", latitude: 46.2, longitude: 2.2 },
   { name: "New Zealand", code: "NZ", flagEmoji: "🇳🇿", postStudyWorkMonths: 36, monthlyLivingCostUsd: 1300, costOfLivingIndex: 77, partTimeAllowed: true, workHoursPerWeek: 20, currency: "NZD", latitude: -40.9, longitude: 174.9 },
+  { name: "Belgium", code: "BE", flagEmoji: "🇧🇪", postStudyWorkMonths: 12, monthlyLivingCostUsd: 1100, costOfLivingIndex: 74, partTimeAllowed: true, workHoursPerWeek: 20, currency: "EUR", latitude: 50.5, longitude: 4.5 },
+  { name: "Poland", code: "PL", flagEmoji: "🇵🇱", postStudyWorkMonths: 9, monthlyLivingCostUsd: 800, costOfLivingIndex: 50, partTimeAllowed: true, workHoursPerWeek: 20, currency: "PLN", latitude: 51.9, longitude: 19.1 },
 ];

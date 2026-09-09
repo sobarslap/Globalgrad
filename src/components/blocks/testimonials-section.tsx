@@ -40,7 +40,7 @@ const testimonials: Testimonial[] = [
     role: "MSc Public Policy applicant",
   },
   {
-    text: "The Similar Student Finder compared my CGPA and scores against past applicants and showed exactly where people like me got in. It made my choices feel grounded.",
+    text: "Safe / Target / Reach matching turned a messy wishlist into a balanced shortlist. I finally knew which applications were realistic and which were a stretch.",
     initials: "MI",
     name: "Maliha Islam",
     role: "MSc Robotics · KTH Sweden",

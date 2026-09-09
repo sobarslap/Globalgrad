@@ -49,7 +49,6 @@ const tiers: Tier[] = [
       "Everything in Free",
       "Unlimited AI advisor",
       "Scholarship eligibility engine",
-      "Similar-student finder",
       "Funding gap analyzer",
     ],
     cta: "Start Pro",

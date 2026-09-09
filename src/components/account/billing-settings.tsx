@@ -11,7 +11,6 @@ const PLAN_LABEL: Record<string, string> = {
 const proPerks = [
   "Unlimited AI advisor",
   "Scholarship eligibility engine",
-  "Similar-student finder",
   "Funding gap analyzer",
 ];
 

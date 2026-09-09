@@ -39,7 +39,6 @@ export function buildAppNav(
     { href: "/map", label: t("map") },
     { href: "/compare", label: t("compare") },
     { href: "/visa", label: t("visa") },
-    { href: "/similar", label: t("similar") },
     { href: "/reality", label: t("reality") },
     { href: "/insights", label: t("insights") },
   ];

@@ -135,44 +135,11 @@ async function main() {
     });
   }
 
-  // ---------- Anonymized past applicants (Similar Student Finder) ----------
-  // Synthetic but plausible; clearly aggregate/anonymized peer data.
+  // ---------- Clear any legacy synthetic applicant data ----------
+  // The Similar Student Finder was removed to keep the site free of fabricated
+  // outcomes (no real public dataset exists for anonymized applicant results).
   await db.applicantOutcome.deleteMany();
   await db.anonymizedApplicant.deleteMany();
-  const unis = [...new Set(realPrograms.map((p) => p.university))];
-  const elite = new Set(
-    realPrograms.filter((p) => p.selectivity >= 82).map((p) => p.university)
-  );
-  const nats = ["Bangladesh", "India", "Pakistan", "Nigeria", "Nepal", "Kenya", "Sri Lanka"];
-  const rng = (n: number) => Math.floor(Math.random() * n);
-  for (let i = 0; i < 60; i++) {
-    const cgpa = Math.round((2.8 + Math.random() * 1.1) * 100) / 100; // 2.8–3.9
-    const ielts = Math.round((6.0 + Math.random() * 1.5) * 2) / 2; // 6.0–7.5
-    const research = rng(4);
-    const strength = (cgpa - 2.8) / 1.1 + (ielts - 6) / 1.5 + research / 3;
-    const picks = [...unis].sort(() => Math.random() - 0.5).slice(0, 2 + rng(3));
-    await db.anonymizedApplicant.create({
-      data: {
-        cgpa,
-        ielts,
-        researchPapers: research,
-        targetField: "Computer Science",
-        nationality: nats[rng(nats.length)],
-        outcomes: {
-          create: picks.map((u) => {
-            const elitePenalty = elite.has(u) ? 1.2 : 0.4;
-            const admitted = strength - elitePenalty + Math.random() * 0.6 > 0.2;
-            return {
-              university: u,
-              program: "MSc Computer Science",
-              admitted,
-              scholarship: admitted && Math.random() < 0.35,
-            };
-          }),
-        },
-      },
-    });
-  }
 
   // ---------- Curated public-insight sources (Public Insight Engine) ----------
   await db.insightSource.deleteMany();
@@ -180,15 +147,13 @@ async function main() {
     { title: "US F-1 visa interview tips", url: "https://travel.state.gov/", sourceType: "EMBASSY" as const, country: "United States", topic: "Visa", snippet: "Applicants are frequently asked about funding and ties to their home country; clear, consistent proof of finances and study intent matters more than memorized answers." },
     { title: "Reddit: Boston housing as a grad student", url: "https://www.reddit.com/r/gradadmissions/", sourceType: "FORUM" as const, country: "United States", topic: "Housing", snippet: "Students repeatedly warn that Boston-area rent can exceed tuition; many recommend securing housing or roommates months before arrival." },
     { title: "Canada study permit financial proof", url: "https://www.canada.ca/", sourceType: "EMBASSY" as const, country: "Canada", topic: "Visa", snippet: "A Guaranteed Investment Certificate plus first-year tuition is the most reliable way to satisfy proof-of-funds; incomplete funds are a common refusal reason." },
-    { title: "Blog: PGWP and working in Canada", url: "https://example-studyblog.com/canada-pgwp", sourceType: "BLOG" as const, country: "Canada", topic: "Work", snippet: "The Post-Graduation Work Permit is a major draw; students advise choosing programs and institutions that keep you eligible." },
+    { title: "Canada Post-Graduation Work Permit (PGWP)", url: "https://www.canada.ca/en/immigration-refugees-citizenship/services/study-canada/work/after-graduation.html", sourceType: "FAQ" as const, country: "Canada", topic: "Work", snippet: "The Post-Graduation Work Permit is a major draw; eligibility depends on your institution and program, so confirm your program qualifies before enrolling." },
     { title: "UK 28-day funds rule explained", url: "https://www.gov.uk/student-visa", sourceType: "FAQ" as const, country: "United Kingdom", topic: "Visa", snippet: "Maintenance funds must sit in your account for 28 consecutive days ending within 31 days of applying; dipping below the threshold restarts the clock." },
     { title: "Forum: cost of living in London", url: "https://www.thestudentroom.co.uk/", sourceType: "FORUM" as const, country: "United Kingdom", topic: "Cost", snippet: "London students stress budgeting for the Immigration Health Surcharge and high rent; outside London is noticeably cheaper." },
     { title: "Germany blocked account guide", url: "https://www.germany.info/", sourceType: "FAQ" as const, country: "Germany", topic: "Funding", snippet: "A blocked account (Sperrkonto) is standard proof of funds; set it up early because processing and embassy appointments can take weeks." },
-    { title: "YouTube transcript: studying in Germany on a budget", url: "https://youtube.com/", sourceType: "YOUTUBE" as const, country: "Germany", topic: "Cost", snippet: "Creators highlight low or no tuition at public universities, but note semester contributions, health insurance, and competitive housing." },
+    { title: "Study in Germany: tuition & costs (DAAD)", url: "https://www.daad.de/en/study-and-research-in-germany/plan-your-studies/tuition-fees/", sourceType: "FAQ" as const, country: "Germany", topic: "Cost", snippet: "Most public universities charge little or no tuition, but budget for semester contributions, mandatory health insurance, and competitive housing." },
     { title: "Australia Genuine Student requirement", url: "https://immi.homeaffairs.gov.au/", sourceType: "EMBASSY" as const, country: "Australia", topic: "Visa", snippet: "The Genuine Student statement and evidence of finances are central; weak or generic statements are a frequent cause of delays." },
-    { title: "Forum: part-time work limits in Australia", url: "https://www.reddit.com/r/australia/", sourceType: "FORUM" as const, country: "Australia", topic: "Work", snippet: "Students note part-time hours are capped during term; OSHC health cover is mandatory and easy to forget." },
-    { title: "General: SOP mistakes to avoid", url: "https://example-studyblog.com/sop", sourceType: "BLOG" as const, country: null, topic: "Applications", snippet: "Admissions readers say vague, one-size-fits-all statements of purpose hurt the most; specific fit with faculty and program stands out." },
-    { title: "General: scholarship timing", url: "https://example-studyblog.com/scholarships", sourceType: "BLOG" as const, country: null, topic: "Funding", snippet: "Many funding deadlines fall before or with admission deadlines; applicants who wait until after an offer often miss the best scholarships." },
+    { title: "Working while studying in Australia (Study Australia)", url: "https://www.studyaustralia.gov.au/", sourceType: "FAQ" as const, country: "Australia", topic: "Work", snippet: "Work hours are capped during term (with limited exceptions); OSHC health cover is mandatory for the length of your visa." },
   ];
   for (const s of insightSources) {
     await db.insightSource.create({ data: { ...s, published: true } });

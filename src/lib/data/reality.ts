@@ -1,88 +1,94 @@
 /**
- * University Reality Check (Module 3, F2): practical info official pages downplay.
- * Ratings are 1–5. Illustrative/curated — verify with current students and forums.
+ * University Reality Check (Module 3, F2): practical, widely-reported context
+ * that official pages downplay — cost of living, housing pressure, part-time
+ * work, and language.
+ *
+ * These are QUALITATIVE, general indicators drawn from broadly-known public
+ * information about each city/institution — not precise per-university scores.
+ * Always verify with current students, official pages, and city cost data.
  */
+export type RealityLevel = "low" | "moderate" | "high";
+
 export interface RealityCheck {
   university: string;
-  housingDifficulty: number; // 1 easy … 5 very hard
-  partTimeAvailability: number; // 1 scarce … 5 plentiful
-  languageBarrier: number; // 1 none … 5 significant
-  studentSatisfaction: number; // 1 low … 5 high
+  city: string;
+  housingPressure: RealityLevel; // high = hard to find / expensive
+  partTimeAvailability: RealityLevel; // high = plentiful (good)
+  languageBarrier: RealityLevel; // high = significant
+  costOfLiving: RealityLevel; // high = expensive
   hiddenCosts: string;
   watchOut: string;
 }
 
 export const REALITY_CHECKS: RealityCheck[] = [
   {
-    university: "MIT",
-    housingDifficulty: 5,
-    partTimeAvailability: 3,
-    languageBarrier: 1,
-    studentSatisfaction: 5,
-    hiddenCosts: "Boston rent is very high; health insurance and fees add up fast.",
+    university: "Massachusetts Institute of Technology",
+    city: "Cambridge / Boston, USA",
+    housingPressure: "high",
+    partTimeAvailability: "moderate",
+    languageBarrier: "low",
+    costOfLiving: "high",
+    hiddenCosts: "Boston-area rent is very high; US health insurance and student fees add up fast.",
     watchOut: "Cost of living can dwarf tuition — budget aggressively for housing.",
   },
   {
     university: "ETH Zurich",
-    housingDifficulty: 5,
-    partTimeAvailability: 2,
-    languageBarrier: 3,
-    studentSatisfaction: 5,
+    city: "Zurich, Switzerland",
+    housingPressure: "high",
+    partTimeAvailability: "low",
+    languageBarrier: "moderate",
+    costOfLiving: "high",
     hiddenCosts: "Zurich is one of the world's most expensive cities; deposits are steep.",
     watchOut: "Secure housing early — waitlists are long and rents are brutal.",
   },
   {
-    university: "TU Munich",
-    housingDifficulty: 4,
-    partTimeAvailability: 4,
-    languageBarrier: 3,
-    studentSatisfaction: 4,
-    hiddenCosts: "Semester contribution, Rundfunk fee, and rental deposits.",
+    university: "Technical University of Munich",
+    city: "Munich, Germany",
+    housingPressure: "high",
+    partTimeAvailability: "moderate",
+    languageBarrier: "moderate",
+    costOfLiving: "moderate",
+    hiddenCosts: "Semester contribution, broadcast (Rundfunk) fee, and rental deposits.",
     watchOut: "Munich housing is tight; some German helps for part-time roles.",
   },
   {
     university: "University of Waterloo",
-    housingDifficulty: 3,
-    partTimeAvailability: 4,
-    languageBarrier: 1,
-    studentSatisfaction: 4,
+    city: "Waterloo, Canada",
+    housingPressure: "moderate",
+    partTimeAvailability: "high",
+    languageBarrier: "low",
+    costOfLiving: "moderate",
     hiddenCosts: "Co-op fees and winter gear; intercity travel for internships.",
     watchOut: "Strong co-op culture — plan work terms; housing spikes near campus.",
   },
   {
     university: "University of Alberta",
-    housingDifficulty: 2,
-    partTimeAvailability: 4,
-    languageBarrier: 1,
-    studentSatisfaction: 4,
-    hiddenCosts: "Winter clothing and heating; car often helpful.",
+    city: "Edmonton, Canada",
+    housingPressure: "low",
+    partTimeAvailability: "high",
+    languageBarrier: "low",
+    costOfLiving: "moderate",
+    hiddenCosts: "Winter clothing and heating; a car is often helpful.",
     watchOut: "Very cold winters — factor comfort and transport costs.",
   },
   {
     university: "Monash University",
-    housingDifficulty: 3,
-    partTimeAvailability: 4,
-    languageBarrier: 1,
-    studentSatisfaction: 4,
-    hiddenCosts: "OSHC health cover and higher grocery/transport costs.",
-    watchOut: "Melbourne rents rising; part-time capped during term.",
+    city: "Melbourne, Australia",
+    housingPressure: "moderate",
+    partTimeAvailability: "high",
+    languageBarrier: "low",
+    costOfLiving: "high",
+    hiddenCosts: "OSHC health cover, and higher grocery and transport costs.",
+    watchOut: "Melbourne rents are rising; part-time hours are capped during term.",
   },
   {
-    university: "Chalmers University",
-    housingDifficulty: 4,
-    partTimeAvailability: 2,
-    languageBarrier: 2,
-    studentSatisfaction: 4,
-    hiddenCosts: "Student union membership; pricey groceries and eating out.",
+    university: "Chalmers University of Technology",
+    city: "Gothenburg, Sweden",
+    housingPressure: "high",
+    partTimeAvailability: "low",
+    languageBarrier: "low",
+    costOfLiving: "high",
+    hiddenCosts: "Student-union membership; groceries and eating out are pricey.",
     watchOut: "Gothenburg housing queues are long — apply the moment you're admitted.",
-  },
-  {
-    university: "Regional State University",
-    housingDifficulty: 2,
-    partTimeAvailability: 3,
-    languageBarrier: 1,
-    studentSatisfaction: 3,
-    hiddenCosts: "Campus fees and textbooks; limited public transport.",
-    watchOut: "Fewer big-employer internships nearby — plan for relocation.",
   },
 ];

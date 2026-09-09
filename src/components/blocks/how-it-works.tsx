@@ -23,7 +23,7 @@ const steps = [
   {
     n: "04",
     title: "Decide with confidence",
-    body: "Country insights, real applicant comparisons and an AI advisor that explains every recommendation.",
+    body: "Country insights, funding-gap analysis and an AI advisor that explains every recommendation.",
     accent: "bg-accent",
   },
 ] as const;

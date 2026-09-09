@@ -79,17 +79,17 @@ export default async function ComparePage({
     },
     { label: "Values research", get: (p) => (p.valuesResearch ? "Yes" : "No") },
     {
-      label: "Housing difficulty",
+      label: "Housing pressure",
       get: (p) => {
         const r = reality.get(p.university);
-        return r ? `${r.housingDifficulty}/5` : "—";
+        return r ? label(r.housingPressure) : "—";
       },
     },
     {
-      label: "Student satisfaction",
+      label: "Cost of living",
       get: (p) => {
         const r = reality.get(p.university);
-        return r ? `${r.studentSatisfaction}/5` : "—";
+        return r ? label(r.costOfLiving) : "—";
       },
     },
   ];

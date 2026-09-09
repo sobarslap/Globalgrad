@@ -6,7 +6,6 @@ import {
   ClipboardList,
   BellRing,
   Sparkles,
-  Users,
   Wallet,
   Plane,
 } from "lucide-react";
@@ -44,7 +43,6 @@ const secondary = [
   { icon: Globe2, label: "Country Decision Dashboard", href: "/countries" },
   { icon: ClipboardList, label: "Smart Document Checklist", href: "/applications" },
   { icon: BellRing, label: "Deadline & Requirement Monitor", href: "/calendar" },
-  { icon: Users, label: "Similar Student Finder", href: "/similar" },
   { icon: Wallet, label: "Funding Gap Analyzer", href: "/cost" },
   { icon: Plane, label: "Visa Preparation Hub", href: "/visa" },
 ];

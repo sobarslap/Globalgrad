@@ -1,54 +1,59 @@
 import { redirect } from "next/navigation";
-import { Home, Briefcase, Languages, Smile, AlertTriangle, Coins } from "lucide-react";
+import { Home, Briefcase, Languages, Wallet, AlertTriangle, Coins } from "lucide-react";
 import { auth } from "@/lib/auth";
-import { REALITY_CHECKS, type RealityCheck } from "@/lib/data/reality";
+import {
+  REALITY_CHECKS,
+  type RealityCheck,
+  type RealityLevel,
+} from "@/lib/data/reality";
 
-export const metadata = { title: "University reality check — GlobalGrad" };
+export const metadata = { title: "University reality check" };
 
-/** 5-segment rating. `invert` = higher is worse (housing difficulty, language barrier). */
-function Rating({
-  value,
-  invert = false,
+const LABEL: Record<RealityLevel, string> = {
+  low: "Low",
+  moderate: "Moderate",
+  high: "High",
+};
+
+/** Qualitative level pill. `higherIsWorse` flips the good/bad colour. */
+function LevelPill({
+  level,
+  higherIsWorse,
 }: {
-  value: number;
-  invert?: boolean;
+  level: RealityLevel;
+  higherIsWorse?: boolean;
 }) {
-  const good = invert ? value <= 2 : value >= 4;
-  const mid = value === 3;
-  const color = good
-    ? "bg-emerald-500"
-    : mid
-      ? "bg-amber-500"
-      : "bg-rose-500";
+  const bad = higherIsWorse ? level === "high" : level === "low";
+  const good = higherIsWorse ? level === "low" : level === "high";
+  const cls = good
+    ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-500"
+    : bad
+      ? "border-rose-500/40 bg-rose-500/10 text-rose-500"
+      : "border-amber-500/40 bg-amber-500/10 text-amber-500";
   return (
-    <div className="flex gap-1">
-      {[1, 2, 3, 4, 5].map((i) => (
-        <span
-          key={i}
-          className={`h-1.5 w-5 rounded-full ${i <= value ? color : "bg-muted"}`}
-        />
-      ))}
-    </div>
+    <span className={`rounded-full border px-2.5 py-0.5 text-xs font-medium ${cls}`}>
+      {LABEL[level]}
+    </span>
   );
 }
 
 function Row({
   icon: Icon,
   label,
-  value,
-  invert,
+  level,
+  higherIsWorse,
 }: {
   icon: React.ComponentType<{ className?: string }>;
   label: string;
-  value: number;
-  invert?: boolean;
+  level: RealityLevel;
+  higherIsWorse?: boolean;
 }) {
   return (
     <div className="flex items-center justify-between gap-3">
       <span className="flex items-center gap-2 text-sm text-muted-foreground">
         <Icon className="h-4 w-4" /> {label}
       </span>
-      <Rating value={value} invert={invert} />
+      <LevelPill level={level} higherIsWorse={higherIsWorse} />
     </div>
   );
 }
@@ -57,11 +62,12 @@ function Card({ r }: { r: RealityCheck }) {
   return (
     <div className="rounded-2xl border border-border/60 bg-card/40 p-5">
       <h3 className="font-semibold">{r.university}</h3>
+      <p className="text-sm text-muted-foreground">{r.city}</p>
       <div className="mt-4 space-y-2">
-        <Row icon={Home} label="Housing difficulty" value={r.housingDifficulty} invert />
-        <Row icon={Briefcase} label="Part-time availability" value={r.partTimeAvailability} />
-        <Row icon={Languages} label="Language barrier" value={r.languageBarrier} invert />
-        <Row icon={Smile} label="Student satisfaction" value={r.studentSatisfaction} />
+        <Row icon={Home} label="Housing pressure" level={r.housingPressure} higherIsWorse />
+        <Row icon={Wallet} label="Cost of living" level={r.costOfLiving} higherIsWorse />
+        <Row icon={Briefcase} label="Part-time availability" level={r.partTimeAvailability} />
+        <Row icon={Languages} label="Language barrier" level={r.languageBarrier} higherIsWorse />
       </div>
       <div className="mt-4 space-y-2 border-t border-border/60 pt-3 text-sm">
         <p className="flex gap-2 text-muted-foreground">
@@ -95,8 +101,8 @@ export default async function RealityPage() {
             University reality check
           </h1>
           <p className="mt-1 text-muted-foreground">
-            The practical stuff official pages gloss over — housing, hidden
-            costs, part-time work, language and student satisfaction.
+            Practical, widely-reported context official pages gloss over — cost of
+            living, housing pressure, part-time work and language.
           </p>
         </div>
         <div className="grid gap-4 md:grid-cols-2">
@@ -105,8 +111,9 @@ export default async function RealityPage() {
           ))}
         </div>
         <p className="text-xs text-muted-foreground">
-          Ratings are indicative and curated for demonstration — cross-check with
-          current students, subreddits and university forums.
+          These are general, qualitative indicators drawn from broadly-known
+          public information about each city — not precise per-university scores.
+          Always verify with current students, official pages and city cost data.
         </p>
       </main>
     </div>

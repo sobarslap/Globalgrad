@@ -26,7 +26,7 @@
       │  readiness (tiers)│        └─────────┬──────────┘
       │  scholarship+filt.│                  │
       │  cost, country,   │        ┌─────────▼──────────┐
-      │  similar          │        │  PostgreSQL (Neon) │
+      │  requirements     │        │  PostgreSQL (Neon) │
       └───────────────────┘        │  + pgvector        │
                                     └─────────┬──────────┘
       ┌───────────────────┐                  │

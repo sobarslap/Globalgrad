@@ -2,12 +2,12 @@
 
 **One place to track everything that has been built**, mapped against the PRD.
 
-- **PRD (source of truth):** `docs/Group2_ssignment 01 Functional Requirements.pdf` — the CSE471
-  "Systems Analysis and Design" functional-requirements assignment (Group 2, Section 7, Summer 2026).
-  *There is no separate written PRD file; that assignment PDF is the product spec.*
+- **PRD (source of truth):** the CSE471 "Systems Analysis and Design" functional-requirements
+  specification (BRAC University, Summer 2026) — the product spec this build traces to.
 - **This build:** the full platform implemented solo as Zubairul Islam's CV project ("GlobalGrad").
 - **Live:** https://globalgrad-wheat.vercel.app · **Repo:** https://github.com/sobarslap/Globalgrad
-- **Status:** all **15 spec features + 3 roles** done and deployed. Post-launch = ROADMAP polish.
+- **Status:** **14 of the 15 spec features + 3 roles** done and deployed; one (Similar Student
+  Finder) was deliberately removed to keep the site free of fabricated data. Post-launch = ROADMAP polish.
 
 Companion docs: `README.md` (overview), `ROADMAP.md` (what's still worth adding), `SECURITY.md`
 (security checklist). This file is the *traceability + history* record.
@@ -41,8 +41,8 @@ Legend: ✅ done & live · 🟡 done in a lighter/curated form than the ambitiou
 | # | Spec feature | Status | Where it lives |
 |---|--------------|--------|----------------|
 | 1 | **Public Insight Engine** — summarize public sources with citations | 🟡 | `src/lib/actions/insights.ts` + `/insights`. Uses **curated, paraphrased** public-source excerpts, AI-synthesized with `[n]` citations. **Live crawler not built** (ROADMAP A1). |
-| 2 | **University Reality Check** — housing/hidden-costs/part-time/language/satisfaction | ✅ | Curated `src/lib/data/reality.ts`; page `/reality` |
-| 3 | **Similar Student Finder** — compare vs anonymized past applicants | ✅ | Engine `src/lib/engines/similar.ts`; `/similar` (20 synthetic applicants + outcomes) |
+| 2 | **University Reality Check** — cost-of-living/housing/part-time/language | ✅ | Qualitative public-info indicators in `src/lib/data/reality.ts`; page `/reality` |
+| 3 | **Similar Student Finder** — compare vs anonymized past applicants | ⬜ | **Removed** — it required fabricated applicant outcomes with no real public dataset to ground it; dropped for data integrity |
 | 4 | **AI Study Abroad Advisor** — grounded Q&A, explains not replaces | ✅ | `src/lib/actions/advisor.ts` + `src/lib/ai.ts` (Gemini); `/advisor` |
 
 ### Module 4 — Cost, visa & feed
@@ -62,7 +62,7 @@ Legend: ✅ done & live · 🟡 done in a lighter/curated form than the ambitiou
 | **Content Manager** | ✅ | `/content` — publish/unpublish universities, programs, scholarships, insight sources (`src/lib/actions/admin.ts` `setContentPublished`) |
 | **Admin** | ✅ | `/admin` — user management + role changes, stats, audit log (`admin.ts` `setUserRole`, `src/lib/data/admin.ts`) |
 
-**Spec coverage: 15/15 features implemented** (2 in a deliberately lighter form — see §5), **3/3 roles**.
+**Spec coverage: 14 of 15 features shipped** (Similar Student Finder removed for data integrity; 1 more in a deliberately lighter form — see §5), **3/3 roles**.
 
 ---
 
@@ -92,10 +92,10 @@ Legend: ✅ done & live · 🟡 done in a lighter/curated form than the ambitiou
   account deletion (cascade), Postgres-backed rate limiting, per-request role re-fetch,
   security headers + CSP in `next.config.ts`, audit logging. See `SECURITY.md`.
 - **Data layer:** Prisma schema + migrations (`prisma/schema.prisma`), seed (`prisma/seed.ts`) —
-  7 countries, 8 universities, 8 programs, 6 scholarships, 20 synthetic applicants + outcomes,
-  ~12 curated insight sources, deadlines.
+  14 countries, ~53 universities, 61 real programs, 19 real scholarships,
+  10 real-source insight citations, deadlines.
 - **Email:** `src/lib/mailer.ts` (Resend) + daily deadline-digest cron (`vercel.json` + `/api/cron/deadlines`, fails closed without `CRON_SECRET`).
-- **Testing/CI:** Vitest engine tests (readiness/matching/scholarship/cost/country/similar, ~32 green)
+- **Testing/CI:** Vitest engine tests (readiness/matching/scholarship/cost/country/requirements, 60 green)
   + GitHub Actions (`.github/workflows/ci.yml`: install + lint + typecheck + test).
 - **UX shell:** landing page, shared `app-header` + mobile slide-over nav, compare (`/compare`),
   print/PDF export, dark/light theme.
@@ -111,7 +111,7 @@ Legend: ✅ done & live · 🟡 done in a lighter/curated form than the ambitiou
 | Database | Neon Postgres connected, initial migration + seed | `59b1fe4` |
 | Auth | Auth.js email/password + DB-backed dashboard | `956966d` |
 | Modules 1,2,4 + roles | Country dashboard, applications, cost/visa/feed, Admin + Content Manager | (feature commits) |
-| Module 3 | AI advisor, similar students, reality check, public insight engine | incl. `f854820` |
+| Module 3 | AI advisor, reality check, public insight engine | incl. `f854820` |
 | Deploy | GitHub + Vercel live; env vars; `postinstall: prisma generate` | (deploy phase) |
 | Auth polish + email | password reset, account deletion, Resend, deadline cron | `7b19791` |
 | Security hardening | rate limiting, email verification, fresh roles, CSP, audit fixes | `a4093aa` |
@@ -138,8 +138,8 @@ Full backlog with sizing lives in `ROADMAP.md`.
 
 ## 6. Quick reference — pages
 
-`/` landing · `/dashboard` (readiness+matching+scholarship) · `/countries` · `/applications` ·
-`/search` · `/compare` · `/cost` · `/visa` · `/feed` · `/advisor` · `/similar` · `/reality` ·
+`/` landing · `/dashboard` · `/matches` · `/readiness` · `/scholarships` · `/countries` ·
+`/applications` · `/search` · `/compare` · `/cost` · `/visa` · `/feed` · `/advisor` · `/reality` ·
 `/insights` · `/settings` · `/admin` (Admin) · `/content` (CM|Admin) ·
 auth: `/sign-in` `/sign-up` `/verify-email` `/forgot-password` `/reset-password`.
 

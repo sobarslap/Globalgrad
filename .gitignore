@@ -33,8 +33,10 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 
-# claude code local settings (per-machine; may capture ad-hoc commands/secrets)
-.claude/settings.local.json
+# Local dev-tooling / agent config (kept out of the public repo)
+.claude/
+AGENTS.md
+CLAUDE.md
 
 # vercel
 .vercel

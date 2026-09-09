@@ -9,9 +9,9 @@ and an AI advisor grounded in the platform's own rule engines.
 - **Stack:** Next.js 16 · React 19 · TypeScript · Tailwind v4 · PostgreSQL (Neon) · Prisma · Auth.js · Gemini · Resend · Vercel (CI/CD)
 
 > Academic project for **CSE471 — System Analysis and Design** (BRAC University), implemented
-> as a production-grade, deployable application. Data (universities, scholarships, applicant
-> outcomes, visa/insight content) is curated from public/official sources and must be verified
-> against them before acting.
+> as a production-grade, deployable application. Data (universities, scholarships, countries,
+> visa/insight content) is curated from public/official sources and must be verified against
+> them before acting.
 
 📊 **[Competitive case study](docs/CASE-STUDY.md)** — benchmarked against a comparable
 competitor and engineered to match its polish and surpass it on data, architecture, and
@@ -43,10 +43,9 @@ Built to a 4-module, 15-feature specification, with three user roles.
 ### Module 3 — Insights & AI
 - **Public Insight Engine** — synthesizes common advice / warnings / student experiences from
   curated, human-reviewed public sources, with inline `[n]` citations.
-- **University Reality Check** — the practical stuff official pages omit (housing, hidden costs,
-  part-time availability, language barrier, satisfaction).
-- **Similar Student Finder** — compares your profile against anonymized past applicants and
-  shows where they applied, admit rates and scholarship rates.
+- **University Reality Check** — the practical stuff official pages omit, as qualitative
+  indicators drawn from public information (cost of living, housing pressure, part-time
+  availability, language barrier).
 - **AI Study Abroad Advisor** — a Gemini chat grounded in your profile + the engines' results;
   it explains and contextualizes, but never replaces the rule-based matching.
 
@@ -71,14 +70,15 @@ src/
   app/
     (marketing)        # landing page
     (auth)             # sign-in / sign-up / forgot- & reset-password
-    (app)              # dashboard, applications, cost, visa, countries, similar,
-                       #   reality, insights, advisor, feed, settings, admin, content
+    (app)              # dashboard, matches, readiness, scholarships, applications,
+                       #   cost, visa, countries, reality, insights, advisor, feed,
+                       #   settings, admin, content
     api/auth/[...]     # Auth.js route handler
     api/cron/deadlines # deadline email digest (Vercel Cron, secret-protected)
   components/          # ui primitives + feature blocks
   lib/
     engines/           # pure, unit-tested decision engines (readiness, matching,
-                       #   scholarship, country, cost, similar)
+                       #   scholarship, country, cost, requirements)
     actions/           # server actions (auth, profile, applications, admin,
                        #   advisor, insights, password, account) — all authz-guarded
     data/              # DB-backed loaders mapped to engine types
@@ -185,3 +185,7 @@ hits `/api/cron/deadlines` (protected by `CRON_SECRET`) to send deadline digests
   fixing a host-header password-reset-poisoning vulnerability.
 - Integrated **transactional email** (Resend) with a scheduled deadline-reminder cron, and a
   **cited "public insight" AI synthesis** over curated, content-manager-reviewed sources.
+
+## License
+
+MIT © 2026 Zubairul Islam Mahi — see [LICENSE](LICENSE).

@@ -7,7 +7,7 @@ import { getPublishedPrograms } from "@/lib/data/catalog";
 import { scoreReadinessByTier } from "@/lib/engines/readiness";
 import { Scorecard } from "@/components/readiness/scorecard";
 
-export const metadata = { title: "Readiness Scorecard — GlobalGrad" };
+export const metadata = { title: "Readiness scorecard" };
 
 export default async function ReadinessPage() {
   const session = await auth();

@@ -6,7 +6,7 @@ import { getMyProfile } from "@/lib/actions/profile";
 import { getPublishedScholarships } from "@/lib/data/catalog";
 import { ScholarshipWizard } from "@/components/scholarships/scholarship-wizard";
 
-export const metadata = { title: "Scholarships — GlobalGrad" };
+export const metadata = { title: "Scholarships" };
 
 export default async function ScholarshipsPage() {
   const session = await auth();

@@ -6,7 +6,7 @@ import { getMyProfile } from "@/lib/actions/profile";
 import { getPublishedPrograms } from "@/lib/data/catalog";
 import { MatchExplorer } from "@/components/matches/match-explorer";
 
-export const metadata = { title: "University Matching — GlobalGrad" };
+export const metadata = { title: "University matching" };
 
 export default async function MatchesPage() {
   const session = await auth();

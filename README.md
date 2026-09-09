@@ -10,7 +10,12 @@ and an AI advisor grounded in the platform's own rule engines.
 
 > Academic project for **CSE471 — System Analysis and Design** (BRAC University), implemented
 > as a production-grade, deployable application. Data (universities, scholarships, applicant
-> outcomes, visa/insight content) is illustrative and must be verified against official sources.
+> outcomes, visa/insight content) is curated from public/official sources and must be verified
+> against them before acting.
+
+📊 **[Competitive case study](docs/CASE-STUDY.md)** — benchmarked against a comparable
+competitor and engineered to match its polish and surpass it on data, architecture, and
+go-to-market. · 🏗 **[Architecture](docs/ARCHITECTURE.md)**
 
 ---
 

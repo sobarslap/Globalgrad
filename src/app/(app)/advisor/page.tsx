@@ -7,7 +7,7 @@ import { getPublishedPrograms } from "@/lib/data/catalog";
 import { scoreReadinessByTier } from "@/lib/engines/readiness";
 import { AdvisorChat } from "@/components/advisor/advisor-chat";
 
-export const metadata = { title: "AI Advisor — GlobalGrad" };
+export const metadata = { title: "AI advisor" };
 
 export default async function AdvisorPage() {
   const session = await auth();

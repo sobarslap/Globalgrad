@@ -23,7 +23,7 @@ const cacheOpts = { revalidate: 3600, tags: [CATALOG_TAG] };
 /** Published programs mapped to the engine's Program shape. */
 export const getPublishedPrograms = unstable_cache(
   _getPublishedPrograms,
-  ["catalog:programs"],
+  ["catalog:programs:v2"],
   cacheOpts
 );
 async function _getPublishedPrograms(): Promise<Program[]> {
@@ -68,7 +68,7 @@ export interface CostProgram {
 /** Published programs with tuition + their country's living cost (Cost Calculator). */
 export const getProgramsWithCost = unstable_cache(
   _getProgramsWithCost,
-  ["catalog:programs-cost"],
+  ["catalog:programs-cost:v2"],
   cacheOpts
 );
 async function _getProgramsWithCost(): Promise<CostProgram[]> {
@@ -98,7 +98,7 @@ async function _getProgramsWithCost(): Promise<CostProgram[]> {
 /** All countries with macro data, for the Country Decision Dashboard. */
 export const getCountries = unstable_cache(
   _getCountries,
-  ["catalog:countries"],
+  ["catalog:countries:v2"],
   cacheOpts
 );
 async function _getCountries(): Promise<CountryInfo[]> {
@@ -120,7 +120,7 @@ async function _getCountries(): Promise<CountryInfo[]> {
 /** Published scholarships mapped to the engine's Scholarship shape. */
 export const getPublishedScholarships = unstable_cache(
   _getPublishedScholarships,
-  ["catalog:scholarships"],
+  ["catalog:scholarships:v2"],
   cacheOpts
 );
 async function _getPublishedScholarships(): Promise<Scholarship[]> {

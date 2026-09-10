@@ -165,14 +165,14 @@ STUDENT QUESTION: ${q}`;
         topCountries
           .map(
             (c) =>
-              `• ${c.country.name}: plan proof-of-funds for tuition + roughly $${
-                (c.country.monthlyLivingCostUsd ?? 1200) * 12
-              }/yr living costs. Post-study work: ${
+              `• ${c.country.name}: budget for tuition plus living costs (estimated ~$${
+                c.country.monthlyLivingCostUsd ?? "—"
+              }/month here). Post-study work: ${
                 c.country.postStudyWorkMonths ?? "—"
               } months.`
           )
           .join("\n") +
-        `\n\nAlways confirm current financial thresholds and document lists on the official embassy/immigration site before applying.`;
+        `\n\nProof-of-funds thresholds are set by each country and change often — look up the exact required amount and document list on the official embassy/immigration site before applying. I don't have the official figures to quote.`;
       break;
     case "roadmap":
       fallback =

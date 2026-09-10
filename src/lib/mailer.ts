@@ -20,6 +20,10 @@ export async function sendEmail(params: {
   if (!key) return { ok: false, skipped: true };
 
   const from = process.env.EMAIL_FROM || "GlobalGrad <onboarding@resend.dev>";
+  // Bound the request so a hung Resend endpoint can't stall the caller (a server
+  // action) indefinitely.
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 10_000);
   try {
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
@@ -35,6 +39,7 @@ export async function sendEmail(params: {
         ...(params.replyTo ? { reply_to: params.replyTo } : {}),
       }),
       cache: "no-store",
+      signal: controller.signal,
     });
     if (!res.ok) {
       console.error(`[mailer] resend status=${res.status}`);
@@ -43,6 +48,8 @@ export async function sendEmail(params: {
     return { ok: true };
   } catch {
     return { ok: false, error: "Email service unreachable." };
+  } finally {
+    clearTimeout(timeout);
   }
 }
 

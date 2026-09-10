@@ -6,7 +6,16 @@ import { headers } from "next/headers";
  * Order: explicit AUTH_URL → Vercel production domain → localhost (dev only).
  */
 export async function baseUrl(): Promise<string> {
-  if (process.env.AUTH_URL) return process.env.AUTH_URL;
+  if (process.env.AUTH_URL) {
+    // In production, never emit an insecure (http) origin in links (CWE-319).
+    if (
+      process.env.NODE_ENV === "production" &&
+      process.env.AUTH_URL.startsWith("http://")
+    ) {
+      return process.env.AUTH_URL.replace(/^http:\/\//, "https://");
+    }
+    return process.env.AUTH_URL;
+  }
   const vercel = process.env.VERCEL_PROJECT_PRODUCTION_URL;
   if (vercel) return `https://${vercel}`;
   if (process.env.NODE_ENV !== "production") {

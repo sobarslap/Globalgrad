@@ -25,7 +25,8 @@ const NEW_COUNTRIES = [
   { name: "Denmark", code: "DK", flagEmoji: "🇩🇰", postStudyWorkMonths: 36, monthlyLivingCostUsd: 1300, costOfLivingIndex: 85, partTimeAllowed: true, workHoursPerWeek: 20, currency: "DKK", latitude: 56.0, longitude: 10.0 },
   { name: "Norway", code: "NO", flagEmoji: "🇳🇴", postStudyWorkMonths: 12, monthlyLivingCostUsd: 1400, costOfLivingIndex: 90, partTimeAllowed: true, workHoursPerWeek: 20, currency: "NOK", latitude: 60.5, longitude: 8.5 },
   { name: "Finland", code: "FI", flagEmoji: "🇫🇮", postStudyWorkMonths: 24, monthlyLivingCostUsd: 1000, costOfLivingIndex: 72, partTimeAllowed: true, workHoursPerWeek: 30, currency: "EUR", latitude: 61.9, longitude: 25.7 },
-  { name: "Belgium", code: "BE", flagEmoji: "🇧🇪", postStudyWorkMonths: 12, monthlyLivingCostUsd: 1000, costOfLivingIndex: 68, partTimeAllowed: true, workHoursPerWeek: 20, currency: "EUR", latitude: 50.5, longitude: 4.5 },
+  // Belgium is the canonical source in prisma/data/countries.real.ts; not duplicated here
+  // (this upsert would otherwise overwrite it with conflicting macro values).
   { name: "Austria", code: "AT", flagEmoji: "🇦🇹", postStudyWorkMonths: 12, monthlyLivingCostUsd: 1050, costOfLivingIndex: 70, partTimeAllowed: true, workHoursPerWeek: 20, currency: "EUR", latitude: 47.6, longitude: 14.5 },
 ];
 

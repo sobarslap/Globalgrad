@@ -312,7 +312,7 @@ model Scholarship {
   livingAllowance Boolean            @default(false)
   deadlineAt      DateTime? // primary application deadline
   applicationUrl  String? // official scholarship page
-  hostCountries   String[] // country display names this funds study in
+  hostCountries   String[]           @default([]) // country display names this funds study in
 
   country   Country?   @relation(fields: [countryId], references: [id])
   deadlines Deadline[]

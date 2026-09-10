@@ -75,20 +75,29 @@ export async function resetPassword(
   if (!parsed.success)
     return { error: parsed.error.issues[0]?.message ?? "Invalid password." };
 
-  const record = await db.passwordResetToken.findUnique({
-    where: { tokenHash: sha256(token) },
+  const tokenHash = sha256(token);
+  const now = new Date();
+
+  // Atomically consume the token: the conditional updateMany only affects the
+  // row while it is still unused and unexpired, so two concurrent submissions of
+  // the same token can't both succeed (closes the TOCTOU race, CWE-367).
+  const consumed = await db.passwordResetToken.updateMany({
+    where: { tokenHash, usedAt: null, expires: { gt: now } },
+    data: { usedAt: now },
   });
-  if (!record || record.usedAt || record.expires < new Date()) {
+  if (consumed.count !== 1) {
     return { error: "This reset link is invalid or has expired." };
   }
+
+  const record = await db.passwordResetToken.findUnique({
+    where: { tokenHash },
+    select: { userId: true },
+  });
+  if (!record) return { error: "This reset link is invalid or has expired." };
 
   const passwordHash = await hashPassword(parsed.data);
   await db.$transaction([
     db.user.update({ where: { id: record.userId }, data: { passwordHash } }),
-    db.passwordResetToken.update({
-      where: { id: record.id },
-      data: { usedAt: new Date() },
-    }),
     // Invalidate any other outstanding tokens for this user.
     db.passwordResetToken.deleteMany({
       where: { userId: record.userId, usedAt: null },

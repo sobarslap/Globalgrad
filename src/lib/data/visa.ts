@@ -54,7 +54,7 @@ export const VISA_GUIDES: VisaGuide[] = [
       "Provincial Attestation Letter (PAL) if required",
     ],
     financialProof:
-      "A GIC of ~CAD 20,635 plus first-year tuition, or equivalent bank proof.",
+      "A GIC of ~CAD 23,448 (one applicant outside Quebec, for applications on/after 1 Sep 2026) plus first-year tuition, or equivalent bank proof. Verify the current figure on the IRCC site.",
     processingTimeline: "Varies by country; often 4–12 weeks.",
     visaFeeUsd: 110,
     embassyUrl: "https://www.canada.ca/en/immigration-refugees-citizenship/services/study-canada/study-permit.html",

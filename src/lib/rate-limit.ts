@@ -71,31 +71,28 @@ export async function rateLimit(
   const now = new Date();
   const resetAt = new Date(now.getTime() + windowMs);
 
-  const existing = await db.rateLimit.findUnique({ where: { key } });
+  // Atomic check-and-increment in a single statement so concurrent hits can't
+  // both read a stale count and over-increment past the limit. On a fresh window
+  // (expired resetAt) the counter resets to 1; otherwise it increments.
+  const rows = await db.$queryRaw<{ count: number; resetAt: Date }[]>`
+    INSERT INTO "RateLimit" ("key", "count", "resetAt")
+    VALUES (${key}, 1, ${resetAt})
+    ON CONFLICT ("key") DO UPDATE SET
+      "count" = CASE WHEN "RateLimit"."resetAt" <= ${now} THEN 1 ELSE "RateLimit"."count" + 1 END,
+      "resetAt" = CASE WHEN "RateLimit"."resetAt" <= ${now} THEN ${resetAt} ELSE "RateLimit"."resetAt" END
+    RETURNING "count", "resetAt"`;
 
-  // New window (or first hit): reset the counter.
-  if (!existing || existing.resetAt <= now) {
-    await db.rateLimit.upsert({
-      where: { key },
-      create: { key, count: 1, resetAt },
-      update: { count: 1, resetAt },
-    });
-    return { ok: true, remaining: limit - 1, retryAfterSec: 0 };
-  }
-
-  if (existing.count >= limit) {
+  const row = rows[0];
+  const count = Number(row.count);
+  const windowResetAt = new Date(row.resetAt);
+  if (count > limit) {
     return {
       ok: false,
       remaining: 0,
-      retryAfterSec: Math.ceil((existing.resetAt.getTime() - now.getTime()) / 1000),
+      retryAfterSec: Math.ceil((windowResetAt.getTime() - now.getTime()) / 1000),
     };
   }
-
-  await db.rateLimit.update({
-    where: { key },
-    data: { count: { increment: 1 } },
-  });
-  return { ok: true, remaining: limit - existing.count - 1, retryAfterSec: 0 };
+  return { ok: true, remaining: Math.max(0, limit - count), retryAfterSec: 0 };
 }
 
 /** Best-effort client IP from proxy headers (Vercel/Neon-style). */

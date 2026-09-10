@@ -1,0 +1,502 @@
+// GlobalGrad — Prisma schema (PostgreSQL / Neon).
+// Auth.js adapter models + the study-abroad domain. Embeddings/pgvector for the
+// Public Insight Engine are added in a later phase.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ---------- Roles & enums ----------
+enum Role {
+  STUDENT
+  CONTENT_MANAGER
+  ADMIN
+}
+
+enum DegreeLevel {
+  BACHELORS
+  MASTERS
+  PHD
+}
+
+enum ApplicationStatus {
+  PLANNED
+  PREPARING
+  APPLIED
+  INTERVIEW
+  OFFER_RECEIVED
+  REJECTED
+  VISA_PROCESSING
+  ENROLLED
+}
+
+enum DocStatus {
+  PENDING
+  PREPARED
+  SUBMITTED
+}
+
+enum InsightSourceType {
+  FAQ
+  EMBASSY
+  BLOG
+  FORUM
+  YOUTUBE
+  NEWS
+}
+
+enum NotificationType {
+  DEADLINE
+  REQUIREMENT_CHANGE
+  MATCH
+  SCHOLARSHIP
+  SYSTEM
+}
+
+// How much of the total cost a scholarship covers.
+enum ScholarshipFunding {
+  FULLY_FUNDED
+  PARTIAL
+}
+
+// Depth of coverage for the wizard's coverage filter.
+enum Coverage {
+  FULL // tuition + stipend/living
+  MAJOR // most of tuition
+  PARTIAL // a contribution
+}
+
+// ---------- Auth.js (NextAuth Prisma adapter) ----------
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  passwordHash  String? // argon2id; null for OAuth-only accounts
+  role          Role      @default(STUDENT)
+  twoFactorEnabled Boolean @default(false)
+  twoFactorSecret  String? // base32 TOTP secret; set during setup, cleared on disable
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Stripe billing (test mode). Set on first checkout; one Stripe customer per user.
+  stripeCustomerId String? @unique
+
+  accounts       Account[]
+  sessions       Session[]
+  studentProfile StudentProfile?
+  applications   Application[]
+  auditLogs      AuditLog[]
+  notifications  Notification[]
+  subscription   Subscription?
+}
+
+// ---------- Billing (Stripe) ----------
+enum PlanTier {
+  FREE
+  PRO
+  INSTITUTION
+}
+
+// Mirror of the user's current Stripe subscription. The webhook is the single
+// writer; the app reads this to know the active plan (never calls Stripe on the
+// render path). One row per user (upserted on subscription create/update).
+model Subscription {
+  id                   String    @id @default(cuid())
+  userId               String    @unique
+  stripeCustomerId     String
+  stripeSubscriptionId String    @unique
+  stripePriceId        String
+  plan                 PlanTier  @default(FREE)
+  // Raw Stripe status: active, trialing, past_due, canceled, incomplete, …
+  status               String
+  interval             String? // "month" | "year"
+  currentPeriodEnd     DateTime?
+  cancelAtPeriodEnd    Boolean   @default(false)
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([stripeCustomerId])
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// Single-use email verification tokens (store only a hash of the token).
+model EmailVerificationToken {
+  id        String    @id @default(cuid())
+  userId    String
+  tokenHash String    @unique
+  expires   DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
+}
+
+// Single-use, time-limited password reset tokens (store only a hash of the token).
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  userId    String
+  tokenHash String   @unique
+  expires   DateTime
+  usedAt    DateTime?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+// ---------- Domain ----------
+model StudentProfile {
+  id                   String      @id @default(cuid())
+  userId               String      @unique
+  cgpa                 Float
+  ielts                Float
+  researchPapers       Int         @default(0)
+  workExperienceMonths Int         @default(0)
+  targetLevel          DegreeLevel @default(MASTERS)
+  targetField          String
+  nationality          String
+  greTotal             Int?
+  budgetUsd            Int?
+  updatedAt            DateTime    @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Country {
+  id                  String   @id @default(cuid())
+  name                String   @unique
+  code                String   @unique
+  flagEmoji           String?
+  postStudyWorkMonths Int? // length of a post-study work visa
+  monthlyLivingCostUsd Int? // rough student monthly living cost
+  costOfLivingIndex   Float? // 100 = US baseline
+  partTimeAllowed     Boolean @default(false)
+  workHoursPerWeek    Int? // permitted part-time hours during term
+  currency            String?
+  latitude            Float? // approximate country centroid for maps
+  longitude           Float?
+
+  universities University[]
+  scholarships Scholarship[]
+}
+
+model University {
+  id        String    @id @default(cuid())
+  name      String
+  countryId String?
+  city      String?
+  worldRank Int?
+  latitude  Float? // campus location for maps
+  longitude Float?
+  published Boolean   @default(false) // Content-Manager verified before public
+
+  country  Country?  @relation(fields: [countryId], references: [id])
+  programs Program[]
+
+  @@index([name])
+}
+
+/**
+ * Public university catalog imported from the open Hipolabs dataset. Kept
+ * separate from `University` (the curated, program-bearing entities the
+ * matching engine and admin manage) so a bulk import of thousands of real
+ * institutions can be browsed without polluting matching, the map, or the
+ * admin content surface. Denormalized country name/code — this is a flat,
+ * read-mostly browse catalog.
+ */
+model CatalogUniversity {
+  id          String  @id @default(cuid())
+  name        String
+  country     String // display name, e.g. "Japan"
+  countryCode String // ISO alpha-2, e.g. "JP"
+  city        String?
+  website     String?
+
+  @@unique([name, countryCode])
+  @@index([countryCode])
+  @@index([country])
+}
+
+model Program {
+  id             String      @id @default(cuid())
+  universityId   String
+  programName    String
+  field          String
+  level          DegreeLevel
+  selectivity    Float // 0–100
+  minCgpa        Float
+  minIelts       Float
+  admitCgpa      Float
+  admitIelts     Float
+  valuesResearch Boolean     @default(false)
+  tuitionUsd     Int?
+  minGre         Int? // minimum GRE total where required; null = not required
+  admitGre       Int? // typical admit GRE total
+  intake         String? // e.g. "Fall", "Fall/Winter"
+  applicationUrl String? // official program/apply page
+  published      Boolean     @default(false)
+
+  university         University           @relation(fields: [universityId], references: [id], onDelete: Cascade)
+  applications       Application[]
+  deadlines          Deadline[]
+  requirementChanges RequirementChange[]
+
+  @@index([field])
+}
+
+model Scholarship {
+  id                    String        @id @default(cuid())
+  name                  String
+  provider              String
+  countryId             String?
+  eligibleNationalities String[]
+  eligibleFields        String[]
+  eligibleLevels        DegreeLevel[]
+  minCgpa               Float
+  minIelts              Float
+  meritCgpa             Float
+  valuesResearch        Boolean       @default(false)
+  amountUsd             Int?
+  published             Boolean       @default(false)
+
+  // Rich filter fields (Scholarship wizard). Backed by curated real data.
+  funding         ScholarshipFunding @default(PARTIAL)
+  coverage        Coverage           @default(PARTIAL)
+  needBased       Boolean            @default(false)
+  meritBased      Boolean            @default(true)
+  renewable       Boolean            @default(false)
+  noAppFee        Boolean            @default(true)
+  livingAllowance Boolean            @default(false)
+  deadlineAt      DateTime? // primary application deadline
+  applicationUrl  String? // official scholarship page
+  hostCountries   String[] // country display names this funds study in
+
+  country   Country?   @relation(fields: [countryId], references: [id])
+  deadlines Deadline[]
+}
+
+model Application {
+  id        String            @id @default(cuid())
+  userId    String
+  programId String
+  status    ApplicationStatus @default(PLANNED)
+  notes     String?
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+
+  user      User                    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  program   Program                 @relation(fields: [programId], references: [id], onDelete: Cascade)
+  checklist DocumentChecklistItem[]
+
+  @@unique([userId, programId])
+  @@index([userId])
+}
+
+model DocumentChecklistItem {
+  id            String    @id @default(cuid())
+  applicationId String
+  name          String
+  status        DocStatus @default(PENDING)
+
+  // Optional uploaded document (A3). fileKey is UploadThing's storage key, kept
+  // so the file can be deleted from storage when the row is cleared/replaced.
+  fileUrl       String?
+  fileName      String?
+  fileKey       String?
+
+  application Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  @@index([applicationId])
+}
+
+model Deadline {
+  id            String    @id @default(cuid())
+  title         String
+  dueDate       DateTime
+  programId     String?
+  scholarshipId String?
+
+  program     Program?     @relation(fields: [programId], references: [id], onDelete: Cascade)
+  scholarship Scholarship? @relation(fields: [scholarshipId], references: [id], onDelete: Cascade)
+
+  @@index([dueDate])
+}
+
+// Curated public-source excerpts for the Public Insight Engine (Module 3, F1).
+// Content Managers verify/publish these before students see synthesized insights.
+model InsightSource {
+  id         String            @id @default(cuid())
+  title      String
+  url        String
+  sourceType InsightSourceType
+  country    String? // country name, or null for general
+  topic      String
+  snippet    String // the curated excerpt used for synthesis
+  published  Boolean           @default(true)
+  createdAt  DateTime          @default(now())
+
+  // Crawl provenance (A1): where the text came from and when it was last fetched.
+  // null origin = the original hand-curated seed sources.
+  origin      InsightOrigin @default(CURATED)
+  fetchedAt   DateTime?
+  contentHash String? // dedupe / change-detection for re-crawls
+
+  // pgvector embedding of (title + snippet) for semantic retrieval (A1).
+  // Unsupported type — read/written via raw SQL (Prisma Client can't map it).
+  embedding Unsupported("vector(768)")?
+
+  @@index([country])
+  @@index([origin, published])
+}
+
+enum InsightOrigin {
+  CURATED // hand-written seed excerpt
+  CRAWLED // fetched by the crawler, awaiting CM review
+}
+
+// Whitelisted pages the crawler fetches (A1). Admin/Content-Manager controlled.
+// Each successful, changed crawl produces an unpublished CRAWLED InsightSource.
+model CrawlSource {
+  id            String            @id @default(cuid())
+  url           String            @unique
+  title         String
+  sourceType    InsightSourceType
+  country       String?
+  topic         String
+  enabled       Boolean           @default(true)
+  lastCrawledAt DateTime?
+  lastHash      String?
+  lastStatus    String? // "ok" | "unchanged" | "error: …"
+  createdAt     DateTime          @default(now())
+
+  @@index([enabled])
+}
+
+// Anonymized past applicants for the Similar Student Finder (Module 3, F3).
+model AnonymizedApplicant {
+  id             String  @id @default(cuid())
+  cgpa           Float
+  ielts          Float
+  researchPapers Int     @default(0)
+  targetField    String
+  nationality    String
+  targetLevel    DegreeLevel @default(MASTERS)
+
+  outcomes ApplicantOutcome[]
+
+  @@index([targetField])
+}
+
+model ApplicantOutcome {
+  id          String  @id @default(cuid())
+  applicantId String
+  university  String
+  program     String?
+  admitted    Boolean
+  scholarship Boolean @default(false)
+
+  applicant AnonymizedApplicant @relation(fields: [applicantId], references: [id], onDelete: Cascade)
+
+  @@index([applicantId])
+}
+
+// Shared fixed-window rate-limit counters (works across serverless instances,
+// unlike in-memory). Keyed by e.g. "login:<ip>" or "advisor:<userId>".
+model RateLimit {
+  key     String   @id
+  count   Int      @default(0)
+  resetAt DateTime
+
+  @@index([resetAt])
+}
+
+// Server-side audit trail (never exposed to clients).
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  action    String
+  detail    String?
+  createdAt DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+}
+
+// In-app notifications (Module 4-adjacent; complements email). Deadline reminders,
+// requirement changes, new matches, scholarship alerts.
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  type      NotificationType
+  title     String
+  body      String?
+  href      String? // deep link into the app
+  dedupeKey String? // stable key to avoid re-notifying for the same event
+  read      Boolean          @default(false)
+  createdAt DateTime         @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, dedupeKey])
+  @@index([userId, read])
+}
+
+// Detected admission-requirement changes for a program (Module 2, F4).
+// Written when a Content Manager edits a program's requirements; students with
+// an application to that program are notified.
+model RequirementChange {
+  id         String   @id @default(cuid())
+  programId  String
+  field      String // e.g. "minIelts", "minCgpa"
+  oldValue   String
+  newValue   String
+  detectedAt DateTime @default(now())
+
+  program Program @relation(fields: [programId], references: [id], onDelete: Cascade)
+
+  @@index([programId])
+}

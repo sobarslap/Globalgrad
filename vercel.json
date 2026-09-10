@@ -1,0 +1,13 @@
+{
+  "regions": ["sin1"],
+  "crons": [
+    {
+      "path": "/api/cron/deadlines",
+      "schedule": "0 9 * * *"
+    },
+    {
+      "path": "/api/cron/crawl",
+      "schedule": "0 3 * * *"
+    }
+  ]
+}

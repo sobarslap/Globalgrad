@@ -1,0 +1,25 @@
+# GlobalGrad
+
+> Personalized decision-support platform for studying abroad and scholarship planning. Every recommendation is grounded in structured data and shown with the reasoning behind it — the product explains decisions, it does not replace the student.
+
+GlobalGrad helps prospective international students decide *where* and *how* to study abroad. It scores an applicant's readiness, sorts universities into Safe / Target / Reach, estimates scholarship eligibility, models the full cost of a degree with a funding-gap analysis, walks through visa preparation, and answers questions with an AI advisor grounded in the platform's own data.
+
+## Core features
+
+- [Readiness & Matching](https://globalgrad-wheat.vercel.app/dashboard): candidate readiness score, Safe/Target/Reach university buckets, scholarship eligibility %.
+- [Country Decision Dashboard](https://globalgrad-wheat.vercel.app/countries): compare destinations on work-visa rules, cost of living, and part-time work laws.
+- [Cost of Degree Calculator](https://globalgrad-wheat.vercel.app/cost): tuition, living, visa, insurance, flights and emergency costs, with a funding-gap analyzer.
+- [Visa Preparation Hub](https://globalgrad-wheat.vercel.app/visa): documents, financial-proof thresholds, embassy links, timelines and common mistakes (US/CA/GB/DE/AU).
+- [Public Insight Engine](https://globalgrad-wheat.vercel.app/insights): summarized public-source insights with citations.
+- [AI Study Abroad Advisor](https://globalgrad-wheat.vercel.app/advisor): grounded Q&A that explains, and does not replace, the student's decision.
+
+## Reference
+
+- [About](https://globalgrad-wheat.vercel.app/about): what GlobalGrad is, who built it, and how the data is sourced.
+- [Privacy Policy](https://globalgrad-wheat.vercel.app/privacy)
+- [Terms of Service](https://globalgrad-wheat.vercel.app/terms)
+
+## Notes
+
+- Data is a curated, realistic demo dataset (countries, universities, programs, scholarships, and anonymized past-applicant outcomes), not an exhaustive live catalog.
+- Guidance is informational and is not legal, immigration, or financial advice.

@@ -1,11 +1,17 @@
 version: 2
+# Dependabot version updates are DISABLED: open-pull-requests-limit is 0 for
+# every ecosystem, so no automated dependency PRs are opened. The grouping and
+# ignore rules below are kept so updates can be re-enabled later by restoring a
+# non-zero limit (e.g. 5). NOTE: this only turns off scheduled *version* update
+# PRs — Dependabot *security* alerts/updates are governed by the repository's
+# Code security settings, not this file.
 updates:
-  # npm dependencies — weekly, grouped to keep PR noise down.
+  # npm dependencies — disabled (limit 0). Grouped config retained for re-enable.
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
       interval: "weekly"
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 0
     groups:
       production-dependencies:
         dependency-type: "production"
@@ -27,8 +33,9 @@ updates:
       - dependency-name: "@types/node"
         update-types: ["version-update:semver-major"]
 
-  # GitHub Actions used in CI.
+  # GitHub Actions used in CI — disabled (limit 0).
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
+    open-pull-requests-limit: 0

@@ -1,6 +1,7 @@
 import { headers } from "next/headers";
 import { ChevronDown } from "lucide-react";
 import { Eyebrow } from "@/components/marketing/kit";
+import { serializeJsonLd } from "@/lib/jsonld";
 
 /**
  * FAQ block. Uses native <details>/<summary> for expand/collapse — accessible
@@ -51,7 +52,7 @@ export async function FaqSection() {
       <script
         type="application/ld+json"
         nonce={nonce}
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(jsonLd) }}
       />
       <div className="flex flex-col items-center text-center">
         <Eyebrow>FAQ</Eyebrow>

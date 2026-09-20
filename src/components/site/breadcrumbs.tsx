@@ -2,6 +2,7 @@ import Link from "next/link";
 import { headers } from "next/headers";
 import { ChevronRight } from "lucide-react";
 import { SITE_URL } from "@/lib/site";
+import { serializeJsonLd } from "@/lib/jsonld";
 
 export type Crumb = { label: string; href?: string };
 
@@ -30,7 +31,7 @@ export async function Breadcrumbs({ items }: { items: Crumb[] }) {
       <script
         type="application/ld+json"
         nonce={nonce}
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(jsonLd) }}
       />
       <ol className="flex flex-wrap items-center gap-1.5 text-muted-foreground">
         {trail.map((c, i) => {

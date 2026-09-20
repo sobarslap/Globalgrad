@@ -1,23 +1,44 @@
 "use client";
 
-import { useState, useSyncExternalStore } from "react";
+import { useSyncExternalStore } from "react";
 import Link from "next/link";
 
 const STORAGE_KEY = "gg-cookie-consent";
 
-// No external changes to subscribe to — the value only changes on dismiss,
-// which re-renders via local state.
-const subscribe = () => () => {};
+const listeners = new Set<() => void>();
 
-/** True once the visitor has accepted/dismissed the notice (or if storage is unavailable). */
-const hasResponded = () => {
+function emitChange() {
+  for (const listener of listeners) listener();
+}
+
+function subscribe(callback: () => void) {
+  listeners.add(callback);
+  window.addEventListener("storage", callback);
+  return () => {
+    listeners.delete(callback);
+    window.removeEventListener("storage", callback);
+  };
+}
+
+/**
+ * Whether the visitor has already responded. Reads localStorage lazily; if it
+ * throws (private mode) we treat the notice as handled so we never nag.
+ */
+function getSnapshot() {
   try {
-    return !!localStorage.getItem(STORAGE_KEY);
+    return localStorage.getItem(STORAGE_KEY) != null;
   } catch {
-    // localStorage unavailable (private mode) — don't nag.
     return true;
   }
-};
+}
+
+/**
+ * On the server (and the hydration render) we always report "responded" so the
+ * banner renders nothing — this is what avoids a hydration mismatch.
+ */
+function getServerSnapshot() {
+  return true;
+}
 
 /**
  * Minimal, honest cookie banner. GlobalGrad only sets strictly-necessary
@@ -30,8 +51,11 @@ const hasResponded = () => {
  * no `useEffect` + `setState` and no hydration mismatch.
  */
 export function CookieConsent() {
-  const responded = useSyncExternalStore(subscribe, hasResponded, () => true);
-  const [dismissed, setDismissed] = useState(false);
+  const hasResponded = useSyncExternalStore(
+    subscribe,
+    getSnapshot,
+    getServerSnapshot,
+  );
 
   const dismiss = (value: "accepted" | "dismissed") => {
     try {
@@ -39,10 +63,10 @@ export function CookieConsent() {
     } catch {
       /* ignore */
     }
-    setDismissed(true);
+    emitChange();
   };
 
-  if (responded || dismissed) return null;
+  if (hasResponded) return null;
 
   return (
     <div

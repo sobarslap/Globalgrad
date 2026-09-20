@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { sendEmail, emailShell } from "@/lib/mailer";
 import { notify } from "@/lib/notify";
+import { authorizeCron } from "@/lib/cron-auth";
 
 /**
  * Deadline & Requirement Monitor email digest (Module 2, F4).
@@ -12,12 +13,10 @@ import { notify } from "@/lib/notify";
 export async function GET(req: Request) {
   // Fail closed: without a configured secret the endpoint is disabled, and with
   // one the caller must present it (Vercel Cron injects it automatically).
-  const secret = process.env.CRON_SECRET;
-  if (!secret) {
-    return NextResponse.json({ error: "Not configured" }, { status: 503 });
-  }
-  if (req.headers.get("authorization") !== `Bearer ${secret}`) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  // Constant-time check — see authorizeCron.
+  const authz = authorizeCron(req);
+  if (!authz.ok) {
+    return NextResponse.json({ error: authz.error }, { status: authz.status });
   }
 
   const now = Date.now();

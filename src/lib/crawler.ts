@@ -52,10 +52,58 @@ export type FetchResult =
   | { ok: false; error: string };
 
 /**
+ * SSRF guard: only allow http(s) to a public host. Blocks localhost, private /
+ * link-local ranges, and the cloud metadata address (169.254.169.254) so a
+ * crawl source can never be pointed at internal infrastructure. This is a
+ * best-effort literal-host check (it does not resolve DNS), layered on top of
+ * the fact that crawl sources are curated, not user-submitted.
+ */
+export function isFetchableUrl(raw: string): boolean {
+  let u: URL;
+  try {
+    u = new URL(raw);
+  } catch {
+    return false;
+  }
+  if (u.protocol !== "http:" && u.protocol !== "https:") return false;
+
+  const host = u.hostname.toLowerCase().replace(/^\[|\]$/g, "");
+  if (
+    host === "localhost" ||
+    host.endsWith(".localhost") ||
+    host.endsWith(".local") ||
+    host.endsWith(".internal")
+  ) {
+    return false;
+  }
+  // IPv6 loopback / unspecified / unique-local / link-local.
+  if (host === "::1" || host === "::" || /^f[cd]/.test(host) || host.startsWith("fe80:")) {
+    return false;
+  }
+  // IPv4 private, loopback, link-local (incl. 169.254.169.254 metadata) ranges.
+  const m = host.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/);
+  if (m) {
+    const [a, b] = [Number(m[1]), Number(m[2])];
+    if (
+      a === 10 ||
+      a === 127 ||
+      a === 0 ||
+      (a === 169 && b === 254) ||
+      (a === 172 && b >= 16 && b <= 31) ||
+      (a === 192 && b === 168)
+    ) {
+      return false;
+    }
+  }
+  return true;
+}
+
+/**
  * Fetch a whitelisted URL politely (identifying User-Agent, 10s timeout) and
  * extract its readable text. Never throws — returns a typed error instead.
  */
 export async function fetchAndExtract(url: string): Promise<FetchResult> {
+  if (!isFetchableUrl(url)) return { ok: false, error: "blocked URL" };
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 10_000);
   try {

@@ -10,6 +10,7 @@ import { ScrollHelpers } from "@/components/site/scroll-helpers";
 import { CookieConsent } from "@/components/site/cookie-consent";
 import { SiteBackground } from "@/components/site/site-background";
 import { SITE, SITE_URL } from "@/lib/site";
+import { serializeJsonLd } from "@/lib/jsonld";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -118,7 +119,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
         <script
           type="application/ld+json"
           nonce={nonce}
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          dangerouslySetInnerHTML={{ __html: serializeJsonLd(jsonLd) }}
         />
         {/* Skip link (C2 a11y): first focusable element; jumps past the header
             nav to each page's <main id="main-content">. Hidden until focused. */}

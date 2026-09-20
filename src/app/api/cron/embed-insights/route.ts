@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { embedText } from "@/lib/ai";
 import { storeInsightEmbedding } from "@/lib/data/insights";
+import { authorizeCron } from "@/lib/cron-auth";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -14,10 +15,9 @@ export const maxDuration = 60;
  * inside the function time limit; call repeatedly until `remaining` is 0.
  */
 export async function GET(req: Request) {
-  const secret = process.env.CRON_SECRET;
-  if (!secret) return NextResponse.json({ error: "Not configured" }, { status: 503 });
-  if (req.headers.get("authorization") !== `Bearer ${secret}`)
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const authz = authorizeCron(req);
+  if (!authz.ok)
+    return NextResponse.json({ error: authz.error }, { status: authz.status });
 
   // Rows without an embedding (raw SQL — Prisma can't filter the vector column).
   const pending = await db.$queryRaw<
